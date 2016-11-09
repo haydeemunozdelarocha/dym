@@ -3,6 +3,9 @@ var router = express.Router();
 var request =   require('request');
 var fs = require('fs');
 var moment= require('moment');
+var S3FS = require('s3fs');
+
+var fsImpl = new S3FS('dymingenieros', s3Options);
 
 router.get('/', function(req, res, err) {
   console.log('getting photo')
@@ -19,6 +22,11 @@ router.get('/', function(req, res, err) {
   }
 };
 
+var s3Options = {
+  region: 'us-standard',
+
+};
+
 function callback(error, response, body) {
   if (!error && response.statusCode == 200) {
     photo = body;
@@ -28,7 +36,7 @@ function callback(error, response, body) {
     // wstream.write(body);
     // // create another Buffer of 100 bytes and write
     // wstream.end();
-           fs.writeFile('./public/images/'+hora+'.jpg', body, 'binary', function(err){
+           fsImpl.writeFile(''+hora+'.jpg', body, 'binary', function(err){
             if (err) throw err
             console.log('File saved.')
         })
