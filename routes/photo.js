@@ -11,7 +11,7 @@ var s3Options = {
   secretAccessKey: process.env.S3_PSS
 };
 
-};
+
 
 var fsImpl = new S3FS('dymingenieros', s3Options);
 
