@@ -5,6 +5,14 @@ var fs = require('fs');
 var moment= require('moment');
 var S3FS = require('s3fs');
 
+var s3Options = {
+  region: 'us-standard',
+  accessKeyId: process.env.S3_USER,
+  secretAccessKey: process.env.S3_PSS
+};
+
+};
+
 var fsImpl = new S3FS('dymingenieros', s3Options);
 
 router.get('/', function(req, res, err) {
@@ -20,11 +28,6 @@ router.get('/', function(req, res, err) {
     'Authorization': 'Bearer '+ auth_token,
     'Content-Type': 'application/x-www-form-urlencoded'
   }
-};
-
-var s3Options = {
-  region: 'us-standard',
-
 };
 
 function callback(error, response, body) {
