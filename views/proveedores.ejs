@@ -1,0 +1,38 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Proveedores</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+  <% include ./partials/header.ejs %>
+  <div id="content-container">
+  <ul class="nav">
+  <li><a href="/proveedores/nuevo">Agregar</a></li>
+</ul>
+  <div id="table">
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Proveedores</div>
+
+  <!-- Table -->
+    <table class="table">
+    <% for(var i=0; i<proveedores.length; i++) {%>
+    <tr>
+      <td><%= proveedores[i].id %></td>
+     <td><%= proveedores[i].razon_social %></td>
+      <td><%= proveedores[i].direccion %></td>
+      <td><%= proveedores[i].telefono %></td>
+      <td><%= proveedores[i].ciudad %></td>
+      <td><%= proveedores[i].estado %></td>
+      <td><%= proveedores[i].rfc %></td>
+      <td><a href="/proveedores/editar/<%= proveedores[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+      <td><a href="/api/proveedores/borrar/<%= proveedores[i].id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+     </tr>
+    <% } %>
+    </table>
+  </div>
+</div>
+</body>
+</html>

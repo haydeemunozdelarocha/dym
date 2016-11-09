@@ -1,0 +1,33 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+</head>
+<body>
+  <div id="content-container">
+<div id="recibo" style="margin-left:10px; padding-top:20px; padding-bottom:20px; font-size:16px;">
+<h1>DYM INGENIEROS CONSTRUCTORES SA DE CV</h1>
+<h2>RECIBO ACARREOS</h2>
+<h3><strong>Fecha: </strong><%= acarreo[0].hora %></h3>
+
+<h3><strong>Recibo No.:</strong> <%= acarreo[0].id%></h3>
+<h3><strong>No. Camión:</strong> <%= acarreo[0].camion_id %></h3>
+<h3><strong>Placas:</strong> <%= acarreo[0].placas %></h3>
+<h3><strong>Modelo:</strong> <%= acarreo[0].modelo %></h3>
+<h3><strong>Fletero:</strong> <%= acarreo[0].razon_social %></h3>
+<br>
+<h3><strong>Material:</strong> <%= acarreo[0].nombre %></h3>
+<h3><strong>Proveedor:</strong> <%= acarreo[0].razon_social %></h3>
+<h3><strong>Cantidad:</strong> <%= acarreo[0].capacidad %> <%= acarreo[0].unidad %></h3>
+<h3><strong>Precio Unitario: </strong>$<%= acarreo[0].precio %></h3>
+</div>
+</div>
+<button onclick="test()" class="btn btn-primary">Imprimir</button>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+
+</body>
+</html>

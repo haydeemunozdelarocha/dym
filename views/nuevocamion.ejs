@@ -1,0 +1,46 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Nuevo Camión</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+<% include ./partials/header.ejs %>
+<div id="content-container">
+<form action="/api/camiones" method="POST" enctype="application/x-www-form-urlencoded">
+<div class="input-group">
+  <label>Número:</label>
+  <input type="text" class="form-control" name="numero" id="numero">
+</div>
+
+<div class="input-group">
+  <label>Placas:</label>
+  <input type="text" class="form-control" placeholder="Placas" name="placas" id="placas">
+</div>
+
+<div class="input-group">
+  <label>Modelo:</label>
+    <input type="text" class="form-control" placeholder="Modelo" name="modelo" id="modelo">
+</div>
+
+<div class="input-group">
+  <label>Capacidad:</label>
+  <input type="text" class="form-control" placeholder="Capacidad" name="capacidad" id="capacidad">
+</div>
+
+<div class="input-group">
+<label>Proveedor:</label>
+<select class="form-control" name="proveedor_id" id="proveedor_id">
+            <option value="">Proveedor</option>
+      <% for(var i=0; i<proveedores.length; i++) {%>
+            <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
+    <% } %>
+    </select>
+</div>
+<br>
+  <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+</div>
+</body>
+</html>

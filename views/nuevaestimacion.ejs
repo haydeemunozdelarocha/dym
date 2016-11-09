@@ -1,0 +1,153 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Estimación Nueva</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
+<% include ./partials/header.ejs %>
+<div id="content-container">
+<form action="/estimaciones/nueva" method="POST">
+   <div class="form-group" id="obrainfo">
+  <div id="obraselect">
+    <label for="obra">Obra</label>
+    <select class="form-control" >
+    <% for(var i=0; i<obras.length; i++) {%>
+      <option value="<%= obras[i].codigo %>"><%= obras[i].codigo %> - <%= obras[i].nombre_obra %></option>
+    <% } %>
+    </select>
+    </div>
+    <div id="numeroest">
+    <label for="numeroest">Número de Estimación</label>
+    <% if (ultimaEstimacion.length > 1) { %>
+    <p><%= ultimaEstimacion.id+1 %></p>
+    <%} else { %>
+    <p>1</p>
+    <% } %>
+    </div>
+  </div>
+  <div class="form-group" id="fechas">
+    <label for="fecha">Periódo</label>
+    <input type="date" class="form-control" id="periodoinicio">
+    <input type="date" class="form-control" id="periodofinal">
+</div>
+  <div class="form-group">
+    <label for="residente">Residente</label>
+    <select class="form-control" id="residenteselect">
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="proveedor">Proveedor</label>
+    <select class="form-control" id="proveedorselect">
+    <% for(var i=0; i<proveedores.length; i++) {%>
+      <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
+    <% } %>
+    </select>
+  </div>
+  <div class="form-group">
+  <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Descripción</div>
+     <table class="table" id="tabla-estimacion">
+       <tr>
+         <td>
+           Concepto
+         </td>
+        <td>
+           Unidad
+         </td>
+         <td>
+           Cantidad Presupuesto
+         </td>
+         <td>
+           Esta Estimación
+         </td>
+         <td>
+           Acumulado Anterior
+         </td>
+         <td>
+           Acumulado <br>Actual
+         </td>
+         <td>
+           Actual por <br>Ejercer
+         </td>
+         <td>
+            Importe
+         </td>
+       </tr>
+        <tr>
+         <td>
+           <input type="text" id="concepto" >
+         </td>
+        <td>
+           <select name="unidad" id="unidad">
+             <option value="m">m</option>
+             <option value="m2">m2</option>
+             <option value="m3">m3</option>
+             <option value="ton">ton</option>
+             <option value="piezas">piezas</option>
+           </select>
+         </td>
+         <td>
+           <input type="text" id="cantidad_presupuesto" >
+         </td>
+         <td>
+           <input type="text" id="esta_estimacion" >
+         </td>
+         <td>
+             <% if (ultimaEstimacion.length > 1) { %>
+              <input type="text" id="acumulado_anterior" disabled value="<%= ultimaEstimacion.acumulado_actual %>">
+              <%} else { %>
+              <input type="text" id="acumulado_anterior" >
+              <% } %>
+         </td>
+         <td>
+           <input type="text" id="acumulado_actual" >
+         </td>
+         <td>
+           <input type="text" id="actual_por_ejercer" >
+         </td>
+         <td>
+            <input type="text" id="importe" >
+         </td>
+
+       </tr>
+     </table>
+     </div>
+     </div>
+     <div id="add-row"><button class="btn btn-success">Add Item</button></div>
+  </div>
+  <div class="form-group" id="subtotales">
+  <div id="total-container">
+    <label for="subtotal">Subtotal</label>
+    <input type="text" id="subtotal" placeholder="subtotal">
+    <label for="iva">Iva</label>
+    <input type="text" id="iva" placeholder="iva" disabled>
+    <label for="retencion">Retención</label>
+    <input type="text" id="retencion" placeholder="retención" disabled>
+    <label for="total">Total</label>
+    <input type="text" id="total" placeholder="total" disabled>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="pagado">Pagado</label>
+    <input type="checkbox">
+    <label for="fecha_pago">Fecha de Pago</label>
+    <input type="text" placeholder="Fecha de Pago">
+    <label for="fecha_pago">No. Factura</label>
+    <input type="text" placeholder="Factura">
+  </div>
+
+  <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+</div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+</body>
+</html>

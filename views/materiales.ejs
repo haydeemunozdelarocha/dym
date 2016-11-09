@@ -1,0 +1,73 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Materiales</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+  <% include ./partials/header.ejs %>
+  <div id="content-container">
+  <ul class="nav">
+</ul>
+    <div id="proveedor">
+      <label for="proveedor">Buscar por Proveedor:</label>
+        <select class="form-control" name="proveedor_id" id="proveedor_id">
+          <% for(var i=0; i<info.length; i++) {%>
+            <option value="<%= info[i].id %>"><%= info[i].razon_social %></option>
+          <% } %>
+        </select>
+    </div>
+    <br>
+  <div id="table">
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Materiales</div>
+
+  <!-- Table -->
+    <table class="table">
+      <tr>
+      <td></td>
+      <td><input type="text" class="form-control" placeholder="Material" name="nombre" id="nombre"></td>
+      <td><select class="form-control" name="proveedor_id" id="proveedor_id">
+            <option value="">Proveedor</option>
+      <% for(var i=0; i<info.length; i++) {%>
+            <option value="<%= info[i].id %>"><%= info[i].razon_social %></option>
+    <% } %>
+    </select>
+    </td>
+    <td>
+      <select class="form-control" name="unidad" id="unidad">
+        <option value="">Unidad</option>
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3">m3</option>
+        <option value="ton">ton</option>
+      </select>
+    </td>
+    <td><input type="text" class="form-control" placeholder="Precio" name="precio" id="precio"></td>
+    <td><a href=""><span class="glyphicon glyphicon-plus-sign save-material"></span></a></td>
+     </tr>
+    <tr>
+      <td>ID</td>
+      <td>Nombre</td>
+      <td>Proveedor</td>
+      <td>Unidad</td>
+      <td>Precio</td>
+    </tr>
+    <% for(var i=0; i<info.length; i++) {%>
+    <tr id="tabla-materiales">
+      <td><%= info[i].id %></td>
+     <td><%= info[i].nombre %></td>
+      <td><%= info[i].razon_social %></td>
+      <td><%= info[i].unidad %></td>
+      <td>$<%= info[i].precio %></td>
+      <td><a href="/materiales/editar/<%= info[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+      <td><a href="/api/materiales/borrar/<%= info[i].id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+     </tr>
+    <% } %>
+    </table>
+  </div>
+</div>
+</body>
+</html>

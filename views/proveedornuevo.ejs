@@ -1,0 +1,89 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Proveedor Nueva</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+<% include ./partials/header.ejs %>
+<div id="content-container">
+<div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="50"
+  aria-valuemin="0" aria-valuemax="100" style="width:50%">
+    <span class="sr-only">50% Complete</span>
+  </div>
+</div>
+  <form action="/api/proveedores" method="post">
+
+<div class="input-group">
+  <label>Nombre:</label>
+  <input type="text" class="form-control" placeholder="Nombre" name="razon_social" id="nombre">
+</div>
+
+<div class="input-group">
+  <label>RFC:</label>
+  <input type="text" class="form-control" placeholder="RFC" name="rfc" id="rfc">
+</div>
+
+<div class="input-group">
+  <label>Dirección:</label>
+  <input type="text" class="form-control" placeholder="Dirección" name="direccion" id="direccion">
+</div>
+
+<div class="input-group">
+  <label>Teléfono:</label>
+  <input type="text" class="form-control" placeholder="Teléfono" name="telefono" id="telefono">
+</div>
+
+<div class="input-group">
+  <label>Ciudad:</label>
+  <input type="text" class="form-control" placeholder="Ciudad" name="ciudad" id="ciudad">
+</div>
+
+<div class="input-group">
+  <label>Estado:</label>
+  <select class="form-control" name="estado" id="estado">
+      <option value="">Seleccionar Estado</option>
+      <option value="Aguascalientes">Aguascalientes</option>
+      <option value="Baja California">Baja California</option>
+      <option value="Baja California Sur">Baja California Sur</option>
+      <option value="Campeche">Campeche</option>
+      <option value="Chiapas">Chiapas</option>
+      <option value="Chihuahua">Chihuahua</option>
+      <option value="Coahuila">Coahuila</option>
+      <option value="Colima">Colima</option>
+      <option value="Distrito Federal">Distrito Federal</option>
+      <option value="Durango">Durango</option>
+      <option value="Estado de México">Estado de México</option>
+      <option value="Guanajuato">Guanajuato</option>
+      <option value="Guerrero">Guerrero</option>
+      <option value="Hidalgo">Hidalgo</option>
+      <option value="Jalisco">Jalisco</option>
+      <option value="Michoacán">Michoacán</option>
+      <option value="Morelos">Morelos</option>
+      <option value="Nayarit">Nayarit</option>
+      <option value="Nuevo León">Nuevo León</option>
+      <option value="Oaxaca">Oaxaca</option>
+      <option value="Puebla">Puebla</option>
+      <option value="Querétaro">Querétaro</option>
+      <option value="Quintana Roo">Quintana Roo</option>
+      <option value="San Luis Potosí">San Luis Potosí</option>
+      <option value="Sinaloa">Sinaloa</option>
+      <option value="Sonora">Sonora</option>
+      <option value="Tabasco">Tabasco</option>
+      <option value="Tamaulipas">Tamaulipas</option>
+      <option value="Tlaxcala">Tlaxcala</option>
+      <option value="Veracruz">Veracruz</option>
+      <option value="Yucatán">Yucatán</option>
+      <option value="Zacatecas">Zacatecas</option>
+  </select>
+</div>
+<br>
+<div class="input-group">
+<button type="submit" class="btn btn-primary">Guardar</button>
+</div>
+</form>
+</div>
+</body>
+</html>

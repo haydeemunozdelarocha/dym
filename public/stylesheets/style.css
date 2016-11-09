@@ -1,0 +1,54 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#content-container{
+  margin-top: 5%;
+}
+#tabla-estimacion input{
+  width:80%;
+}
+#subtotales{
+  display:block;
+  width:97%;
+  height:20%;
+}
+#subtotales input{
+  width:53%;
+    float:right;
+}
+#subtotales label{
+    float:left;
+    width:26%;
+}
+#total-container{
+  width:19%;
+  height:20%;
+    float:right;
+}
+#fechas{
+  display: flex;
+  justify-content: space-between;
+}
+#fechas input{
+width:25%;
+}
+#obrainfo{
+  width:100%;
+  height:20%;
+}
+#obrainfo select{
+  width:58%;
+}
+#numeroest{
+  float: right;
+}
+#obraselect{
+  float: left;
+  width:50%;
+}

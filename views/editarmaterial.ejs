@@ -1,0 +1,51 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Nuevo Material</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+<% include ./partials/header.ejs %>
+<div id="content-container">
+<form action="/api/materiales/<%= material[0].id %>" method="POST" enctype="application/x-www-form-urlencoded">
+  <input type="hidden" name="_method" value="put">
+<div class="input-group">
+  <div id="materiales">
+  <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Materiales</div>
+  <!-- Table -->
+    <table class="table">
+    <tr>
+      <td>Nombre</td>
+      <td>Proveedor</td>
+      <td>Unidad</td>
+      <td>Precio</td>
+    </tr>
+    <tr>
+      <td><input type="text" class="form-control" value="<%=material[0].nombre %>" name="nombre" id="nombre"></td>
+      <td><input type="text" class="form-control" value="<%=material[0].proveedor_id %>" name="proveedor_id" id="proveedor_id">
+    </td>
+    <td>
+      <select class="form-control" name="unidad" id="unidad">
+        <option value="">Unidad</option>
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3">m3</option>
+        <option value="ton">ton</option>
+      </select>
+    </td>
+    <td><input type="text" class="form-control" value="<%=material[0].precio %>" name="precio" id="precio"></td>
+     </tr>
+    </table>
+    </div>
+  </div>
+</div>
+<br>
+
+  <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+</div>
+</body>
+</html>

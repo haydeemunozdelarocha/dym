@@ -1,0 +1,43 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Acarreos</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+  <% include ./partials/header.ejs %>
+  <div id="content-container">
+  <ul class="nav">
+</ul>
+  <div id="table">
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Acarreos</div>
+
+  <!-- Table -->
+    <table class="table">
+    <tr>
+      <td>ID</td>
+      <td>Material</td>
+      <td>Proveedor</td>
+      <td>Camión</td>
+      <td>Cantidad</td>
+      <td>Fecha</td>
+    </tr>
+    <% for(var i=0; i<acarreos.length; i++) {%>
+    <tr>
+      <td><%= acarreos[i].id %></td>
+     <td><%= acarreos[i].nombre %></td>
+      <td><%= acarreos[i].razon_social %></td>
+      <td><%= acarreos[i].camion_id %></td>
+      <td><%= acarreos[i].capacidad %></td>
+      <td><%= acarreos[i].hora %></td>
+      <td><a href="/edit/<%= acarreos[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+     </tr>
+    <% } %>
+    </table>
+  </div>
+</div>
+</body>
+</html>

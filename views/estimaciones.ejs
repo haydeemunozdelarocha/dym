@@ -1,0 +1,34 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Estimaciones</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+  <% include ./partials/header.ejs %>
+  <div id="content-container">
+  <ul class="nav">
+  <li><a href="/estimaciones/nueva">Agregar</a></li>
+</ul>
+  <div id="table">
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Estimaciones</div>
+
+  <!-- Table -->
+    <table class="table">
+    <% for(var i=0; i<estimaciones.length; i++) {%>
+    <tr>
+      <td><%= estimaciones[i].id %></td>
+     <td><%= estimaciones[i].residente.id %></td>
+      <td><%= estimaciones[i].proveedor %></td>
+      <td><a href="/estimaciones/editar/<%= estimaciones[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+      <td><a href="/estimaciones/borrar/<%= estimaciones[i].id %>"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+     </tr>
+    <% } %>
+    </table>
+  </div>
+</div>
+</body>
+</html>

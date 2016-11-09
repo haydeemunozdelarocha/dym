@@ -1,0 +1,60 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Acarreo - Captura</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
+<div id="content-container">
+<form action="/api/acarreos" method="POST" enctype="application/x-www-form-urlencoded">
+   <div class="form-group" id="camion_id">
+      <label for="camion_id">Camión ID</label>
+      <input type="text" class="form-control" id="scanner" name="numero" oninput="getCamion()" required autofocus autocomplete="off">
+      <div id="search-status"></div>
+    </div>
+        <div class="form-group" id="materialinfo">
+    <div id="material">
+      <label for="material">Proveedor Material:</label>
+          <select class="form-control" name="proveedor_id" id="proveedor_id" onchange="getMateriales()" required disabled>
+            <option value="">Proveedor</option>
+      <% for(var i=0; i<info.length; i++) {%>
+            <option value="<%= info[i].id %>"><%= info[i].razon_social %></option>
+    <% } %>
+    </select>
+    </div>
+    </div>
+    <div class="form-group" id="materialinfo">
+    <div id="material">
+      <label for="material">Material</label>
+        <select class="form-control" name="material_id" id="material_id" onchange="getMaterial()" required disabled>
+        <option value="">Material</option>
+        </select>
+    </div>
+    </div>
+    <div class="form-group" id="precio">
+      <label for="precio">Precio Unitario</label>
+      <input type="text" class="form-control" id="precio-input" name="precio" readonly="readonly">
+    </div>
+    <div class="form-group" name="zona" id="zona">
+      <label for="zona">Zona</label>
+        <select class="form-control" id="zona" name="zona" required onchange="allowPhoto()">
+            <option value="">Zonas</option>
+            <option >Zona 1</option>
+            <option >Zona 2</option>
+            <option >Zona 3</option>
+        </select>
+    </div>
+    <div class="form-group" name="foto" id="foto">
+      <div onclick="getImage()" id="photo-button" class="btn btn-primary" disabled>Capturar Imagen</div><div id="loading"></div>
+    </div>
+    <div id="photo-status"></div>
+  <button type="submit" id="submit-button" class="btn btn-primary" disabled>Ver ticket</button>
+</form>
+</div>
+<div id="test"></div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+</body>
+</html>
+
