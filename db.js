@@ -6,7 +6,7 @@ var db_config      =    mysql.createPool({
     host     : process.env.DYM_DB_HOST,
     user     : process.env.DYM_DB_USER,
     password : process.env.DYM_DB_PSS,
-    database : 'heroku_20b3705599c7d39',
+    database : 'heroku_aa5f4bff4de7c3d',
     debug    :  false
 });
 
