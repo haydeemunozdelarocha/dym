@@ -8,6 +8,7 @@ var passport = require('passport');
 var readTable = 'SELECT * FROM obras';
 var listaAcarreos = 'SELECT acarreos.*, camiones.capacidad, proveedores.razon_social, materiales.nombre, materiales.precio FROM acarreos JOIN camiones ON camiones.id = acarreos.camion_id JOIN proveedores ON proveedores.id = camiones.proveedor_id JOIN materiales ON materiales.id = acarreos.material_id';
 var infoCaptura = 'SELECT * FROM proveedores';
+var sess;
 
 router.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -31,7 +32,8 @@ router.get('/auth/nest', passport.authenticate('nest'), function(req, res){
 router.get('/auth/nest/callback', passport.authenticate('nest'),
   function(req, res) {
     console.log("callback")
-res.cookie('nest_token', req.user.accessToken);
+    res.cookie('nest_token', req.user.accessToken,{ maxAge: 900000 });
+    console.log(req.user)
     console.log(req.user.accessToken)
     res.redirect('/captura');
 //

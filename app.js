@@ -60,7 +60,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: SUPER_SECRET_KEY,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie:{maxAge:6000}
 }));
 app.use(passport.initialize());
 app.use(passport.session());
