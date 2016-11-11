@@ -8,7 +8,7 @@ var passport = require('passport');
 var readTable = 'SELECT * FROM obras';
 var listaAcarreos = 'SELECT acarreos.*, camiones.capacidad, proveedores.razon_social, materiales.nombre, materiales.precio FROM acarreos JOIN camiones ON camiones.id = acarreos.camion_id JOIN proveedores ON proveedores.id = camiones.proveedor_id JOIN materiales ON materiales.id = acarreos.material_id';
 var infoCaptura = 'SELECT * FROM proveedores';
-var sess;
+
 
 router.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -22,8 +22,75 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/login', function(req, res, next) {
-  res.render('login', { title: 'DYM Ingenieros Constructores' });
+  res.render('login', { title: 'Express' });
 });
+
+router.post('/signin', function(req,res,next){
+  var username = req.body.username;
+  var password = req.body.password;
+  console.log(req.body)
+      db.query("SELECT * FROM `users` WHERE `username` = '" + username + "'",function(err,rows){
+      if (err)
+                return err;
+       if (!rows.length) {
+                 res.send('No user found.');
+            }
+
+      // if the user is found but the password is wrong
+            if (!( rows[0].password == password))
+                res.send('Wrong password.');// create the loginMessage and save it to session as flashdata
+
+            // all is well, return successful user
+            return  req.logIn(rows[0], function (err) {
+                    if (err) {
+                        return err;
+                    }
+                        return res.redirect('/captura');
+                });
+
+    });
+});
+
+router.get('/register/:accessToken', function(req, res, next) {
+  var accessToken = req.params.accessToken;
+  res.render('register', { title: 'DYM Ingenieros Constructores', accessToken:accessToken});
+});
+
+router.post('/signup/:accessToken', function(req, res, next){
+  var accessToken = req.params.accessToken;
+  var username = req.body.username;
+   var password = req.body.password;
+   var empleado_id= req.body.empleado_id;
+      db.query("select * from users where username = '"+username+"'",function(err,rows){
+      console.log(rows);
+      console.log("above row object");
+      if (err)
+                return err;
+       if (rows.length) {
+                res.redirect('/register');
+            } else {
+                var newUserMysql = new Object();
+
+        newUserMysql.accessToken    = accessToken;
+        newUserMysql.username    = username;
+        newUserMysql.password    = password;
+        newUserMysql.empleado_id    = empleado_id;
+
+        var insertQuery = "INSERT INTO users ( accessToken, username, password, empleado_id ) values ('" + accessToken+"','"+username+"','"+password+"','"+empleado_id+"')";
+        db.query(insertQuery,function(err,rows){
+          newUserMysql.id = rows.insertId;
+             req.logIn(newUserMysql, function (err) {
+                    if (err) {
+                        return err;
+                    }
+                        console.log(req.user)
+                        return res.redirect('/captura');
+                });
+        });
+      }
+    });
+});
+
 
 router.get('/auth/nest', passport.authenticate('nest'), function(req, res){
   console.log('sending request')
@@ -33,17 +100,19 @@ router.get('/auth/nest/callback', passport.authenticate('nest'),
   function(req, res) {
     console.log("callback")
     res.cookie('nest_token', req.user.accessToken,{ maxAge: 900000 });
-    console.log(req.user)
-    console.log(req.user.accessToken)
-    res.redirect('/captura');
-//
-});
+    var accessToken = req.user.accessToken;
+        console.log(accessToken)
+        res.redirect('/register/'+accessToken)
+  });
+
 
  function isLoggedIn(req, res, next){
+  console.log('is logged in?')
     if (req.isAuthenticated()) {
+      console.log(req.user)
       next();
     }else{
-      res.redirect('/');
+      res.redirect('/login');
     }
   };
 
@@ -113,7 +182,8 @@ router.get('/acarreos', function(err,res){
   });
 })
 
-router.get('/captura', function(err,res){
+router.get('/captura', isLoggedIn, function(req, res){
+  console.log(process.env.AWS_ACCESS_KEY_ID)
     db.query(infoCaptura, function(err, info){
     if(err) throw err;
     else {

@@ -8,7 +8,7 @@ var db = require('../../db.js');
 var nuevoCamion = 'INSERT INTO camiones(modelo, numero, placas, proveedor_id, capacidad) VALUE(?,?,?,?,?)';
 var listaCamiones = 'SELECT proveedores.nombre, camiones.* FROM camiones INNER JOIN proveedores ON camiones.proveedor_id=proveedores.id';
 var getCamion = "SELECT * FROM `camiones` WHERE `numero` = ?";
-var editarCamion = 'UPDATE camiones SET modelo = ?, placas = ?, proveedor_id = ?, capacidad= ?, numero= ? WHERE id= ?';
+var editarCamion = 'UPDATE camiones SET modelo = ?, placas = ?, capacidad= ?, numero= ? WHERE id= ?';
 
 //Read table.
 router.get('/', function(err,res){
@@ -62,9 +62,8 @@ var id = req.params.idcamion;
 var modelo= req.body.modelo;
 var placas= req.body.placas;
 var numero= req.body.numero;
-var proveedor_id= req.body.proveedor_id;
 var capacidad= req.body.capacidad;
-    db.query(editarCamion,[modelo,placas,proveedor_id,capacidad,numero,id], function(err, camion){
+    db.query(editarCamion,[modelo,placas,capacidad,numero,id], function(err, camion){
     if(err) throw err;
     else {
         console.log('Listo');

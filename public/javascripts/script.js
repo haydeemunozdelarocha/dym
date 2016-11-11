@@ -1,41 +1,7 @@
-// function foo(data)
-// {
-//     // do stuff with JSON
-//     data = JSON.stringify(data);
-//     var images=JSON.parse(data)
-
-//     console.log(images)
-// }
-
-// var script = document.createElement('script');
-// script.src = 'http://10.5.5.9/gp/gpMediaList?callback=foo'
-
-// document.getElementsByTagName('head')[0].appendChild(script);
-
-// function getPhotoFront() {
-// var xhr = new XMLHttpRequest();
-// console.log('snapping')
-// xhr.open('GET', 'http://10.5.5.9/gp/gpControl/command/shutter?p=1', true);
-// xhr.send();
-// setTimeout(getImage,3000);
-// console.log('done')
-
-// }
-
-// function photoMode() {
-// document.getElementById("loading").innerHTML = "Loading..";
-// var xhr = new XMLHttpRequest();
-// console.log('changing mode')
-// xhr.open('GET', 'http://10.5.5.9/gp/gpControl/command/mode?p=1', true);
-// xhr.send();
-// xhr.getAllResponseHeaders()
-// console.log('done')
-// getPhotoFront();
-// }
-
 
 function getImage() {
 console.log("getting image");
+$('#photo-status').html("Capturando imagen...")
 var image = $.ajax({
     url: '/photo',
     type: 'GET',
@@ -43,7 +9,9 @@ var image = $.ajax({
   });
 
   image.done(function(data){
+    $('#photo-status').html("Listo!")
     console.log(data);
+    $('#photo-status').html(data)
     });
 
   image.fail(function(jqXHR, textStatus, errorThrown){

@@ -5,12 +5,14 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
+var LocalStrategy   = require('passport-local').Strategy;
 var NestStrategy = require('passport-nest').Strategy;
+var flash = require('connect-flash');
 var session = require('express-session');
+var MySQLStore = require('express-mysql-session')(session);
 var db = require('./db.js');
 
 var routes = require('./routes/index');
-var camera = require('./routes/camera');
 var photo = require('./routes/photo');
 var users = require('./routes/users');
 var obras = require('./routes/api/obras');
@@ -34,6 +36,28 @@ app.all('/', function(req, res, next) {
 var SUPER_SECRET_KEY = 'keyboard-cat';
 var NEST_API_URL = 'https://developer-api.nest.com';
 
+var options = {
+    host: process.env.DYM_DB_HOST,
+    port: 3306,
+    user     : process.env.DYM_DB_USER,
+    password : process.env.DYM_DB_PSS,
+    database : 'heroku_aa5f4bff4de7c3d',
+    checkExpirationInterval: 900000,// How frequently expired sessions will be cleared; milliseconds.
+    expiration: 86400000,// The maximum age of a valid session; milliseconds.
+    createDatabaseTable: true,// Whether or not to create the sessions database table, if one does not already exist.
+    connectionLimit: 1,// Number of connections when creating a connection pool
+    cookie : { httpOnly: true, maxAge: 2419200000 },
+    schema: {
+        tableName: 'sessions',
+        columnNames: {
+            session_id: 'session_id',
+            expires: 'expires',
+            data: 'data'
+        }
+    }
+};
+
+var sessionStore = new MySQLStore(options);
 
 passport.use(new NestStrategy({
   // Read credentials from your environment variables.
@@ -41,6 +65,7 @@ passport.use(new NestStrategy({
   clientSecret: process.env.NEST_SECRET,
   authorizationURL: 'https://home.nest.com/login/oauth2?client_id=9f4b110f-72f9-40e0-8c83-b4b03d5d3f55&state=foo'
 }));
+
 
 passport.serializeUser(function(user, done) {
   done(null, user);
@@ -58,17 +83,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
+  key: 'session_cookie_name',
   secret: SUPER_SECRET_KEY,
-  resave: false,
+  resave: true,
   saveUninitialized: false,
-  cookie:{maxAge:6000}
+  cookie:{maxAge:new Date(Date.now() + 3600000)},
+  store: sessionStore
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
+
 
 app.use('/', routes);
 app.use('/users', users);
-app.use('/camera', camera);
 app.use('/photo', photo);
 app.use('/api/obras', obras);
 app.use('/api/proveedores', proveedores);
