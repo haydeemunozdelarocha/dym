@@ -3,7 +3,6 @@ var router = express.Router();
 var request =   require('request');
 var fs = require('fs');
 var moment= require('moment');
-var AWS = require('aws-sdk');
 var S3FS = require('s3fs');
 var session = require('express-session');
 
@@ -35,8 +34,12 @@ function callback(error, response, body) {
     var date= Date.now();
     var hora = moment(date).format("DD-MM-YYYY-hh-mm");
     var path =''+hora+'.jpg';
+            console.log('antes:'+body)
+            console.log('antes:'+path)
            fsImpl.writeFile(path, body, function(err){
             if (err) throw err
+              console.log(body)
+            console.log(path)
               res.send('https://s3.amazonaws.com/dymingenieros/'+path)
             console.log('File saved.')
         })
