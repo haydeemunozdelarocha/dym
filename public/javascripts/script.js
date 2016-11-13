@@ -9,9 +9,11 @@ var image = $.ajax({
   });
 
   image.done(function(data){
+    $('#photo-status').html("")
     $('#photo-status').html("Listo!")
     console.log(data);
-    $('#photo-status').html(data)
+    $('#photo-status').html(data);
+    allowSubmit()
     });
 
   image.fail(function(jqXHR, textStatus, errorThrown){

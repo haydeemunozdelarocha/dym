@@ -7,8 +7,8 @@ var S3FS = require('s3fs');
 var session = require('express-session');
 
 var fsImpl = new S3FS('dymingenieros', {
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  accessKeyId: "AKIAI7PFT7YCFAAJQK2Q",
+  secretAccessKey: "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"
 });
 
 router.get('/', function(req, res, err) {
@@ -33,21 +33,16 @@ function callback(error, response, body) {
     photo = body;
     var date= Date.now();
     var hora = moment(date).format("DD-MM-YYYY-hh-mm");
-    var path =''+hora+'.jpg';
-            console.log('antes:'+body)
-            console.log('antes:'+path)
-           fsImpl.writeFile(path, body, function(err){
+    var path =''+hora+'.jpeg';
+           fsImpl.writeFile(path, photo, function(err){
             if (err) throw err
-              console.log(body)
-            console.log(path)
-              res.send('https://s3.amazonaws.com/dymingenieros/'+path)
             console.log('File saved.')
         })
 
   }
 }
 
-request(options, callback);
+request(options, callback, res);
 });
 
 module.exports = router;
