@@ -11,9 +11,9 @@ var image = $.ajax({
   image.done(function(data){
     $('#photo-status').html("")
     $('#photo-status').html("Listo!")
-    console.log(data);
-    $('#photo-status').html(data);
+    $('#photo').val(data);
     allowSubmit()
+    $('#photo-button').attr("disabled", true);
     });
 
   image.fail(function(jqXHR, textStatus, errorThrown){
@@ -60,6 +60,7 @@ var material_id = $('#material_id').val();
   material.done(function(data){
     $('#precio').val('');
     $('#precio-input').attr('value', ''+data.precio+'');
+    $('#zonas').removeAttr("disabled")
     });
 
   material.fail(function(jqXHR, textStatus, errorThrown){

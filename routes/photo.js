@@ -30,19 +30,22 @@ router.get('/', function(req, res, err) {
 
 function callback(error, response, body) {
   if (!error && response.statusCode == 200) {
-    photo = body;
+    body = new Buffer(body, 'binary')
     var date= Date.now();
     var hora = moment(date).format("DD-MM-YYYY-hh-mm");
-    var path =''+hora+'.jpeg';
-           fsImpl.writeFile(path, photo, function(err){
+    var path =''+hora+'.jpg';
+    photo="https://s3.amazonaws.com/dymingenieros/"+path;
+           fsImpl.writeFile(path, body, {"ContentType":"image/jpeg", "ContentEncoding":"Binary"}, function(err){
             if (err) throw err
             console.log('File saved.')
+          res.json(photo)
         })
 
   }
 }
 
-request(options, callback, res);
+request(options, callback);
+
 });
 
 module.exports = router;

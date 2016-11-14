@@ -4,7 +4,7 @@ var mysql = require('mysql');
 var moment= require('moment');
 var db = require('../../db.js');
 
-var nuevoAcarreo = 'INSERT INTO acarreos(camion_id, material_id,hora,zona) VALUE(?,?,?,?)';
+var nuevoAcarreo = 'INSERT INTO acarreos(camion_id, material_id,hora,zona,foto,checador_id) VALUE(?,?,?,?,?,?)';
 var listaAcarreos = 'SELECT acarreos.*, camiones.capacidad, proveedores.razon_social, materiales.nombre, materiales.precio FROM acarreos JOIN camiones ON camiones.id = acarreos.camion_id JOIN proveedores ON proveedores.id = camiones.proveedor_id JOIN materiales ON materiales.id = acarreos.material_id';
 
 
@@ -12,8 +12,11 @@ var listaAcarreos = 'SELECT acarreos.*, camiones.capacidad, proveedores.razon_so
 //agregar camion
 router.post('/', function(req,res, next){
   console.log('posting')
+var checador_id= req.user.empleado_id;
+console.log(checador_id)
 var numero= req.body.numero;
 var precio = req.body.precio;
+var foto = req.body.photo;
 var zona = req.body.zona;
 var material_id= Number(req.body.material_id);
 var capacidad;
@@ -26,7 +29,7 @@ console.log(getCamion);
       else {
           var camion_id = camion[0].id;
           capacidad = camion[0].capacidad;
-            db.query(nuevoAcarreo,[camion_id,material_id,hora,zona], function(err,acarreo){
+            db.query(nuevoAcarreo,[camion_id,material_id,hora,zona,foto,checador_id], function(err,acarreo){
             if(err) throw err;
             else {
                   var findLast = 'SELECT * FROM acarreos ORDER BY id DESC LIMIT 1';
