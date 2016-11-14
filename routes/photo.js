@@ -7,8 +7,8 @@ var S3FS = require('s3fs');
 var session = require('express-session');
 
 var fsImpl = new S3FS('dymingenieros', {
-  accessKeyId: "AKIAI7PFT7YCFAAJQK2Q",
-  secretAccessKey: "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"
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
 router.get('/', function(req, res, err) {
