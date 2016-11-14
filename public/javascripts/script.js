@@ -128,8 +128,7 @@ function test () {
 
 function print(html){
   var encodedHtml = ""+encodeURI(html)+"";
-  window.open("starpassprnt://v1/print/nopreview?html="+encodedHtml+"&back=http://evening-bastion-81870.herokuapp.com/captura");
-  alert('printing')
+  window.open("starpassprnt://v1/print/nopreview?html="+encodedHtml+"&back=http://dymingenieros.herokuapp.com/captura");
 }
 
 function getTotals(){
