@@ -19,8 +19,8 @@
       <label for="material">Proveedor Material:</label>
           <select class="form-control" name="proveedor_id" id="proveedor_id" onchange="getMateriales()" required disabled>
             <option value="">Proveedor</option>
-      <% for(var i=0; i<info.length; i++) {%>
-            <option value="<%= info[i].id %>"><%= info[i].razon_social %></option>
+      <% for(var i=0; i<proveedores.length; i++) {%>
+            <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
     <% } %>
     </select>
     </div>
@@ -41,9 +41,9 @@
       <label for="zona">Zona</label>
         <select class="form-control" id="zonas" name="zona" required onchange="allowPhoto()" disabled>
             <option value="">Zonas</option>
-            <option >Zona 1</option>
-            <option >Zona 2</option>
-            <option >Zona 3</option>
+      <% for(var i=0; i<zonas.length; i++) {%>
+            <option value="<%= zonas[i].zonas_id %>"><%= zonas[i].nombre_zona %></option>
+    <% } %>
         </select>
     </div>
     <div class="form-group" name="foto" id="foto">

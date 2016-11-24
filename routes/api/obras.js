@@ -6,8 +6,8 @@ var methodOverride = require('method-override');
 var db = require('../../db.js');
 
 var listaObras = 'SELECT obras.*, residentes.nombre FROM obras JOIN residentes ON residentes.id = obras.residente_id';
- var editarObra = 'UPDATE obras SET codigo = ?, nombre_obra = ?, residente_id = ?, ciudad = ?, estado=? WHERE id=?';
-var getObra = "SELECT * FROM `obras` WHERE `id` = ?";
+ var editarObra = 'UPDATE obras SET codigo = ?, nombre_obra = ?, residente_id = ?, ciudad = ?, estado=? WHERE obra_id=?';
+var getObra = "SELECT * FROM `obras` WHERE `obra_id` = ?";
 
 //agregar obra
 router.post('/', function(req,res, next){
@@ -60,13 +60,13 @@ router.use(methodOverride(function(req, res){
 
   //Update a record.
 router.put('/:id', function(req,res,err){
-  var id= req.params.id;
+  var obra_id= req.params.id;
   var nombre_obra = req.body.nombre;
   var codigo = req.body.codigo;
   var residente_id = req.body.residente_id;
   var ciudad = req.body.ciudad;
   var estado = req.body.estado;
-    con.query(editarObra,[codigo,nombre_obra,residente_id,ciudad,estado,id], function(err, obra){
+    con.query(editarObra,[codigo,nombre_obra,residente_id,ciudad,estado,obra_id], function(err, obra){
     if(err) throw err;
     else {
         console.log('Listo');
@@ -92,10 +92,10 @@ router.use( function( req, res, next ) {
 
   //Delete a record.
 router.delete('/borrar/:idobra', function(req,res,err){
-  var id = req.params.idobra;
-  var borrarObra = 'DELETE FROM obras WHERE id = ?';
+  var obra_id = req.params.idobra;
+  var borrarObra = 'DELETE FROM obras WHERE obra_id = ?';
   console.log(req.params.idobra)
-  con.query(borrarObra,[id], function(err,obra){
+  con.query(borrarObra,[obra_id], function(err,obra){
     if(err) throw err;
     else {
         console.log('Esta obra ha sido eliminada');

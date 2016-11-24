@@ -27,13 +27,13 @@
     </tr>
     <% for(var i=0; i<acarreos.length; i++) {%>
     <tr>
-      <td><%= acarreos[i].id %></td>
+      <td><%= acarreos[i].acarreo_id %></td>
      <td><%= acarreos[i].nombre %></td>
       <td><%= acarreos[i].razon_social %></td>
-      <td><%= acarreos[i].camion_id %></td>
+      <td><%= acarreos[i].numero %></td>
       <td><%= acarreos[i].capacidad %></td>
       <td><%= acarreos[i].hora %></td>
-      <td><a href="/edit/<%= acarreos[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+      <td><a href="/edit/<%= acarreos[i].acarreo_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
      </tr>
     <% } %>
     </table>

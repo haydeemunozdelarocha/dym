@@ -1,0 +1,86 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Presupuesto</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+</head>
+<body>
+<% include ./partials/header.ejs %>
+  <div style="margin-top:10px">
+    <select class="form-control" id="obraselect">
+      <option value="">Obra</option>
+    <% for(var i=0; i<obras.length; i++) { %>
+      <option value="<%= obras[i].obra_id %>"><%= obras[i].nombre_obra %></option>
+    <% } %>
+    </select>
+  </div>
+  <br>
+<div id="content-container">
+    <table class="table">
+    <tr>
+      <td><select class="form-control" id="conceptosselect">
+      <option value="">Concepto</option>
+    <% for(var i=0; i<conceptos.length; i++) {%>
+      <option value="<%= conceptos[i].conceptos_id %>"><%= conceptos[i].nombre_concepto %></option>
+    <% } %>
+    </select></td>
+      <td><select class="form-control" id="zonaselect">
+      <option value="">Zona</option>
+    <% for(var i=0; i<zonas.length; i++) {%>
+      <option value="<%= zonas[i].zonas_id %>"><%= zonas[i].nombre_zona %></option>
+    <% } %>
+    </select></td>
+    <td><input type="text" class="form-control" placeholder="Cantidad" name="cantidad" id="cantidad"></td>
+    <td>
+      <select class="form-control" name="unidad" id="unidad">
+        <option value="">Unidad</option>
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3">m3</option>
+        <option value="ton">ton</option>
+      </select>
+    </td>
+        <td><input type="text" class="form-control" placeholder="Precio" name="precio" id="precio"></td>
+    <td><input type="text" class="form-control" placeholder="Total" name="total" id="total" disabled></td>
+    <td><a onclick="savePresupuesto()" ><span class="glyphicon glyphicon-plus-sign save-presupuesto"></span></a></td>
+     </tr>
+    </table>
+<div class="input-group">
+  <div id="concepto-presupuesto">
+  <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Presupuesto</div>
+
+  <!-- Table -->
+    <table class="table">
+    <tr>
+      <td>Concepto</td>
+      <td>Zona</td>
+      <td>Cantidad</td>
+      <td>Unidad</td>
+      <td>Precio Unitario</td>
+      <td>Total</td>
+    </tr>
+    <% for(var i=0; i<presupuestos.length; i++) {%>
+    <tr>
+      <td><%= presupuestos[i].nombre_concepto %></td>
+      <td><%= presupuestos[i].nombre_zona %></td>
+      <td><%= presupuestos[i].cantidad %></td>
+      <td><%= presupuestos[i].unidad %></td>
+      <td>$<%= presupuestos[i].precio_unitario %></td>
+      <td>$<%= presupuestos[i].total %></td>
+    <td><a href="/api/presupuestos/borrar/<%= presupuestos[i].presupuestos_id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+     </tr>
+    <% } %>
+    </table>
+    </div>
+  </div>
+</div>
+<br>
+</div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+</body>
+</html>

@@ -5,10 +5,10 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var db = require('../../db.js');
 
-var nuevoCamion = 'INSERT INTO camiones(modelo, numero, placas, proveedor_id, capacidad) VALUE(?,?,?,?,?)';
-var listaCamiones = 'SELECT proveedores.nombre, camiones.* FROM camiones INNER JOIN proveedores ON camiones.proveedor_id=proveedores.id';
+var nuevoCamion = 'INSERT INTO camiones(modelo, numero, placas, fletero, capacidad, precio_flete, unidad) VALUE(?,?,?,?,?,?,?)';
+var listaCamiones = 'SELECT proveedores.nombre, camiones.* FROM camiones INNER JOIN proveedores ON camiones.fletero=proveedores.id';
 var getCamion = "SELECT * FROM `camiones` WHERE `numero` = ?";
-var editarCamion = 'UPDATE camiones SET modelo = ?, placas = ?, capacidad= ?, numero= ? WHERE id= ?';
+var editarCamion = 'UPDATE camiones SET modelo = ?, placas = ?, capacidad= ?, numero= ? WHERE camion_id= ?';
 
 //Read table.
 router.get('/', function(err,res){
@@ -45,9 +45,11 @@ router.post('/', function(req,res,err){
 var numero = req.body.numero;
 var modelo= req.body.modelo;
 var placas= req.body.placas;
-var proveedor_id= req.body.proveedor_id;
+var precio_flete= req.body.precio_flete;
+var unidad= req.body.unidad;
+var fletero= req.body.fletero;
 var capacidad= req.body.capacidad;
-    db.query(nuevoCamion,[modelo,numero,placas,proveedor_id,capacidad], function(err, camion){
+    db.query(nuevoCamion,[modelo,numero,placas,fletero,capacidad,precio_flete,unidad], function(err, camion){
     if(err) throw err;
     else {
         console.log('Listo');
@@ -58,12 +60,12 @@ var capacidad= req.body.capacidad;
 
   //Update a record.
 router.put('/:idcamion', function(req,res,err){
-var id = req.params.idcamion;
+var camion_id = req.params.idcamion;
 var modelo= req.body.modelo;
 var placas= req.body.placas;
 var numero= req.body.numero;
 var capacidad= req.body.capacidad;
-    db.query(editarCamion,[modelo,placas,capacidad,numero,id], function(err, camion){
+    db.query(editarCamion,[modelo,placas,capacidad,numero,camion_id], function(err, camion){
     if(err) throw err;
     else {
         console.log('Listo');
@@ -91,10 +93,10 @@ router.use( function( req, res, next ) {
 
   //Delete a record.
 router.delete('/borrar/:idcamion', function(req,res,err){
-  var id = req.params.idcamion;
+  var camion_id = req.params.idcamion;
   var borrarCamion = 'DELETE FROM camiones WHERE id = ?';
   console.log(req.params.idcamion)
-  db.query(borrarCamion,[id], function(err,camion){
+  db.query(borrarCamion,[camion_id], function(err,camion){
     if(err) throw err;
     else {
         console.log('Este camion ha sido eliminada');

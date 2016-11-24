@@ -28,7 +28,12 @@
     <table class="table">
       <tr>
       <td></td>
-      <td><input type="text" class="form-control" placeholder="Material" name="nombre" id="nombre"></td>
+      <td><select class="form-control" name="concepto" id="concepto">
+            <option value="">Concepto</option>
+      <% for(var i=0; i<conceptos.length; i++) {%>
+            <option value="<%= conceptos[i].conceptos_id %>"><%= conceptos[i].nombre_concepto %></option>
+    <% } %>
+    </select></td>
       <td><select class="form-control" name="proveedor_id" id="proveedor_id">
             <option value="">Proveedor</option>
       <% for(var i=0; i<info.length; i++) {%>
@@ -58,7 +63,7 @@
     <% for(var i=0; i<info.length; i++) {%>
     <tr id="tabla-materiales">
       <td><%= info[i].id %></td>
-     <td><%= info[i].nombre %></td>
+     <td><%= info[i].nombre_concepto %></td>
       <td><%= info[i].razon_social %></td>
       <td><%= info[i].unidad %></td>
       <td>$<%= info[i].precio %></td>
@@ -67,6 +72,7 @@
      </tr>
     <% } %>
     </table>
+
   </div>
 </div>
 </body>

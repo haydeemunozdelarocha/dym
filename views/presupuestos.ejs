@@ -1,0 +1,55 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Presupuestos</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+  <% include ./partials/header.ejs %>
+  <div id="content-container">
+  <ul class="nav">
+  <li><a href="/presupuestos/nuevo">Agregar</a></li>
+</ul>
+    <div id="obra">
+      <label for="obra">Obra:</label>
+        <select class="form-control" name="obra_id" id="obra_id">
+          <% for(var i=0; i<obras.length; i++) {%>
+            <option value="<%= obras[i].id %>"><%= obras[i].nombre_obra %></option>
+          <% } %>
+        </select>
+    </div>
+  <div id="table">
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Presupuesto</div>
+
+  <!-- Table -->
+    <table class="table">
+    <tr>
+      <td>ID</td>
+      <td>Concepto</td>
+      <td>Cantidad</td>
+      <td>Unidad</td>
+      <td>Zona</td>
+      <td>Precio Unitario</td>
+      <td>Total</td>
+    </tr>
+    <% for(var i=0; i<presupuestos.length; i++) {%>
+    <tr>
+      <td><%= presupuestos[i].presupuesto_id %></td>
+     <td><%= presupuestos[i].nombre_concepto %></td>
+      <td><%= presupuestos[i].cantidad %></td>
+      <td><%= presupuestos[i].unidad %></td>
+      <td><%= presupuestos[i].nombre_zona %></td>
+      <td><%= presupuestos[i].precio_unitario %></td>
+      <td><%= presupuestos[i].total %></td>
+      <td><a href="/presupuestos/editar/<%= presupuestos[i].presupuesto_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+      <td><a data-method="delete" href="/api/presupuestos/borrar/<%= presupuestos[i].presupuesto_id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+       <% } %>
+     </tr>
+    </table>
+  </div>
+</div>
+</body>
+</html>

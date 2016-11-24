@@ -30,8 +30,24 @@
 </div>
 
 <div class="input-group">
+<label>Unidad:</label>
+  <select class="form-control" name="unidad" id="unidad">
+        <option value="">Unidad</option>
+      <option value="m">m</option>
+      <option value="m2">m2</option>
+      <option value="m3">m3</option>
+      <option value="ton">ton</option>
+  </select>
+</div>
+
+<div class="input-group">
+  <label>Precio Unitario:</label>
+  <input type="text" class="form-control" placeholder="Precio Unitario" name="precio_flete" id="precio_flete">
+</div>
+
+<div class="input-group">
 <label>Proveedor:</label>
-<select class="form-control" name="proveedor_id" id="proveedor_id">
+<select class="form-control" name="fletero" id="fletero">
             <option value="">Proveedor</option>
       <% for(var i=0; i<proveedores.length; i++) {%>
             <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>

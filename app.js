@@ -20,6 +20,9 @@ var proveedores = require('./routes/api/proveedores');
 var materiales = require('./routes/api/materiales');
 var camiones = require('./routes/api/camiones');
 var acarreos = require('./routes/api/acarreos');
+var conceptos = require('./routes/api/conceptos');
+var zonas = require('./routes/api/zonas');
+var presupuestos = require('./routes/api/presupuestos');
 
 var app = express();
 
@@ -103,6 +106,9 @@ app.use('/api/proveedores', proveedores);
 app.use('/api/materiales', materiales);
 app.use('/api/camiones', camiones);
 app.use('/api/acarreos', acarreos);
+app.use('/api/conceptos', conceptos);
+app.use('/api/zonas', zonas);
+app.use('/api/presupuestos', presupuestos);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

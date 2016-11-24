@@ -1,0 +1,40 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Estimación Nueva</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
+<% include ./partials/header.ejs %>
+<div id="content-container">
+<form action="/api/acarreos/buscar" method="POST">
+
+  <div class="form-group" id="fechas">
+    <label for="fecha">Periódo</label>
+    <input type="date" class="form-control" id="date1" name="date1">
+    <input type="date" class="form-control" id="date2" name="date2">
+</div>
+  <div class="form-group">
+    <label for="proveedor">Proveedor</label>
+    <select class="form-control" id="proveedor_id" name="proveedor_id">
+    <% for(var i=0; i<proveedores.length; i++) {%>
+      <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
+    <% } %>
+    </select>
+  </div>
+    <div class="form-group">
+    <label for="categoria">Categoría</label>
+    <select class="form-control" id="categoriaselect">
+      <option value="">Categoria</option>
+      <option value="flete">Fletes</option>
+      <option value="material">Materiales</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+</div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+</body>
+</html>

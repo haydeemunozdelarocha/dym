@@ -34,11 +34,12 @@ var proveedor_id = $('#proveedor_id').val();
   });
 
   materiales.done(function(data){
+    console.log(data)
     $('#material_id').removeAttr("disabled")
     $('#material_id').html('');
     $('#material_id').html('<option value="">Material</option>');
     for(var i = 0; i < data.length ; i ++){
-          $('#material_id').append('<option value="'+data[i].id+'">'+data[i].nombre+'</option>');
+          $('#material_id').append('<option value="'+data[i].id+'">'+data[i].nombre_concepto+'</option>');
     }
     });
 
@@ -97,6 +98,74 @@ var camion_id = $('#scanner').val();
       $('#search-status').html("");
       $('#search-status').append("Camión ID inválido!");
   });
+}
+function savePresupuesto(){
+
+}
+
+function getAcarreos(){
+var categoria = $('#categoriaselect').val();
+if( categoria === "flete"){
+  getFletes()
+} else if (categoria === "material") {
+  getAcarreosMateriales()
+}
+}
+
+function getFletes() {
+console.log("getting acarreps");
+var proveedor_id = $('#proveedorselect').val()
+var date1 = $('#periodoinicio').val()
+var date2 = $('#periodofinal').val()
+var acarreos = $.ajax({
+    url: '/api/acarreos/flete/'+proveedor_id+'/'+date1+'/'+date2,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  acarreos.done(function(data){
+    $('#acarreos_table').html('');
+    console.log(data)
+    for (var i = 0; i < data.length;i++){
+        $('#acarreos_table').append('<tr><td>'+data[i].hora+'</td><td>'+data[i].cantidad+' ' + data[i].unidad + '</td><td>'+data[i].precio_flete+'</td></tr>')
+        $('#concepto').val('Acarreo de Material');
+        $('#unidad').val('m3');
+    }
+    });
+
+  acarreos.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+          console.log('error');
+  });
+
+
+}
+
+function getAcarreosMateriales() {
+console.log("getting acarreos");
+var proveedor_id = $('#proveedorselect').val();
+var date1 = $('#periodoinicio').val()
+var date2 = $('#periodofinal').val()
+var acarreos = $.ajax({
+    url: '/api/acarreos/material/'+proveedor_id,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  acarreos.done(function(data){
+    $('#acarreos_table').html('');
+    for (var i = 0; i < data.length;i++){
+      console.log(data[i])
+        $('#acarreos_table').append('<tr><td>'+data[i].hora+'</td><td>'+data[i].cantidad+' ' + data[i].unidad + '</td><td>$'+data[i].precio+'</td><td>'+data[i].nombre_concepto+'</td></tr>');
+    }
+    });
+
+  acarreos.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+          console.log('error');
+  });
+
+
 }
 
 function getPhoto() {

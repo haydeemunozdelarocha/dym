@@ -5,20 +5,20 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var db = require('../../db.js');
 
-var nuevoMaterial = 'INSERT INTO materiales(nombre, unidad, precio,proveedor_id) VALUE(?,?,?,?)';
-var listaMateriales = 'SELECT * FROM materiales';
-var listaMaterialesProveedor = 'SELECT * FROM materiales WHERE proveedor_id = ?';
+var nuevoMaterial = 'INSERT INTO materiales(concepto, unidad, precio,proveedor_id) VALUE(?,?,?,?)';
+var listaMateriales = 'SELECT materiales.*, conceptos.* JOIN materiales ON conceptos.conceptos_id = materiales.concepto';
+var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto FROM materiales INNER JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.proveedor_id = ?';
 var editarMaterial = 'UPDATE `materiales` SET `nombre` = ?, `unidad` = ?, proveedor_id = ?, `precio` = ? WHERE `id`= ?';
 var borrarMaterial = 'DELETE FROM materiales WHERE nombre=?';
 
 
 //agregar material
 router.post('/', function(req,res, next){
-var nombre= req.body.nombre;
+var concepto= req.body.concepto;
 var unidad= req.body.unidad;
 var precio= req.body.precio;
 var proveedor_id = req.body.proveedor_id;
-  db.query(nuevoMaterial,[nombre, unidad, precio,proveedor_id], function(err,material){
+  db.query(nuevoMaterial,[concepto, unidad, precio,proveedor_id], function(err,material){
       if(err) throw err;
       else {
           console.log('Nuevo material agregado exitosamente');
@@ -38,7 +38,7 @@ router.get('/', function(err,res){
 })
 
 router.get('/:proveedorid', function(req,res,err){
-  var id = req.params.proveedorid;
+  var id = Number(req.params.proveedorid);
     db.query(listaMaterialesProveedor,[id], function(err, rows){
     if(err) throw err;
     else {

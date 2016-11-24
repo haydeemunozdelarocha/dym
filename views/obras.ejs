@@ -28,14 +28,14 @@
     </tr>
     <% for(var i=0; i<obras.length; i++) {%>
     <tr>
-      <td><%= obras[i].id %></td>
+      <td><%= obras[i].obra_id %></td>
      <td><%= obras[i].nombre_obra %></td>
       <td><%= obras[i].codigo %></td>
       <td><%= obras[i].nombre %></td>
       <td><%= obras[i].ciudad %></td>
       <td><%= obras[i].estado %></td>
-      <td><a href="/obras/editar/<%= obras[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
-      <td><a data-method="delete" href="/api/obras/borrar/<%= obras[i].id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+      <td><a href="/obras/editar/<%= obras[i].obra_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+      <td><a data-method="delete" href="/api/obras/borrar/<%= obras[i].obra_id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
        <% } %>
      </tr>
     </table>
