@@ -1,4 +1,25 @@
 
+function createEstimacion(acarreos, categoria, obra_id, proveedor, periodo_inicial, periodo_final) {
+  console.log(acarreos, categoria, obra_id, proveedor, periodo_inicial, periodo_final)
+  console.log('sending')
+var estimacion = $.ajax({
+    url: '/api/estimaciones/nueva',
+    type: 'POST',
+    dataType: 'json',
+    data: { acarreos : acarreos, categoria: categoria, obra: obra_id, proveedor: proveedor, periodo_inicio: periodo_inicial, periodo_final: periodo_final}
+  });
+
+  estimacion.done(function(data){
+    window.location.href = '/estimaciones/'+data;
+    });
+
+  estimacion.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+          console.log('error');
+  });
+
+}
+
 function getImage() {
 console.log("getting image");
 $('#photo-status').html("Capturando imagen...")
@@ -35,6 +56,7 @@ var proveedor_id = $('#proveedor_id').val();
 
   materiales.done(function(data){
     console.log(data)
+     $('#proveedor_id').attr("disabled", true);
     $('#material_id').removeAttr("disabled")
     $('#material_id').html('');
     $('#material_id').html('<option value="">Material</option>');
@@ -85,7 +107,7 @@ var camion_id = $('#scanner').val();
       $('#search-status').html("");
       $('#search-status').append("Camión encontrado!");
       $('#scanner').attr("readonly", true);
-      $('#proveedor_id').removeAttr("disabled");
+      $('#concepto_flete').removeAttr("disabled");
     } else {
       $('#search-status').html("");
       $('#search-status').append("Camión ID inválido!");
@@ -99,75 +121,11 @@ var camion_id = $('#scanner').val();
       $('#search-status').append("Camión ID inválido!");
   });
 }
-function savePresupuesto(){
 
+function getProveedores(){
+  $('#concepto_flete').attr("disabled", true);
+  $('#proveedor_id').removeAttr("disabled");
 }
-
-function getAcarreos(){
-var categoria = $('#categoriaselect').val();
-if( categoria === "flete"){
-  getFletes()
-} else if (categoria === "material") {
-  getAcarreosMateriales()
-}
-}
-
-function getFletes() {
-console.log("getting acarreps");
-var proveedor_id = $('#proveedorselect').val()
-var date1 = $('#periodoinicio').val()
-var date2 = $('#periodofinal').val()
-var acarreos = $.ajax({
-    url: '/api/acarreos/flete/'+proveedor_id+'/'+date1+'/'+date2,
-    type: 'GET',
-    dataType: 'json'
-  });
-
-  acarreos.done(function(data){
-    $('#acarreos_table').html('');
-    console.log(data)
-    for (var i = 0; i < data.length;i++){
-        $('#acarreos_table').append('<tr><td>'+data[i].hora+'</td><td>'+data[i].cantidad+' ' + data[i].unidad + '</td><td>'+data[i].precio_flete+'</td></tr>')
-        $('#concepto').val('Acarreo de Material');
-        $('#unidad').val('m3');
-    }
-    });
-
-  acarreos.fail(function(jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-          console.log('error');
-  });
-
-
-}
-
-function getAcarreosMateriales() {
-console.log("getting acarreos");
-var proveedor_id = $('#proveedorselect').val();
-var date1 = $('#periodoinicio').val()
-var date2 = $('#periodofinal').val()
-var acarreos = $.ajax({
-    url: '/api/acarreos/material/'+proveedor_id,
-    type: 'GET',
-    dataType: 'json'
-  });
-
-  acarreos.done(function(data){
-    $('#acarreos_table').html('');
-    for (var i = 0; i < data.length;i++){
-      console.log(data[i])
-        $('#acarreos_table').append('<tr><td>'+data[i].hora+'</td><td>'+data[i].cantidad+' ' + data[i].unidad + '</td><td>$'+data[i].precio+'</td><td>'+data[i].nombre_concepto+'</td></tr>');
-    }
-    });
-
-  acarreos.fail(function(jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-          console.log('error');
-  });
-
-
-}
-
 function getPhoto() {
 document.getElementById("loading").innerHTML = "Loading..";
 var xhr = new XMLHttpRequest();
@@ -200,6 +158,3 @@ function print(html){
   window.open("starpassprnt://v1/print/nopreview?html="+encodedHtml+"&back=http://dymingenieros.herokuapp.com/captura");
 }
 
-function getTotals(){
-
-}

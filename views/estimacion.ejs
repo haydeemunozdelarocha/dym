@@ -1,8 +1,39 @@
-  <div class="form-group">
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Estimación Nueva</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<body>
+<% include ./partials/header.ejs %>
+<div id="content-container">
+<div class="input-group">
+  <label>Proveedor:</label>
+  <input type="text" class="form-control" name="proveedor" id="proveedor" value="<%= estimacion[0].razon_social %>" disabled>
+</div>
+<div class="input-group">
+  <label>Obra:</label>
+  <input type="text" class="form-control" name="obra" id="obra" value="<%= estimacion[0].nombre_obra %>" disabled>
+</div>
+<div class="input-group">
+  <label>Periódo:</label>
+<input type="text" class="form-control" name="date1" id="date1" value="<%=estimacion[0].periodo_inicio %>" disabled>
+<br>
+<input type="text" class="form-control" name="date2" id="date2" value="<%= estimacion[0].periodo_final %>" disabled>
+</div>
+<br>
+<div class="input-group">
+  <label>Número:</label>
+  <input type="text" class="form-control" name="numero" id="numero" value="<%= estimacion[0].numero %>" disabled>
+</div>
+<br>
+<div class="form-group">
   <div class="panel panel-default">
   <!-- Default panel contents -->
-  <div class="panel-heading">Descripción</div>
-     <table class="table" id="tabla-estimacion">
+  <div class="panel-heading">Articulos</div>
+     <table class="table" id="articulos">
        <tr>
          <td>
            Concepto
@@ -11,72 +42,69 @@
            Unidad
          </td>
          <td>
-           Cantidad Presupuesto
-         </td>
-         <td>
-           Esta Estimación
+           Cantidad Presupuestada
          </td>
          <td>
            Acumulado Anterior
          </td>
          <td>
-           Acumulado <br>Actual
+           Esta Estimación
          </td>
          <td>
-           Actual por <br>Ejercer
+           Acumulado Actual
          </td>
          <td>
-            Importe
+           Por Ejercer
          </td>
-       </tr>
-        <tr>
          <td>
-           <input type="text" id="concepto" >
+         Precio Unitario
          </td>
         <td>
-        <input type="text" id="unidad" >
+         Importe
          </td>
-         <td>
-           <input type="text" id="cantidad_presupuesto" >
-         </td>
-         <td>
-           <input type="text" id="esta_estimacion" >
-         </td>
-         <td>
-         </td>
-         <td>
-           <input type="text" id="acumulado_actual" >
-         </td>
-         <td>
-           <input type="text" id="actual_por_ejercer" >
-         </td>
-         <td>
-            <input type="text" id="importe" >
-         </td>
-
        </tr>
-     </table>
+       <% for (var i = 0; i < articulos.length ; i++ ) { %>
+        <tr>
+         <td>
+           <p><%=articulos[i].nombre_concepto %></p>
+         </td>
+        <td>
+        <p><%=articulos[i].unidad %></p>
+         </td>
+         <td>
+           <p><%=articulos[i].cantidad_presupuestada %></p>
+         </td>
+         <td>
+           <p><%=articulos[i].acumulado_anterior %></p>
+         </td>
+         <td>
+         <p><%=articulos[i].esta_estimacion %></p>
+         </td>
+         <td>
+            <p><%=articulos[i].acumulado_actual %></p>
+         </td>
+         <td>
+           <p><%=articulos[i].por_ejercer %></p>
+         </td>
+          <td>
+           <p>$<%=articulos[i].precio_unitario %></p>
+         </td>
+         <td>
+          <p>$<%=articulos[i].importe %></p>
+         </td>
+       </tr>
+       <% } %>
+      </table>
      </div>
      </div>
-     <div id="add-row"><button class="btn btn-success">Add Item</button></div>
-  </div>
-  <div class="form-group" id="subtotales">
-  <div id="total-container">
-    <label for="subtotal">Subtotal</label>
-    <input type="text" id="subtotal" placeholder="subtotal">
-    <label for="iva">Iva</label>
-    <input type="text" id="iva" placeholder="iva" disabled>
-    <label for="retencion">Retención</label>
-    <input type="text" id="retencion" placeholder="retención" disabled>
-    <label for="total">Total</label>
-    <input type="text" id="total" placeholder="total" disabled>
-    </div>
-  </div>
-  <div class="form-group">
-    <label for="pagado">Pagado</label>
-    <input type="checkbox">
-    <label for="fecha_pago">Fecha de Pago</label>
-    <input type="text" placeholder="Fecha de Pago">
-    <label for="fecha_pago">No. Factura</label>
-    <input type="text" placeholder="Factura">
-  </div>
+     Subtotal: $<%= estimacion[0].subtotal %>
+     <br>
+     Retencion: $<%= estimacion[0].retencion %>
+     <br>
+     IVA: $<%= estimacion[0].iva %>
+     <br>
+     Total: $<%= estimacion[0].total %>
+</div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+</body>
+</html>

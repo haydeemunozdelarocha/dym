@@ -9,33 +9,99 @@
 <body>
 <% include ./partials/header.ejs %>
 <div id="content-container">
-<form action="/estimaciones/nueva" method="POST" enctype="application/x-www-form-urlencoded">
- <input type="hidden" name="_method" value="put">
 <div class="input-group">
   <label>Proveedor:</label>
   <input type="text" class="form-control" name="proveedor" id="proveedor" value="<%= proveedor %>" disabled>
 </div>
 <div class="input-group">
   <label>Obra:</label>
-  <input type="text" class="form-control" name="obra" id="obra" disabled>
+  <input type="text" class="form-control" name="obra" id="obra" value="<%=obra %>" disabled>
 </div>
 <div class="input-group">
   <label>Periódo:</label>
-  Del <input type="text" class="form-control" name="date1" id="date1" value="<%=date1 %>" disabled> al <input type="text" class="form-control" name="date2" id="date2" value="<%=date2 %>" disabled>
+<input type="text" class="form-control" name="date1" id="date1" value="<%=date1 %>" disabled>
+<br>
+<input type="text" class="form-control" name="date2" id="date2" value="<%=date2 %>" disabled>
 </div>
-    <div class="form-group">
-    <label for="categoria">Categoría</label>
-    <select class="form-control" id="categoriaselect" onchange="getAcarreos()">
-      <option value="">Categoria</option>
-      <option value="flete">Fletes</option>
-      <option value="material">Materiales</option>
-    </select>
-  </div>
+<br>
+  <% if (categoria === "material") { %>
 <div class="form-group">
   <div class="panel panel-default">
   <!-- Default panel contents -->
   <div class="panel-heading">Acarreos</div>
-     <table class="table" id="tabla-acarreos">
+     <table class="table" id="tabla-acarreos-material">
+       <tr>
+        <td>
+           ID
+         </td>
+         <td>
+           Fecha
+         </td>
+        <td>
+           Concepto
+         </td>
+         <td>
+           Proveedor
+         </td>
+         <td>
+           Cantidad
+         </td>
+         <td>
+           Unidad
+         </td>
+         <td>
+           Precio Unitario
+         </td>
+         <td>
+           Total
+         </td>
+         <td>
+         Agregar
+         </td>
+       </tr>
+       <% for (var i = 0; i < acarreos.length ; i++ ) { %>
+        <tr>
+         <td>
+           <p><%=acarreos[i].acarreo_id %></p>
+         </td>
+         <td>
+           <p><%=acarreos[i].hora %></p>
+         </td>
+        <td>
+        <p><%=acarreos[i].nombre_concepto %></p>
+         </td>
+         <td>
+           <p><%=acarreos[i].razon_social %></p>
+         </td>
+         <td>
+           <p><%=acarreos[i].cantidad %></p>
+         </td>
+         <td>
+         <p><%=acarreos[i].unidad %></p>
+         </td>
+         <td>
+            <p><%=acarreos[i].precio %></p>
+         </td>
+         <td>
+           <p><%=acarreos[i].total %></p>
+         </td>
+         <td>
+        <input type="checkbox" id="<%=acarreos[i].acarreo_id%>" onclick="agregarId(<%=acarreos[i].acarreo_id%>)"/>
+         </td>
+       </tr>
+       <% } %>
+     </table>
+     </div>
+     </div>
+  <button type="submit" class="btn btn-primary">Guardar</button>
+  </form>
+</div>
+<% } else if (categoria === "flete") { %>
+<div class="form-group">
+  <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Acarreos</div>
+     <table class="table" id="tabla-acarreos-fletes">
        <tr>
         <td>
            ID
@@ -61,11 +127,14 @@
          <td>
            Total
          </td>
+        <td>
+           Agregar
+         </td>
        </tr>
        <% for (var i = 0; i < acarreos.length ; i++ ) { %>
         <tr>
          <td>
-           <p><%=acarreos[i].acarreo_id %></p>
+           <p name="id"><%=acarreos[i].acarreo_id %></p>
          </td>
          <td>
            <p><%=acarreos[i].hora %></p>
@@ -74,29 +143,30 @@
         <p><%=acarreos[i].numero %></p>
          </td>
          <td>
-           <p><%=acarreos[i].fletero %></p>
+           <p><%=acarreos[i].razon_social %></p>
          </td>
          <td>
            <p><%=acarreos[i].cantidad %></p>
          </td>
          <td>
-         <p><%=acarreos[i].unidad %></p>
+         <p><%=acarreos[i].unidad_camion %></p>
          </td>
          <td>
             <p><%=acarreos[i].precio_flete %></p>
          </td>
          <td>
-           <p><%=acarreos[i].total_flete %></p>
+           <p><%=acarreos[i].total %></p>
          </td>
+        <td>
+       <input type="checkbox" id="<%=acarreos[i].acarreo_id%>" onclick="agregarId(<%=acarreos[i].acarreo_id%>)"/>
        </tr>
        <% } %>
      </table>
      </div>
      </div>
-
-  <button type="submit" class="btn btn-primary">Guardar</button>
-</form>
+  <button type="submit" class="btn btn-primary" onclick="createEstimacion(<%= ids %>, '<%= categoria %>', '<%=obra%>','<%=proveedor%>','<%=date1 %>','<%=date2 %>')" >Guardar</button>
 </div>
+<% } %>
 <script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>
 </html>

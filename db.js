@@ -2,7 +2,7 @@ var mysql = require('mysql');
 
 
 var db_config      =    mysql.createPool({
-    connectionLimit : 100, //important
+    connectionLimit : 150, //important
     host     : process.env.DYM_DB_HOST,
     user     : process.env.DYM_DB_USER,
     password : process.env.DYM_DB_PSS,

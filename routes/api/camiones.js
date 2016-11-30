@@ -5,8 +5,8 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var db = require('../../db.js');
 
-var nuevoCamion = 'INSERT INTO camiones(modelo, numero, placas, fletero, capacidad, precio_flete, unidad) VALUE(?,?,?,?,?,?,?)';
-var listaCamiones = 'SELECT proveedores.nombre, camiones.* FROM camiones INNER JOIN proveedores ON camiones.fletero=proveedores.id';
+var nuevoCamion = 'INSERT INTO camiones(modelo, numero, placas, proveedor_id, capacidad, precio_flete, unidad_camion) VALUE(?,?,?,?,?,?,?)';
+var listaCamiones = 'SELECT proveedores.nombre, camiones.* FROM camiones INNER JOIN proveedores ON camiones.proveedor_id=proveedores.id';
 var getCamion = "SELECT * FROM `camiones` WHERE `numero` = ?";
 var editarCamion = 'UPDATE camiones SET modelo = ?, placas = ?, capacidad= ?, numero= ? WHERE camion_id= ?';
 
@@ -46,10 +46,10 @@ var numero = req.body.numero;
 var modelo= req.body.modelo;
 var placas= req.body.placas;
 var precio_flete= req.body.precio_flete;
-var unidad= req.body.unidad;
-var fletero= req.body.fletero;
+var unidad_camion= req.body.unidad;
+var proveedor_id= req.body.proveedor_id;
 var capacidad= req.body.capacidad;
-    db.query(nuevoCamion,[modelo,numero,placas,fletero,capacidad,precio_flete,unidad], function(err, camion){
+    db.query(nuevoCamion,[modelo,numero,placas,proveedor_id,capacidad,precio_flete,unidad_camion], function(err, camion){
     if(err) throw err;
     else {
         console.log('Listo');

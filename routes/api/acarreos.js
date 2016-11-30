@@ -3,59 +3,75 @@ var router = express.Router();
 var mysql = require('mysql');
 var moment= require('moment');
 var db = require('../../db.js');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
 
-var nuevoAcarreo = 'INSERT INTO acarreos(material_id,cantidad,camion_id,total_material,total_flete,hora,foto,checador_id,zona_id) VALUE(?,?,?,?,?,?,?,?,?)';
-var listaAcarreos = 'SELECT acarreos.*, camiones.capacidad, proveedores.razon_social, materiales.nombre, materiales.precio FROM acarreos JOIN camiones ON camiones.camion_id = acarreos.flete JOIN proveedores ON proveedores.id = camiones.fletero JOIN materiales ON materiales.id = acarreos.material';
+var nuevoAcarreoFlete = 'INSERT INTO acarreos(cantidad,camion_id,total,categoria,recibo_id,concepto_flete) VALUE(?,?,?,?,?,?)';
+var nuevoAcarreoMaterial = 'INSERT INTO acarreos(material_id,cantidad,total,categoria,recibo_id) VALUE(?,?,?,?,?)';
+var listaAcarreos = 'SELECT acarreos.*, camiones.capacidad, proveedores.razon_social, materiales.concepto, materiales.precio FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN proveedores ON proveedores.id = camiones.proveedor_id LEFT JOIN materiales ON materiales.id = acarreos.material_id';
+var nuevoRecibo = 'INSERT INTO recibos(checador_id,zona_id,foto,hora,obra_id) VALUE (?,?,?,?,?)';
 
-
-
-//agregar camion
+//agregar acarreo
 router.post('/', function(req,res, next){
-  console.log('posting')
-  console.log(req.user)
-var checador_id= Number(req.user.idusers);
+  console.log(req.body)
+var recibo;
+var checador_id= Number(req.user.id);
+var obra_id = Number(req.user.obra_id);
 var numero= req.body.numero;
 var precio = req.body.precio;
 var foto = req.body.photo;
+var concepto_flete = req.body.concepto_flete;
 var zona_id = Number(req.body.zona);
 var material_id= Number(req.body.material_id);
 var cantidad;
 var date= Date.now();
 var hora = moment(date).format("DD/MM/YYYY HH:mm A");
 var getCamion = 'SELECT * FROM `camiones` WHERE `numero` = ' + numero ;
-  db.query(getCamion, function(err,camion){
+  db.query(nuevoRecibo,[checador_id,zona_id,foto,hora,obra_id], function(err,recibo){
       if(err) throw err;
       else {
-          var camion_id = Number(camion[0].camion_id);
-          var precioFlete = camion[0].precio_flete;
-          cantidad = camion[0].capacidad;
-          var total_material = cantidad*precio;
-          total_material = total_material.toString();
-          var total_flete = cantidad*precioFlete;
-          total_flete = total_flete.toString();
-          console.log(material_id,cantidad,camion_id,total_material,total_flete,hora,foto,checador_id,zona_id)
-            db.query(nuevoAcarreo,[material_id,cantidad,camion_id,total_material,total_flete,hora,foto,checador_id,zona_id], function(err,acarreo){
+        var findLast = 'SELECT * FROM recibos ORDER BY recibo_id DESC LIMIT 1';
+          db.query(findLast, function(err, rows){
+          if(err) throw err;
+          else {
+            recibo = rows[0].recibo_id;
+            db.query(getCamion, function(err,camion){
             if(err) throw err;
             else {
-              console.log(acarreo)
-                  var findLast = 'SELECT * FROM acarreos ORDER BY acarreo_id DESC LIMIT 1';
-                  db.query(findLast, function(err, rows){
+                var camion_id = Number(camion[0].camion_id);
+                var precioFlete = camion[0].precio_flete;
+                cantidad = camion[0].capacidad;
+                var total = cantidad*precioFlete;
+                var recibo_id= recibo;
+                categoria = "flete";
+                  db.query(nuevoAcarreoFlete,[cantidad,camion_id,total,categoria,recibo_id,concepto_flete], function(err,acarreo){
+                  if(err) throw err;
+                  else {
+                    var getMaterial = 'SELECT * FROM `materiales` WHERE `id` = ' + material_id ;
+                      db.query(getMaterial, function(err,material){
                       if(err) throw err;
                       else {
-                        res.redirect('/recibo/'+rows[0].acarreo_id)
-                        console.log(rows[0].acarreo_id)
+                          var precio = material[0].precio;
+                          var total = cantidad*precio;
+                          var recibo_id= recibo;
+                          categoria = "material";
+                            db.query(nuevoAcarreoMaterial,[material_id,cantidad,total,categoria,recibo_id], function(err,acarreo){
+                            if(err) throw err;
+                            else {
+                              res.redirect('/recibo/'+recibo)
+                            }
+                        });
                       }
                     });
-              console.log(acarreo)
-            }
-    });
+                  }
+                });
+              }
+            });
+          }
+        })
       }
-    });
+    })
 })
 
-//Read table.
+//Read acarreos
 router.get('/', function(err,res){
     db.query(listaAcarreos, function(err, rows){
     if(err) throw err;
@@ -65,33 +81,28 @@ router.get('/', function(err,res){
   });
 })
 
-router.get('/flete/:proveedorid/:date1/:date2', function(req,res,next){
-  var proveedor_id = req.params.proveedorid;
-  var date1 = moment(req.params.date1).format("DD/MM/YYYY HH:mm A");
-  var date2 = moment(req.params.date2).format("DD/MM/YYYY HH:mm A");
-  var listaAcarreosFlete = 'SELECT acarreos.*, camiones.* FROM acarreos JOIN camiones ON acarreos.camion_id = camiones.camion_id WHERE camiones.fletero = '+proveedor_id+' AND hora BETWEEN "'+date1+'" AND "'+date2+'"';
-
-    db.query(listaAcarreosFlete,function(err, rows){
-    if(err) throw err;
-    else {
-      console.log(listaAcarreosFlete)
-        res.send(rows);
-    }
-  });
-})
-
 router.post('/buscar', function(req,res,next){
   var proveedor_id = req.body.proveedor_id;
+  var categoria = req.body.categoria;
   var date1 = moment(req.body.date1).format("DD/MM/YYYY HH:mm A");
   var date2 = moment(req.body.date2).format("DD/MM/YYYY HH:mm A");
-  var listaAcarreosMaterial = 'SELECT acarreos.*, camiones.* FROM acarreos JOIN camiones ON acarreos.camion_id = camiones.camion_id WHERE camiones.fletero = '+proveedor_id+' AND hora BETWEEN "'+date1+'" AND "'+date2+'"';
-
-    db.query(listaAcarreosMaterial,[proveedor_id], function(err, acarreos){
+  var obra_id = req.body.obra_id;
+  var categoriaProveedor;
+  if (categoria === "material"){
+    categoriaProveedor = "materiales";
+  } else if (categoria === "flete"){
+    categoriaProveedor = "camiones"
+  }
+  var listaAcarreosBuscar = 'SELECT acarreos.*, camiones.*, recibos.*, materiales.*, conceptos.*, proveedores.razon_social FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON acarreos.material_id = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id LEFT JOIN proveedores ON '+categoriaProveedor+'.proveedor_id = proveedores.id WHERE categoria = "'+categoria+'" AND recibos.obra_id = '+obra_id+' AND '+categoriaProveedor+'.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'"';
+    db.query(listaAcarreosBuscar, function(err, acarreos){
     if(err) throw err;
     else {
-      console.log(date1)
-        res.render('nuevaestimacion', { title: 'Nueva Estimación', acarreos: acarreos, date1: date1, date2:date2, proveedor:proveedor_id });
-    }
+      var ids = [];
+      for (var i = 0 ; i < acarreos.length ; i++){
+        ids.push(acarreos[i].acarreo_id)
+      }
+        res.render('nuevaestimacion', { title: 'Nueva Estimación', acarreos: acarreos, date1: date1, date2:date2, proveedor:proveedor_id, categoria: categoria, obra: obra_id, ids: ids });
+      }
   });
 })
 
@@ -103,35 +114,6 @@ router.get('/:id', function(req, res, next ){
     else {
         console.log('Buscando acarreo por id');
         res.send(acarreo)
-    }
-  });
-})
-
-router.use(bodyParser.urlencoded({extended:true}))
-router.use(methodOverride(function(req, res){
-  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
-    // look in urlencoded POST bodies and delete it
-    var method = req.body._method
-    delete req.body._method
-    return method
-  }
-}))
-
-router.put('/:idproveedor', function(req,res,err){
-  var id= req.params.idproveedor;
-  var razon_social = req.body.razon_social;
-  var rfc = req.body.rfc;
-  var direccion = req.body.direccion;
-  var telefono = req.body.telefono;
-  var ciudad = req.body.ciudad;
-  var estado = req.body.estado;
-  var editarProveedor = 'UPDATE proveedores SET razon_social = ?,rfc = ?, direccion = ?, telefono = ?, ciudad = ?, estado = ? WHERE id=?';
-
-    db.query(editarProveedor,[razon_social,rfc,direccion,telefono,ciudad,estado,id], function(err, proveedor){
-    if(err) throw err;
-    else {
-        console.log('Listo');
-        res.redirect('/proveedores')
     }
   });
 })

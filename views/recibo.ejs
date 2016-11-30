@@ -12,18 +12,18 @@
 <div id="recibo" style="margin-left:10px; padding-top:20px; padding-bottom:20px; font-size:16px;">
 <h1>DYM INGENIEROS CONSTRUCTORES SA DE CV</h1>
 <h2>RECIBO ACARREOS</h2>
-<h3><strong>Fecha: </strong><%= acarreo[0].hora %></h3>
+<h3><strong>Fecha: </strong><%= acarreo[0].hora%></h3>
 
-<h3><strong>Recibo No.:</strong> <%= acarreo[0].acarreo_id%></h3>
-<h3><strong>No. Camión:</strong> <%= acarreo[0].camion_id %></h3>
-<h3><strong>Placas:</strong> <%= acarreo[0].placas %></h3>
-<h3><strong>Modelo:</strong> <%= acarreo[0].modelo %></h3>
-<h3><strong>Fletero:</strong> <%= acarreo[0].razon_social %></h3>
+<h3><strong>Recibo No.:</strong> <%= acarreo[0].recibo_id%></h3>
+<h3><strong>No. Camión:</strong> <%= camion[0].camion_id %></h3>
+<h3><strong>Placas:</strong> <%= camion[0].placas %></h3>
+<h3><strong>Modelo:</strong> <%= camion[0].modelo %></h3>
+<h3><strong>Fletero:</strong> <%= camion[0].razon_social %></h3>
 <br>
-<h3><strong>Material:</strong> <%= concepto[0].nombre_concepto %></h3>
-<h3><strong>Proveedor:</strong> <%= acarreo[0].razon_social %></h3>
-<h3><strong>Cantidad:</strong> <%= acarreo[0].capacidad %> <%= acarreo[0].unidad %></h3>
-<h3><strong>Precio Unitario: </strong>$<%= acarreo[0].precio %></h3>
+<h3><strong>Material:</strong> <%= material[0].nombre_concepto %></h3>
+<h3><strong>Proveedor:</strong> <%= material[0].razon_social %></h3>
+<h3><strong>Cantidad:</strong> <%= acarreo[0].cantidad %> <%= material[0].unidad %></h3>
+<h3><strong>Precio Unitario: </strong>$<%= material[0].precio %></h3>
 </div>
 </div>
 <button onclick="test()" class="btn btn-primary">Imprimir</button>

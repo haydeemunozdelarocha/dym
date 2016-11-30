@@ -22,6 +22,7 @@ var camiones = require('./routes/api/camiones');
 var acarreos = require('./routes/api/acarreos');
 var conceptos = require('./routes/api/conceptos');
 var zonas = require('./routes/api/zonas');
+var estimaciones = require('./routes/api/estimaciones');
 var presupuestos = require('./routes/api/presupuestos');
 
 var app = express();
@@ -109,6 +110,7 @@ app.use('/api/acarreos', acarreos);
 app.use('/api/conceptos', conceptos);
 app.use('/api/zonas', zonas);
 app.use('/api/presupuestos', presupuestos);
+app.use('/api/estimaciones', estimaciones);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
