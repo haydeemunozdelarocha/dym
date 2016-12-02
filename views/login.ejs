@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
+    <title>Login | DYM Ingenieros Constructores</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
   </head>
-  <body>
+  <body id="login-body">
     <div class="container">
     <div id="login-logo">
       <img src="/images/dym-logo.png" alt="" align="center">
     </div>
               <div class="panel-body">
-              <form action="/signin" method="post">
+              <form action="/signin" method="post" class="login-form">
                               <div class="form-group">
                   <label for="username">Usuario:</label>
-                  <input type="text" name="username" class="form-control">
+                  <input type="text" name="username" class="form-control login-input">
                 </div>
 
                 <div class="form-group">
                   <label for="password">Password:</label>
-                  <input type="password" name="password" class="form-control">
+                  <input type="password" name="password" class="form-control login-input">
                 </div>
 
-                <input type="submit" value="Entrar" class="btn btn-default">
+                <input type="submit" value="ENTRAR" class="btn btn-default btn-info login-button" style="display:flex">
               </form>
             </div>
           </div>

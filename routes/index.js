@@ -26,7 +26,6 @@ router.get('/login', function(req, res, next) {
 router.post('/signin', function(req,res,next){
   var username = req.body.username;
   var password = req.body.password;
-  console.log(req.body)
       db.query("SELECT * FROM `users` WHERE `username` = '" + username + "'",function(err,rows){
       if (err)
                 return err;
@@ -53,7 +52,6 @@ router.get('/register/:accessToken', function(req, res, next) {
   var accessToken = req.params.accessToken;
   var readObras = 'SELECT * FROM obras';
     db.query(readObras, function(err, obras){
-      console.log(obras)
     if(err) throw err;
     else {
       res.render('register', { title: 'Register', obras: obras, accessToken:accessToken });
@@ -68,7 +66,6 @@ router.post('/signup/:accessToken', function(req, res, next){
    var empleado_id= req.body.empleado_id;
      var obra_id= req.body.obra_id;
       db.query("select * from users where username = '"+username+"'",function(err,rows){
-      console.log(rows);
       console.log("above row object");
       if (err)
                 return err;

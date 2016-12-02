@@ -11,7 +11,7 @@ var nuevoRecibo = 'INSERT INTO recibos(checador_id,zona_id,foto,hora,obra_id) VA
 
 //agregar acarreo
 router.post('/', function(req,res, next){
-  console.log(req.body)
+console.log(req.body)
 var recibo;
 var checador_id= Number(req.user.idusers);
 var obra_id = Number(req.user.obra_id);

@@ -81,6 +81,7 @@ var material_id = $('#material_id').val();
   });
 
   material.done(function(data){
+    $('#material_id').attr("disabled", true);
     $('#precio').val('');
     $('#precio-input').attr('value', ''+data.precio+'');
     $('#zonas').removeAttr("disabled")
@@ -107,7 +108,7 @@ var camion_id = $('#scanner').val();
       $('#search-status').html("");
       $('#search-status').append("Camión encontrado!");
       $('#scanner').attr("readonly", true);
-      $('#concepto_flete').removeAttr("disabled");
+      $('#concepto').removeAttr("disabled");
     } else {
       $('#search-status').html("");
       $('#search-status').append("Camión ID inválido!");
@@ -123,7 +124,7 @@ var camion_id = $('#scanner').val();
 }
 
 function getProveedores(){
-  $('#concepto_flete').attr("disabled", true);
+  $('#concepto').attr("disabled", true);
   $('#proveedor_id').removeAttr("disabled");
 }
 function getPhoto() {
@@ -140,11 +141,16 @@ function cerrarRecibo(){
 }
 
 function allowPhoto(){
+  $('#zonas').attr("disabled", true);
   $('#photo-button').removeAttr("disabled")
 }
 
 function allowSubmit(){
+  $('#photo-button').attr("disabled", true);
   $('#submit-button').removeAttr("disabled")
+  $('#concepto').removeAttr("disabled")
+  $('#zonas').removeAttr("disabled")
+  $('#material_id').removeAttr("disabled")
 }
 
 function test () {

@@ -11,34 +11,6 @@ var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,period
 var listaEstimaciones = 'SELECT * FROM estimaciones';
 var path = 'http://localhost:3000';
 
-router.post('/', function(req,res, next){
-var obra;
-var date= Date.now();
-var fecha = moment(date).format("YYYY-MM-DD HH:mm");
-var periodo_inicio= req.body.periodo_inicio;
-var periodo_final= req.body.periodo_final;
-var residente= req.body.residente;
-var proveedor_id= req.body.proveedor;
-var numero= req.body.numero;
-var concepto= req.body.concepto;
-var unidad= req.body.unidad;
-var cantidad_presupuestada= req.body.cantidad_presupuestada;
-var acumulado_anterior= req.body.acumulado_anterior;
-var acumulado_actual= req.body.acumulado_actual;
-var por_ejercer= req.body.por_ejercer;
-var precio_unitario= req.body.precio_unitario;
-var importe= req.body.importe;
-var subtotal= req.body.subtotal;
-var iva= req.body.iva;
-var retencion= req.body.retencion;
-var total= req.body.total;
-  db.query(nuevaEstimacion,[obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero,concepto,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer,precio_unitario,importe,subtotal,iva,retencion,total], function(err,estimacion){
-      if(err) throw err;
-      else {
-          res.send(estimacion);
-      }
-    });
-})
 //agregar estimacion de flete
 router.post('/nueva', function(req,res, next){
 console.log(req.body)

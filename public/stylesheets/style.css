@@ -10,6 +10,16 @@ a {
 #content-container{
   margin-top: 5%;
 }
+.login-button{
+  display: flex;
+  align-content: center;
+  margin: auto;
+}
+#login-body{
+  width: 100%;
+  height:100%;
+  background: url('../images/login-background.jpg') no-repeat center center fixed;
+}
 #login-logo{
   display:flex;
   padding-top: 2%;
@@ -17,6 +27,15 @@ a {
 #login-logo img{
   align-content: center;
   margin: auto;
+}
+.login-form label{
+  color:white;
+}
+.login-input{
+  background-color:white;
+}
+.login-input:active{
+  background-color:white;
 }
 #tabla-estimacion input{
   width:80%;
