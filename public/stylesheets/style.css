@@ -10,6 +10,14 @@ a {
 #content-container{
   margin-top: 5%;
 }
+#login-logo{
+  display:flex;
+  padding-top: 2%;
+}
+#login-logo img{
+  align-content: center;
+  margin: auto;
+}
 #tabla-estimacion input{
   width:80%;
 }

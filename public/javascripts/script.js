@@ -10,7 +10,7 @@ var estimacion = $.ajax({
   });
 
   estimacion.done(function(data){
-    window.location.href = '/estimaciones/'+data;
+    console.log(data);
     });
 
   estimacion.fail(function(jqXHR, textStatus, errorThrown){

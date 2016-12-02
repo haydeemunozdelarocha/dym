@@ -127,9 +127,6 @@
          <td>
            Total
          </td>
-        <td>
-           Agregar
-         </td>
        </tr>
        <% for (var i = 0; i < acarreos.length ; i++ ) { %>
         <tr>
@@ -157,14 +154,12 @@
          <td>
            <p><%=acarreos[i].total %></p>
          </td>
-        <td>
-       <input type="checkbox" id="<%=acarreos[i].acarreo_id%>" onclick="agregarId(<%=acarreos[i].acarreo_id%>)"/>
        </tr>
        <% } %>
      </table>
      </div>
      </div>
-  <button type="submit" class="btn btn-primary" onclick="createEstimacion(<%= ids %>, '<%= categoria %>', '<%=obra%>','<%=proveedor%>','<%=date1 %>','<%=date2 %>')" >Guardar</button>
+  <button type="submit" class="btn btn-primary" onclick="createEstimacion('(<%= ids %>)', '<%= categoria %>', '<%=obra%>','<%=proveedor%>','<%=date1 %>','<%=date2 %>')" >Guardar</button>
 </div>
 <% } %>
 <script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>

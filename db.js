@@ -7,7 +7,8 @@ var db_config      =    mysql.createPool({
     user     : process.env.DYM_DB_USER,
     password : process.env.DYM_DB_PSS,
     database : 'heroku_aa5f4bff4de7c3d',
-    debug    :  false
+    debug    :  false,
+    multipleStatements: true
 });
 
 function handle_database(req,res) {

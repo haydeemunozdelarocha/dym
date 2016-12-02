@@ -7,8 +7,8 @@ var db = require('../../db.js');
 
 var nuevoPresupuesto = 'INSERT INTO presupuestos(obra, concepto, cantidad, unidad,zona, precio_unitario, total) VALUE(?,?,?,?,?,?,?)';
 var listaPresupuestos = 'SELECT presupuestos.*, conceptos.*, zonas.*, obras.* FROM presupuestos JOIN obras ON presupuestos.obra=obras.obra_id JOIN zonas ON presupuestos.zona = zonas.zonas_id JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id' ;
-var getPresupuesto = "SELECT * FROM `presupuestos`";
 var editarPresupuesto = 'UPDATE presupuestos SET obra = ?, concepto = ?, cantidad= ?, zona= ?, precio_unitario = ?, total=? WHERE presupuesto_id= ?';
+var getPresupuesto = 'SELECT * FROM presupuestos WHERE obra = ? AND concepto = ?';
 
 //Read table.
 router.get('/', function(err,res){
@@ -20,13 +20,14 @@ router.get('/', function(err,res){
   });
 })
 
-router.get('/buscar/:id', function(req, res, next ){
-  var obra= req.params.id;
-  db.query(getPresupuesto,[obra], function(err, presupuesto){
+router.get('/:obra/:concepto', function(req, res, next ){
+  var obra= req.params.obra;
+  var concepto= req.params.concepto;
+  db.query(getPresupuesto,[obra,concepto], function(err, presupuesto){
     if(err) throw err;
     else {
-        console.log('Buscando presupuesto por id');
-        res.send(presupuesto)
+        console.log('Buscando presupuesto');
+        res.json(presupuesto)
     }
   });
 })

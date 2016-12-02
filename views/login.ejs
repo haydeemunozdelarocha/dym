@@ -2,15 +2,15 @@
 <html>
   <head>
     <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
   </head>
   <body>
     <div class="container">
-      <div class="jumbotron text-center">
-        <h1>Checador Nuevo</h1>
-      </div>
-            <div class="panel-body">
-
+    <div id="login-logo">
+      <img src="/images/dym-logo.png" alt="" align="center">
+    </div>
+              <div class="panel-body">
               <form action="/signin" method="post">
                               <div class="form-group">
                   <label for="username">Usuario:</label>

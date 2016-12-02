@@ -406,7 +406,7 @@ router.get('/estimaciones/nueva', function(req, res, next) {
 router.get('/estimaciones/:id', function(req,res,err){
   var estimacion_id = req.params.id;
   console.log(estimacion_id)
-  var getEstimacion = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON proveedores.id = estimaciones.proveedor WHERE estimaciones_id = ?';
+  var getEstimacion = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON proveedores.id = estimaciones.proveedor_id WHERE estimaciones_id = ?';
   var getEstimacionArticulos = 'SELECT estimacion_articulo.*,conceptos.nombre_concepto FROM estimacion_articulo JOIN conceptos ON estimacion_articulo.concepto_id = conceptos.conceptos_id WHERE estimacion_id = ?';
     db.query(getEstimacion,[estimacion_id], function(err, estimacion){
     if(err) throw err;
