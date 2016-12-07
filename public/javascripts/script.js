@@ -164,3 +164,30 @@ function print(html){
   window.open("starpassprnt://v1/print/nopreview?html="+encodedHtml+"&back=http://dymingenieros.herokuapp.com/captura");
 }
 
+function getPresupuestos(){
+  console.log('getting presupuestos')
+  var obra_id = $('#obraselect').val();
+  var presupuestos = $.ajax({
+    url: '/api/presupuestos/'+obra_id,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  presupuestos.done(function(data){
+    if(data[0]){
+      console.log(data)
+      $('#presupuestos-table').append('<tr><td>Concepto</td><td>Zona</td><td>Cantidad</td><td>Unidad</td><td>Precio Unitario</td><td>Total</td><td>Acumulado</td><td></td></tr>');
+      for(var i = 0; i < data.length ; i ++){
+              $('#presupuestos-table').append('<tr><td>'+data[i].concepto+'</td><td>'+data[i].nombre_zona+'</td><td>'+data[i].cantidad+'</td><td>'+data[i].unidad+'</td><td>$'+data[i].precio_unitario+'</td><td>$'+data[i].total+'</td><td>'+data[i].acumulado+'</td><td><a href="/api/presupuestos/borrar/'+data[i].presupuestos_id+'?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td></tr>')
+      }
+    } else {
+
+    }
+
+    });
+
+  presupuestos.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+
+  });
+}

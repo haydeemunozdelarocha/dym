@@ -6,7 +6,9 @@ var db = require('../db.js');
 var passport = require('passport');
 
 var readTable = 'SELECT * FROM obras';
-var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.nombre, materiales.precio FROM acarreos JOIN camiones ON camiones.camion_id = acarreos.flete JOIN proveedores ON proveedores.id = camiones.proveedor_id JOIN materiales ON materiales.id = acarreos.material';
+var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.concepto, materiales.precio, conceptos.nombre_concepto FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN proveedores ON proveedores.id = camiones.proveedor_id LEFT JOIN materiales ON materiales.id = acarreos.material_id LEFT JOIN conceptos ON materiales.concepto OR concepto_flete = conceptos.conceptos_id ORDER BY recibo_id DESC';
+
+var path = 'http://localhost:3000/';
 
 router.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,7 +28,7 @@ router.get('/login', function(req, res, next) {
 router.post('/signin', function(req,res,next){
   var username = req.body.username;
   var password = req.body.password;
-      db.query("SELECT * FROM `users` WHERE `username` = '" + username + "'",function(err,rows){
+      db.query("SELECT * FROM `checadores` WHERE `username` = '" + username + "'",function(err,rows){
       if (err)
                 return err;
        if (!rows.length) {
@@ -65,7 +67,7 @@ router.post('/signup/:accessToken', function(req, res, next){
    var password = req.body.password;
    var empleado_id= req.body.empleado_id;
      var obra_id= req.body.obra_id;
-      db.query("select * from users where username = '"+username+"'",function(err,rows){
+      db.query("select * from checadores where username = '"+username+"'",function(err,rows){
       console.log("above row object");
       if (err)
                 return err;
@@ -80,16 +82,14 @@ router.post('/signup/:accessToken', function(req, res, next){
         newUserMysql.empleado_id    = empleado_id;
         newUserMysql.obra_id    = obra_id;
 
-        var insertQuery = "INSERT INTO users ( accessToken, username, password, empleado_id ) values ('" + accessToken+"','"+username+"','"+password+"','"+empleado_id+"')";
+        var insertQuery = "INSERT INTO checadores ( accessToken, username, password, empleado_id, obra_id ) values ('" + accessToken+"','"+username+"','"+password+"','"+empleado_id+"',"+obra_id+")";
         db.query(insertQuery,function(err,rows){
-          newUserMysql.usersid = rows.insertId;
-             req.logIn(newUserMysql, function (err) {
+          newUserMysql.id_checador = rows.insertId;
                     if (err) {
                         return err;
                     }
                         console.log(req.user)
-                        return res.redirect('/captura');
-                });
+                        return res.redirect('/checadores');
         });
       }
     });
@@ -137,6 +137,17 @@ router.get('/buscar', function(req, res, next) {
               res.render('buscar', { title: 'Buscar', proveedores: proveedores, obras: obras });
             }
           });
+    }
+  });
+});
+
+router.get('/checadores', function(req, res, next) {
+  var listaChecadores = 'SELECT checadores.*, obras.nombre_obra FROM checadores LEFT JOIN obras ON checadores.obra_id = obras.obra_id';
+    db.query(listaChecadores, function(err, checadores){
+    if(err) throw err;
+    else {
+      console.log(checadores)
+      res.render('checadores', { title: 'Checadores', checadores: checadores });
     }
   });
 });
@@ -369,11 +380,13 @@ router.get('/materiales/editar/:id', function(req, res, next) {
 
 
 router.get('/estimaciones', function(req, res, next) {
-  var readTable = 'SELECT * FROM estimaciones';
-    db.query(readTable, function(err, estimaciones){
-    if(err) throw err;
-    else {
-      res.render('estimaciones', { title: 'Estimaciones', estimaciones: estimaciones });
+  console.log('sending request')
+  var estimaciones;
+    request(path+'api/estimaciones/', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      estimaciones = JSON.parse(body);
+      console.log(estimaciones)
+          res.render('estimaciones', { title: 'Estimaciones', estimaciones: estimaciones });
     }
   });
 });

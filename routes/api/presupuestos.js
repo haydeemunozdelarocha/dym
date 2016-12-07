@@ -32,6 +32,19 @@ router.get('/:obra/:concepto', function(req, res, next ){
   });
 })
 
+router.get('/:obra', function(req, res, next ){
+  var obra= req.params.obra;
+  var concepto= req.params.concepto;
+  var getPresupuesto = 'SELECT presupuestos.*,zonas.nombre_zona FROM presupuestos LEFT JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = ? ';
+  db.query(getPresupuesto,[obra], function(err, presupuesto){
+    if(err) throw err;
+    else {
+        console.log('Buscando presupuesto');
+        res.json(presupuesto)
+    }
+  });
+})
+
 router.use(bodyParser.urlencoded({extended:true}))
 router.use(methodOverride(function(req, res){
   if (req.body && typeof req.body === 'object' && '_method' in req.body) {

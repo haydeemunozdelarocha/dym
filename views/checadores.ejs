@@ -1,0 +1,43 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Checadores</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+  <% include ./partials/residentesheader.ejs %>
+  <div id="content-container">
+  <ul class="nav">
+  <li><a href="/auth/nest">Agregar</a></li>
+</ul>
+  <div id="table">
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Checadores</div>
+
+  <!-- Table -->
+    <table class="table">
+    <tr>
+      <td>ID</td>
+      <td>Username</td>
+      <td>Password</td>
+      <td>Empleado ID</td>
+      <td>Obra</td>
+    </tr>
+    <% for(var i=0; i<checadores.length; i++) {%>
+    <tr>
+      <td><%= checadores[i].id_checador %></td>
+     <td><%= checadores[i].username %></td>
+      <td><%= checadores[i].password %></td>
+      <td><%= checadores[i].empleado_id %></td>
+      <td><%= checadores[i].nombre_obra %></td>
+      <td><a href="/checadores/api/editar/<%= checadores[i].id_checador %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+      <td><a data-method="delete" href="/api/checadores/borrar/<%= checadores[i].id_checador %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+       <% } %>
+     </tr>
+    </table>
+  </div>
+</div>
+</body>
+</html>

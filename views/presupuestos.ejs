@@ -6,14 +6,14 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <body>
-  <% include ./partials/header.ejs %>
+  <% include ./partials/residentesheader.ejs %>
   <div id="content-container">
   <ul class="nav">
   <li><a href="/presupuestos/nuevo">Agregar</a></li>
 </ul>
     <div id="obra">
       <label for="obra">Obra:</label>
-        <select class="form-control" name="obra_id" id="obra_id">
+        <select class="form-control" onchange="getPresupuestos()" name="obra_id" id="obra_id" >
           <% for(var i=0; i<obras.length; i++) {%>
             <option value="<%= obras[i].id %>"><%= obras[i].nombre_obra %></option>
           <% } %>
@@ -51,5 +51,7 @@
     </table>
   </div>
 </div>
+</div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>
 </html>

@@ -13,7 +13,7 @@ var nuevoRecibo = 'INSERT INTO recibos(checador_id,zona_id,foto,hora,obra_id) VA
 router.post('/', function(req,res, next){
 console.log(req.body)
 var recibo;
-var checador_id= Number(req.user.idusers);
+var checador_id= Number(req.user.id_checador);
 var obra_id = Number(req.user.obra_id);
 var numero= req.body.numero;
 var precio = req.body.precio;

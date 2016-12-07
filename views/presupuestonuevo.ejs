@@ -8,9 +8,9 @@
 
 </head>
 <body>
-<% include ./partials/header.ejs %>
+<% include ./partials/residentesheader.ejs %>
   <div style="margin-top:10px">
-    <select class="form-control" id="obraselect">
+    <select class="form-control" id="obraselect" onchange="getPresupuestos()">
       <option value="">Obra</option>
     <% for(var i=0; i<obras.length; i++) { %>
       <option value="<%= obras[i].obra_id %>"><%= obras[i].nombre_obra %></option>
@@ -19,62 +19,592 @@
   </div>
   <br>
 <div id="content-container">
-    <table class="table">
+
+<div id="concepto-presupuesto">
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Generales</div>
+  <table clas="table">
     <tr>
-      <td><select class="form-control" id="conceptosselect">
-      <option value="">Concepto</option>
-    <% for(var i=0; i<conceptos.length; i++) {%>
-      <option value="<%= conceptos[i].conceptos_id %>"><%= conceptos[i].nombre_concepto %></option>
-    <% } %>
-    </select></td>
-      <td><select class="form-control" id="zonaselect">
-      <option value="">Zona</option>
-    <% for(var i=0; i<zonas.length; i++) {%>
-      <option value="<%= zonas[i].zonas_id %>"><%= zonas[i].nombre_zona %></option>
-    <% } %>
-    </select></td>
-    <td><input type="text" class="form-control" placeholder="Cantidad" name="cantidad" id="cantidad"></td>
-    <td>
-      <select class="form-control" name="unidad" id="unidad">
-        <option value="">Unidad</option>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo" selected>Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
         <option value="m">m</option>
         <option value="m2">m2</option>
-        <option value="m3">m3</option>
+        <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
-      </select>
-    </td>
-        <td><input type="text" class="form-control" placeholder="Precio" name="precio" id="precio"></td>
-    <td><input type="text" class="form-control" placeholder="Total" name="total" id="total" disabled></td>
-    <td><a onclick="savePresupuesto()" ><span class="glyphicon glyphicon-plus-sign save-presupuesto"></span></a></td>
-     </tr>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno" selected>Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+
+    </tr>
     </table>
-<div class="input-group">
-  <div id="concepto-presupuesto">
+    </div>
+    </div>
+    <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Plataforma</div>
+  <table clas="table">
+
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" selected>Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco" selected>Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+        <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base" selected>Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación" selected>Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    </table>
+    </div>
+  </div>
+
   <div class="panel panel-default">
   <!-- Default panel contents -->
-  <div class="panel-heading">Presupuesto</div>
-
-  <!-- Table -->
-    <table class="table">
+  <div class="panel-heading">Tráfico Pesado</div>
+  <table clas="table">
     <tr>
-      <td>Concepto</td>
-      <td>Zona</td>
-      <td>Cantidad</td>
-      <td>Unidad</td>
-      <td>Precio Unitario</td>
-      <td>Total</td>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo" selected>Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
     </tr>
-    <% for(var i=0; i<presupuestos.length; i++) {%>
     <tr>
-      <td><%= presupuestos[i].nombre_concepto %></td>
-      <td><%= presupuestos[i].nombre_zona %></td>
-      <td><%= presupuestos[i].cantidad %></td>
-      <td><%= presupuestos[i].unidad %></td>
-      <td>$<%= presupuestos[i].precio_unitario %></td>
-      <td>$<%= presupuestos[i].total %></td>
-    <td><a href="/api/presupuestos/borrar/<%= presupuestos[i].presupuestos_id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
-     </tr>
-    <% } %>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno" selected>Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+        <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" selected>Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" >Piedra</option>
+        <option value="Material de Banco" selected>Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+        <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base" selected>Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" >Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base" selected>Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación" selected>Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm" selected>Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Tráfico Ligero</div>
+  <table clas="table">
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo" selected>Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno" selected>Acarreo Interno</option>
+        <option value="Piedra" >Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+        <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" selected>Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" >Piedra</option>
+        <option value="Material de Banco" selected>Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+        <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" >Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base" selected>Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" >Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base" selected>Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" >Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación" selected>Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+        <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" >Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm" selected>Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    </table>
+    </div>
+  </div>
+
+    <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Cuartos Exteriores</div>
+  <table clas="table">
+        <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" selected>Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" >Piedra</option>
+        <option value="Material de Banco" selected>Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra" >Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base" selected>Base</option>
+        <option value="Impregnación">Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+    <tr>
+      <td><select name="concepto1" id="concepto1" class="form-control">
+        <option value="Acarreo Externo">Acarreo Externo</option>
+        <option value="Acarreo Interno">Acarreo Interno</option>
+        <option value="Piedra">Piedra</option>
+        <option value="Material de Banco">Material de Banco</option>
+        <option value="Sub-base">Sub-base</option>
+        <option value="Base">Base</option>
+        <option value="Impregnación" selected>Impregnación</option>
+        <option value="Carpeta 5 cm">Carpeta 5 cm</option>
+        <option value="Carpeta 7 cm">Carpeta 7 cm</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="Cantidad"></td>
+      <td><select name="unidad1" id="unidad1" class="form-control">
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3" selected>m3</option>
+        <option value="ton">ton</option>
+      </select></td>
+      <td><input type="text" class="form-control" placeholder="$0.00" disabled></td>
+    </tr>
+
     </table>
     </div>
   </div>

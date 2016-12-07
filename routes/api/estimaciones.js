@@ -8,8 +8,21 @@ var moment= require('moment');
 var request = require('request');
 
 var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero,concepto,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer,precio_unitario,importe,subtotal,iva,retencion,total) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-var listaEstimaciones = 'SELECT * FROM estimaciones';
+var listaEstimaciones = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON estimaciones.proveedor_id = proveedores.id;';
 var path = 'http://localhost:3000';
+
+
+//Read table.
+router.get('/', function(req,res,err){
+  console.log('getting request')
+    db.query(listaEstimaciones, function(err, rows){
+    if(err) throw err;
+    else {
+        res.json(rows);
+    }
+  });
+})
+
 
 //agregar estimacion de flete
 router.post('/nueva', function(req,res, next){
@@ -156,17 +169,56 @@ router.get('/sumar/:id', function(req,res,err){
           }
     });
 })
+router.use(bodyParser.urlencoded({extended:true}))
+router.use(methodOverride(function(req, res){
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    var method = req.body._method
+    delete req.body._method
+    return method
+  }
+}))
 
-//Read table.
-router.get('/', function(err,res){
-    db.query(listaEstimaciones, function(err, rows){
+router.put('/editar/:id', function(req,res,err){
+  var estimacion_id=req.params.id;
+  var editarEstimacion = 'UPDATE estimaciones SET obra = ?, fecha = ?, periodo_inicio = ?, periodo_final = ?, residente = ?, numero = ?, subtotal = ?, iva = ?, retencion = ?, total = ?, pagado = ?, facturas = ?, firma_residente = ?, autorizacion = ?, firma_contratista = ?, proveedor_id = ? WHERE `id`= ?';
+
+    db.query(editarEstimacion,[obra,fecha,periodo_inicio,periodo_final,residente,numero,subtotal,iva,retencion,total,pagado,facturas,firma_residente,firma_contratista,proveedor_id,estimacion_id], function(err, material){
+        console.log(editarMaterial);
     if(err) throw err;
     else {
-        res.send(rows);
+        console.log('Listo');
+        res.redirect('/estimaciones');
     }
   });
 })
 
+router.use( function( req, res, next ) {
+    // this middleware will call for each requested
+    // and we checked for the requested query properties
+    // if _method was existed
+    // then we know, clients need to call DELETE request instead
+    if ( req.query._method == 'DELETE' ) {
+        // change the original METHOD
+        // into DELETE method
+        req.method = 'DELETE';
+        // and set requested url to /user/12
+        req.url = req.path;
+    }
+    next();
+});
 
+router.delete('/borrar/:id', function(req,res,err){
+  var estimaciones_id = req.params.id;
+  console.log(estimaciones_id)
+  var borrarEstimacion = 'DELETE FROM estimacion_articulo WHERE estimacion_id = ?; DELETE FROM estimaciones WHERE estimaciones_id = ?;';
+  db.query(borrarEstimacion,[estimaciones_id, estimaciones_id], function(err,estimacion){
+    if(err) throw err;
+    else {
+        console.log('Esta estimación ha sido eliminada');
+        res.redirect('/estimaciones');
+    }
+  });
+})
 
 module.exports = router;
