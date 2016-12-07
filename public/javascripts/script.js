@@ -161,6 +161,7 @@ function test () {
 
 function print(html){
   var encodedHtml = ""+encodeURI(html)+"";
+  console.log("")
   window.open("starpassprnt://v1/print/nopreview?html="+encodedHtml+"&back=http://dymingenieros.herokuapp.com/captura");
 }
 
