@@ -148,17 +148,6 @@ function allowSubmit(){
   $('#material_id').removeAttr("disabled")
 }
 
-function test () {
-  console.log('running ')
-  var html=$('#recibo').html();
-  print(html)
-}
-
-function print(html){
-  var encodedHtml = ""+encodeURI(html)+"";
-  window.open("starpassprnt://v1/print/nopreview?html="+encodedHtml+"&back=http://dymingenieros.herokuapp.com/captura");
-}
-
 function getPresupuestos(){
   console.log('getting presupuestos')
   var obra_id = $('#obraselect').val();

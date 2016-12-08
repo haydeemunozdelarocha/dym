@@ -1,5 +1,3 @@
-// Written by Guillermo Cubero
-// guillermocubero21@gmail.com
 
 var canvas = document.createElement("canvas");
 canvas.setAttribute("id", "canvasPaper");
