@@ -65,7 +65,7 @@ function drawCanvas(image) {
 function createImgElement(base64URL) {
   var imgElement = document.createElement("img");
   imgElement.setAttribute("src", base64URL);
-  imgElement.setAttribute("style", "padding-bottom: 10px;");
+  // imgElement.setAttribute("style", "padding-bottom: 10px;");
   console.log(imgElement.outerHTML)
   createImgElementBase64(imgElement.outerHTML);
 }
@@ -78,7 +78,7 @@ function createImgElementBase64(htmlElement) {
 function buildURLScheme(encodedReceiptBase64) {
   var urlStart = "starpassprnt://v1/print/nopreview?html=";
   //var back = "googlechrome=://"; //Chrome's URL Scheme for iOS/Android
-  var back = "http://dymingenieros.herokupapp.com/captura";
+  var back = "http://dymingenieros.herokuapp.com/captura";
   //OR
   //back = window.location.href;
 
