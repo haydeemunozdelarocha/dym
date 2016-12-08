@@ -22,7 +22,7 @@ var estimacion = $.ajax({
 
 function getImage() {
 console.log("getting image");
-$('#photo-status').html("Capturando imagen...")
+$('#photo-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
 var image = $.ajax({
     url: '/photo',
     type: 'GET',
@@ -31,7 +31,6 @@ var image = $.ajax({
 
   image.done(function(data){
     $('#photo-status').html("")
-    $('#photo-status').html("Listo!")
     $('#photo').val(data);
     allowSubmit()
     $('#photo-button').attr("disabled", true);
@@ -56,7 +55,6 @@ var proveedor_id = $('#proveedor_id').val();
 
   materiales.done(function(data){
     console.log(data)
-     $('#proveedor_id').attr("disabled", true);
     $('#material_id').removeAttr("disabled")
     $('#material_id').html('');
     $('#material_id').html('<option value="">Material</option>');
@@ -81,7 +79,6 @@ var material_id = $('#material_id').val();
   });
 
   material.done(function(data){
-    $('#material_id').attr("disabled", true);
     $('#precio').val('');
     $('#precio-input').attr('value', ''+data.precio+'');
     $('#zonas').removeAttr("disabled")
@@ -124,7 +121,6 @@ var camion_id = $('#scanner').val();
 }
 
 function getProveedores(){
-  $('#concepto').attr("disabled", true);
   $('#proveedor_id').removeAttr("disabled");
 }
 function getPhoto() {
@@ -141,7 +137,6 @@ function cerrarRecibo(){
 }
 
 function allowPhoto(){
-  $('#zonas').attr("disabled", true);
   $('#photo-button').removeAttr("disabled")
 }
 
