@@ -4,7 +4,7 @@
 var canvas = document.createElement("canvas");
 canvas.setAttribute("id", "canvasPaper");
 canvas.setAttribute("width", "576");
-canvas.setAttribute("height", "253");
+canvas.setAttribute("height", "100");
 canvas.style.visibility = "hidden"; // to hide the canvas
 canvas.style.display = "none"; // to not ruin the layout of the page
 
