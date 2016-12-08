@@ -13,7 +13,7 @@
 <div id="printData">
 <h2>DYM INGENIEROS CONSTRUCTORES SA DE CV</h2>
 <h2>RECIBO ACARREOS</h2>
-<div id="recibo-style" style="font-size: 20px; padding-bottom: 20px;"">
+<div id="recibo-style" style="font-size: 20px;">
 <h3><strong>Fecha: </strong><%= acarreo[0].hora%></h3>
 
 <h3><strong>Recibo No.:</strong> <%= acarreo[0].recibo_id%></h3>
@@ -27,6 +27,7 @@
 <h3><strong>Cantidad:</strong> <%= acarreo[0].cantidad %> <%= material[0].unidad %></h3>
 <h3><strong>Precio Unitario: </strong>$<%= material[0].precio %></h3>
 </div>
+<div height="20px"></div>
 </div>
 </div>
 <button onclick="passPRNT()" class="btn btn-primary">Imprimir</button>
