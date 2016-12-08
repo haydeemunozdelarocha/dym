@@ -8,9 +8,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body>
-  <div id="content-container" id="printData">
+  <div id="content-container">
 <div id="recibo" style="margin-left:10px; padding-top:20px; padding-bottom:20px; font-size:16px;">
-
+<div id="printData">
 <h2>DYM INGENIEROS CONSTRUCTORES SA DE CV</h2>
 <h2>RECIBO ACARREOS</h2>
 <h3><strong>Fecha: </strong><%= acarreo[0].hora%></h3>
@@ -25,6 +25,7 @@
 <h3><strong>Proveedor:</strong> <%= material[0].razon_social %></h3>
 <h3><strong>Cantidad:</strong> <%= acarreo[0].cantidad %> <%= material[0].unidad %></h3>
 <h3><strong>Precio Unitario: </strong>$<%= material[0].precio %></h3>
+</div>
 </div>
 </div>
 <button onclick="passPRNT()" class="btn btn-primary">Imprimir</button>
