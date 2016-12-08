@@ -1,14 +1,60 @@
-<nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container">
-  <a class="navbar-brand" href="#">DYM Ingenieros Constructores</a>
-  <ul class="nav navbar-nav">
-        <li><a href="/obras">Obras</a></li>
-        <li><a href="/empleados">Empleados</a></li>
-        <li><a href="/proveedores">Proveedores</a></li>
-        <li><a href="/estimaciones">Estimaciones</a></li>
-        <li><a href="/acarreos">Acarreos</a></li>
-        <li><a href="/camiones">Camiones</a></li>
-        <li><a href="/materiales">Materiales</a></li>
-      </ul>
-  </div>
-</nav>
+<div class="navbar-wrapper">
+    <div class="container-fluid">
+        <nav class="navbar navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">DYM Ingenieros</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="/" class="">Home</a></li>
+                        <li class=" dropdown">
+                            <a href="#" class="dropdown-toggle " data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Obras <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/obras">Ver obras</a></li>
+                                <li><a href="/presupuestos">Ver presupuestos</a></li>
+                                <li><a href="/nuevo/presupuesto">Agregar</a></li>
+                            </ul>
+                        </li>
+
+                        <li class=" dropdown"><a href="#" class="dropdown-toggle " data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Empleados<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/empleados">Ver Empleados</a></li>
+                                <li><a href="/nuevo/empleado">Agregar</a></li>
+                            </ul>
+                        </li>
+                        <li class=" dropdown"><a href="#" class="dropdown-toggle active" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Proveedores<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/proveedores">Ver Proveedores</a></li>
+                                <li><a href="/camiones">Ver Camiones</a></li>
+                            </ul>
+                        </li>
+                        <li class=" down"><a href="#" class="dropdown-toggle active" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Estimaciones<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/estimaciones">Ver estimaciones</a></li>
+                                <li><a href="/nueva/estimacion">Agregar</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav pull-right">
+                        <li class=" dropdown"><a href="#" class="dropdown-toggle active" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Signed in as  <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Cambiar contraseña</a></li>
+                                <li><a href="#">Perfil</a></li>
+                            </ul>
+                        </li>
+                        <li class=""><a href="/logout">Salir</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+
+

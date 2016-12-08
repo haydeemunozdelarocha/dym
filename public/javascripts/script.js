@@ -191,3 +191,34 @@ function getPresupuestos(){
 
   });
 }
+
+function savePresupuesto(){
+  $('#submit').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
+  var obra = $('#obra_id').val();
+  obra = Number(obra);
+  for(var i = 1; i < 30 ; i++){
+    var concepto = $('#concepto'+i).val();
+    var cantidad = $('#cantidad'+i).val();
+    var unidad = $('#unidad'+i).val();
+    var zona = $('#zona'+i).val();
+    var precio_unitario = $('#precio'+i).val();
+    var total = $('#total'+i).val();
+    concepto = Number(concepto);
+      var presupuestos = $.ajax({
+        url: '/api/presupuestos/',
+        type: 'POST',
+        dataType: 'json',
+        data:{obra:obra,concepto:concepto,cantidad:cantidad,unidad:unidad,zona:zona,precio_unitario:precio_unitario,total:total}
+      });
+
+      presupuestos.done(function(data){
+        console.log(data);
+        console.log(i)
+        });
+
+      presupuestos.fail(function(jqXHR, textStatus, errorThrown){
+        console.log(errorThrown);
+
+      });
+}
+}

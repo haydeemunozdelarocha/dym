@@ -6,7 +6,7 @@ var db = require('../db.js');
 var passport = require('passport');
 
 var readTable = 'SELECT * FROM obras';
-var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.concepto, materiales.precio, conceptos.nombre_concepto FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN proveedores ON proveedores.id = camiones.proveedor_id LEFT JOIN materiales ON materiales.id = acarreos.material_id LEFT JOIN conceptos ON materiales.concepto OR concepto_flete = conceptos.conceptos_id ORDER BY recibo_id DESC';
+var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.concepto, materiales.precio, materiales.proveedor_id, conceptos.nombre_concepto, recibos.hora,recibos.foto FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON materiales.id = acarreos.material_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON materiales.concepto=conceptos.conceptos_id OR acarreos.concepto_flete = conceptos.conceptos_id ORDER BY recibo_id, categoria DESC';
 
 var path = 'http://localhost:3000/';
 

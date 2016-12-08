@@ -1,13 +1,16 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Acarreos</title>
+    <title>DYM Ingenieros Constructores | Acarreos</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </head>
 <body>
   <% include ./partials/residentesheader.ejs %>
   <div id="content-container">
+    <p><h2>Acarreos</h2></p>
   <ul class="nav">
 </ul>
   <div id="table">
@@ -24,7 +27,7 @@
       <td>Proveedor</td>
       <td>Recibo</td>
       <td>Fecha</td>
-      <td>Flete</td>
+      <td>Foto</td>
     </tr>
     <% for(var i=0; i<acarreos.length; i++) {%>
     <tr>
@@ -33,13 +36,19 @@
       <% if (acarreos[i].categoria === "material") { %>
      <td><%= acarreos[i].nombre_concepto %></td>
      <% } else { %>
-     <td><%= acarreos[i].concepto_flete %></td>
+     <td><%= acarreos[i].nombre_concepto %></td>
      <% } %>
       <td><%= acarreos[i].razon_social %></td>
       <td><%= acarreos[i].recibo_id %></td>
       <td><%= acarreos[i].hora %></td>
-      <td><%= acarreos[i].concepto_flete %></td>
-      <td><a href="/edit/<%= acarreos[i].acarreo_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+      <% if (acarreos[i].categoria === "material") { %>
+     <td></td>
+     <% } else { %>
+     <td><a href="<%= acarreos[i].foto %>" onclick="window.open(this.href, 'mywin',
+'left=20,top=20,width=600,height=340,toolbar=1,resizable=0'); return false;">
+          <span class="glyphicon glyphicon-camera"></span>
+        </a></td>
+     <% } %>
      </tr>
     <% } %>
     </table>

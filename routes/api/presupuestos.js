@@ -63,6 +63,7 @@ var cantidad= req.body.cantidad;
 var unidad= req.body.unidad;
 var precio_unitario= req.body.precio_unitario;
 var total= cantidad*precio_unitario;
+console.log(obra,concepto,cantidad,unidad,zona,precio_unitario,total)
     db.query(nuevoPresupuesto,[obra,concepto,cantidad,unidad,zona,precio_unitario,total], function(err, presupuesto){
     if(err) throw err;
     else {
