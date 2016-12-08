@@ -65,6 +65,7 @@ function drawCanvas(image) {
 function createImgElement(base64URL) {
   var imgElement = document.createElement("img");
   imgElement.setAttribute("src", base64URL);
+  imgElement.setAttribute("style", "padding-bottom: 0px;");
 
   createImgElementBase64(imgElement.outerHTML);
 }
