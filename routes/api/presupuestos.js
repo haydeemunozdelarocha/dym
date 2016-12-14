@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var db = require('../../db.js');
 
+
 var nuevoPresupuesto = 'INSERT INTO presupuestos(obra, concepto, cantidad, unidad,zona, precio_unitario, total) VALUE(?,?,?,?,?,?,?)';
 var listaPresupuestos = 'SELECT presupuestos.*, conceptos.*, zonas.*, obras.* FROM presupuestos JOIN obras ON presupuestos.obra=obras.obra_id JOIN zonas ON presupuestos.zona = zonas.zonas_id JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id' ;
 var editarPresupuesto = 'UPDATE presupuestos SET obra = ?, concepto = ?, cantidad= ?, zona= ?, precio_unitario = ?, total=? WHERE presupuesto_id= ?';
@@ -21,12 +22,16 @@ router.get('/', function(err,res){
 })
 
 router.get('/buscar/:articulo', function(req, res, next ){
-  console.log('filling out missing info')
+  console.log('filling out missing info articulo')
   var articulo_id = req.params.articulo;
   var esta_estimacion;
   var estimacion_id;
+  var acumulado_actual;
+  var presupuesto_id;
   var getArticulo = 'SELECT estimacion_articulo.*, estimaciones.obra FROM estimacion_articulo JOIN estimaciones ON estimacion_articulo.estimacion_id = estimaciones.estimaciones_id WHERE estimacion_articulo.articulo_id = ?;'
-  db.query(getArticulo,[articulo_id], function(err, articulo){
+  var updateArticulo = 'UPDATE estimacion_articulo SET unidad = ?, cantidad_presupuestada = ?, acumulado_anterior = ?, acumulado_actual = ?, por_ejercer = ? WHERE articulo_id = ?;';
+  var updatePresupuesto = 'UPDATE presupuestos SET acumulado = ? WHERE presupuestos_id = ?;';
+  db.query(getArticulo,[articulo_id]).then(function(articulo,err){
     if(err) throw err
     else {
       var obra = articulo[0].obra;
@@ -34,31 +39,31 @@ router.get('/buscar/:articulo', function(req, res, next ){
       esta_estimacion = Number(articulo[0].esta_estimacion);
       estimacion_id = articulo[0].estimacion_id;
       console.log(articulo[0])
-      db.query(getPresupuesto,[obra,concepto_id], function(err, presupuesto){
+      return db.query(getPresupuesto,[obra,concepto_id])
+    }
+  }).then( function(presupuesto,err){
     if(err) throw err
     else {
-      // var obra = presupuesto[0].obra;
-      // var concepto_id = presupuesto[0].concepto_id;
       console.log(presupuesto[0])
-      var presupuesto_id = presupuesto[0].presupuestos_id;
+      presupuesto_id = presupuesto[0].presupuestos_id;
       var unidad = presupuesto[0].unidad;
       var cantidad_presupuestada = presupuesto[0].cantidad;
       var acumulado_anterior = presupuesto[0].acumulado;
-      var acumulado_actual = presupuesto[0].acumulado + esta_estimacion;
+      acumulado_actual = presupuesto[0].acumulado + esta_estimacion;
       var por_ejercer = cantidad_presupuestada - acumulado_actual;
-      var updateArticulo = 'UPDATE estimacion_articulo SET unidad = ?, cantidad_presupuestada = ?, acumulado_anterior = ?, acumulado_actual = ?, por_ejercer = ? WHERE articulo_id = ?; UPDATE presupuestos SET acumulado = ? WHERE presupuestos_id = ?;'
-          db.query(updateArticulo,[unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer,articulo_id,acumulado_actual,presupuesto_id], function(err, articulo){
+      return db.query(updateArticulo,[unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer,articulo_id,acumulado_actual,presupuesto_id]);
+    }
+  }).then(function(articulo,err){
           if(err) throw err
           else {
-            res.json(estimacion_id)
-
+            return db.query(updatePresupuesto,[acumulado_actual,presupuesto_id])
           }
+        }).then(function(presupuesto,err){
+            console.log(acumulado_actual,presupuesto_id)
+            res.json(estimacion_id)
         })
-    }
-  })
-    }
-  })
-})
+    })
+
 
 router.get('/:obra', function(req, res, next ){
   var obra= req.params.obra;

@@ -45,7 +45,8 @@ var periodo_final = moment(req.body.periodo_final).format("YYYY-MM-DD HH:mm");
 var proveedor_id = Number(req.body.proveedor);
 var getNumeroEstimacion = 'SELECT * FROM estimaciones WHERE obra = ? ORDER BY fecha DESC';
 var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero) VALUE(?,?,?,?,?,?,?)';
-var buscarAcarreos = 'SELECT acarreos.camion_id, acarreos.concepto_flete, camiones.precio_flete, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos JOIN camiones ON acarreos.camion_id=camiones.camion_id WHERE acarreo_id IN '+acarreos+' GROUP BY concepto_flete;';
+var buscarAcarreosFlete = 'SELECT acarreos.camion_id, acarreos.concepto_flete, camiones.precio_flete, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos JOIN camiones ON acarreos.camion_id=camiones.camion_id WHERE acarreo_id IN '+acarreos+' GROUP BY concepto_flete;';
+var editarAcarreos = 'UPDATE acarreos SET estimacion = "Y", estimacion_id = ? WHERE acarreo_id IN '+acarreos;
 var nuevoArticuloEstimacion = 'INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id) VALUE(?,?,?,?,?);';
 var getPresupuesto = 'SELECT * FROM presupuestos WHERE obra = ? AND concepto = ?';
 var articulos=[];
@@ -65,7 +66,10 @@ var conceptos = [];
                  console.log(estimacion.insertId);
               estimacion_id = estimacion.insertId;
               console.log('Estimacion creada exitosamente!');
-              return db.query(buscarAcarreos)
+              return db.query(editarAcarreos,[estimacion_id])
+  }).then(function(acarreos,err){
+    console.log('Acarreos editados')
+    return db.query(buscarAcarreosFlete)
   }).then(function(acarreos,err){
     console.log(acarreos)
     for (var i = 0; i < acarreos.length ; i++) {
@@ -95,8 +99,6 @@ var conceptos = [];
 
 router.post('/articulos', function(req,res,err){
   console.log('articulos')
-  console.log('body')
-  console.log(req.body)
   var concepto_id = req.body.concepto_id;
   var esta_estimacion = req.body.esta_estimacion;
   var precio_unitario = req.body.precio_unitario;
