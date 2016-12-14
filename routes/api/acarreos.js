@@ -89,8 +89,8 @@ router.post('/buscar', function(req,res,next){
   console.log(req.body)
   var proveedor_id = req.body.proveedor_id;
   var categoria = req.body.categoria;
-  var date1 = moment(req.body.date1).format("YYYY/MM/DD HH:mm");
-  var date2 = moment(req.body.date2).format("YYYY/MM/DD HH:mm");
+  var date1 = moment(req.body.date1).format("YYYY-MM-DD HH:mm");
+  var date2 = moment(req.body.date2).format("YYYY-MM-DD HH:mm");
   var obra_id = req.body.obra_id;
   var categoriaProveedor;
   if (categoria === "material"){
@@ -98,7 +98,7 @@ router.post('/buscar', function(req,res,next){
   } else if (categoria === "flete"){
     categoriaProveedor = "camiones"
   }
-  var listaAcarreosBuscar = 'SELECT acarreos.*, camiones.*, recibos.*, materiales.*, conceptos.*, proveedores.razon_social FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON acarreos.material_id = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id LEFT JOIN proveedores ON '+categoriaProveedor+'.proveedor_id = proveedores.id WHERE categoria = "'+categoria+'" AND recibos.obra_id = '+obra_id+' AND '+categoriaProveedor+'.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'"';
+  var listaAcarreosBuscar = 'SELECT acarreos.*, camiones.*, recibos.*, materiales.*, conceptos.*,obras.nombre_obra, proveedores.razon_social FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos.material_id = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id LEFT JOIN proveedores ON '+categoriaProveedor+'.proveedor_id = proveedores.id WHERE categoria = "'+categoria+'" AND recibos.obra_id = '+obra_id+' AND '+categoriaProveedor+'.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'"';
     db.query(listaAcarreosBuscar, function(err, acarreos){
     if(err) throw err;
     else {

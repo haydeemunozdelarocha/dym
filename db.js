@@ -1,4 +1,4 @@
-var mysql = require('mysql');
+var mysql = require('promise-mysql');
 
 
 var db_config      =    mysql.createPool({
@@ -12,6 +12,7 @@ var db_config      =    mysql.createPool({
 });
 
 function handle_database(req,res) {
+  console.log('connecting')
 db_config.getConnection(function(err){
   if(err){
     console.log('No se pudo conectar a la base de datos');
@@ -33,11 +34,11 @@ db_config.on('error', function(err) {
   });
 
 function handleDisconnect() {
-
-db_config.connect(function(err){
+console.log('reconnecting...')
+db_config.getConnection(function(err){
   if(err){
     console.log('No se pudo conectar a la base de datos');
-    setTimeout(handleDisconnect, 2000);
+    handle_database();
     return;
   }
   console.log('Conectado');
@@ -45,5 +46,15 @@ db_config.connect(function(err){
 }
 
 handle_database();
+
+function disconnect() {
+  db_config.end(function onEnd(error) {
+  console.log('ending connection')
+  if (error) throw error;
+  // All connections are now closed once they have been returned with connection.release()
+  // i.e. this waits for all consumers to finish their use of the connections and ends them.
+});
+}
+
 
 module.exports = db_config;

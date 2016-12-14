@@ -20,16 +20,44 @@ router.get('/', function(err,res){
   });
 })
 
-router.get('/:obra/:concepto', function(req, res, next ){
-  var obra= req.params.obra;
-  var concepto= req.params.concepto;
-  db.query(getPresupuesto,[obra,concepto], function(err, presupuesto){
-    if(err) throw err;
+router.get('/buscar/:articulo', function(req, res, next ){
+  console.log('filling out missing info')
+  var articulo_id = req.params.articulo;
+  var esta_estimacion;
+  var estimacion_id;
+  var getArticulo = 'SELECT estimacion_articulo.*, estimaciones.obra FROM estimacion_articulo JOIN estimaciones ON estimacion_articulo.estimacion_id = estimaciones.estimaciones_id WHERE estimacion_articulo.articulo_id = ?;'
+  db.query(getArticulo,[articulo_id], function(err, articulo){
+    if(err) throw err
     else {
-        console.log('Buscando presupuesto');
-        res.json(presupuesto)
+      var obra = articulo[0].obra;
+      var concepto_id = articulo[0].concepto_id;
+      esta_estimacion = Number(articulo[0].esta_estimacion);
+      estimacion_id = articulo[0].estimacion_id;
+      console.log(articulo[0])
+      db.query(getPresupuesto,[obra,concepto_id], function(err, presupuesto){
+    if(err) throw err
+    else {
+      // var obra = presupuesto[0].obra;
+      // var concepto_id = presupuesto[0].concepto_id;
+      console.log(presupuesto[0])
+      var presupuesto_id = presupuesto[0].presupuestos_id;
+      var unidad = presupuesto[0].unidad;
+      var cantidad_presupuestada = presupuesto[0].cantidad;
+      var acumulado_anterior = presupuesto[0].acumulado;
+      var acumulado_actual = presupuesto[0].acumulado + esta_estimacion;
+      var por_ejercer = cantidad_presupuestada - acumulado_actual;
+      var updateArticulo = 'UPDATE estimacion_articulo SET unidad = ?, cantidad_presupuestada = ?, acumulado_anterior = ?, acumulado_actual = ?, por_ejercer = ? WHERE articulo_id = ?; UPDATE presupuestos SET acumulado = ? WHERE presupuestos_id = ?;'
+          db.query(updateArticulo,[unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer,articulo_id,acumulado_actual,presupuesto_id], function(err, articulo){
+          if(err) throw err
+          else {
+            res.json(estimacion_id)
+
+          }
+        })
     }
-  });
+  })
+    }
+  })
 })
 
 router.get('/:obra', function(req, res, next ){

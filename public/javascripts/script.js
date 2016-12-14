@@ -1,6 +1,7 @@
 
-function createEstimacion(acarreos, categoria, obra_id, proveedor, periodo_inicial, periodo_final) {
-  console.log(acarreos, categoria, obra_id, proveedor, periodo_inicial, periodo_final)
+function createArticulos(acarreos, categoria, obra_id, proveedor, periodo_inicial, periodo_final) {
+  $('#button').html('')
+  $('#button').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
   console.log('sending')
 var estimacion = $.ajax({
     url: '/api/estimaciones/nueva',
@@ -10,7 +11,7 @@ var estimacion = $.ajax({
   });
 
   estimacion.done(function(data){
-    console.log(data);
+    window.location.replace('http://localhost:3000/estimaciones/'+data.estimacion_id);
     });
 
   estimacion.fail(function(jqXHR, textStatus, errorThrown){
