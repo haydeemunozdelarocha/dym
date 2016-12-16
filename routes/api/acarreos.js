@@ -86,7 +86,6 @@ router.get('/', function(err,res){
 })
 
 router.post('/buscar', function(req,res,next){
-  console.log(req.body)
   var proveedor_id = req.body.proveedor_id;
   var categoria = req.body.categoria;
   var date1 = moment(req.body.date1).format("YYYY-MM-DD HH:mm");
@@ -98,19 +97,24 @@ router.post('/buscar', function(req,res,next){
   } else if (categoria === "flete"){
     categoriaProveedor = "camiones"
   }
-  var listaAcarreosBuscar = 'SELECT acarreos.*, camiones.*, recibos.*, materiales.*, conceptos.*,obras.nombre_obra, proveedores.razon_social FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos.material_id = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id LEFT JOIN proveedores ON '+categoriaProveedor+'.proveedor_id = proveedores.id WHERE categoria = "'+categoria+'" AND recibos.obra_id = '+obra_id+' AND '+categoriaProveedor+'.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'"';
+  var listaAcarreosBuscar = 'SELECT acarreos.*, camiones.*, recibos.*, materiales.*, conceptos.*,zonas.*,obras.nombre_obra, proveedores.razon_social FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos.material_id = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id OR acarreos.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN proveedores ON '+categoriaProveedor+'.proveedor_id = proveedores.id WHERE categoria = "'+categoria+'" AND recibos.obra_id = '+obra_id+' AND '+categoriaProveedor+'.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" AND estimacion = "N";';
     db.query(listaAcarreosBuscar, function(err, acarreos){
-    if(err) throw err;
-    else {
-      console.log(listaAcarreosBuscar)
-      var ids = [];
-      for (var i = 0 ; i < acarreos.length ; i++){
-        ids.push(acarreos[i].acarreo_id)
-      }
-      console.log(ids)
-      date1 = moment(date1).format("YYYY-MM-DD HH:mm");
-      date2 = moment(date2).format("YYYY-MM-DD HH:mm");
-        res.render('nuevaestimacion', { title: 'Nueva Estimación', acarreos: acarreos, date1: date1, date2:date2, proveedor:proveedor_id, categoria: categoria, obra: obra_id, ids: ids });
+      console.log(acarreos)
+    if (acarreos.length === 0){
+      console.log('no se encontraron acarreos')
+          var message = "No se encontraron acarreos sin estimación en éstas fechas."
+            res.json({message: message});
+    }
+    else if (acarreos.length > 0){
+          var ids = [];
+          for (var i = 0 ; i < acarreos.length ; i++){
+            ids.push(acarreos[i].acarreo_id)
+          }
+          console.log(ids)
+          date1 = moment(date1).format("YYYY-MM-DD HH:mm");
+          date2 = moment(date2).format("YYYY-MM-DD HH:mm");
+          var message = ""
+            res.render('nuevaestimacion', { title: 'Nueva Estimación', acarreos: acarreos, date1: date1, date2:date2, proveedor:proveedor_id, categoria: categoria, obra: obra_id, ids: ids , message:message});
       }
   });
 })

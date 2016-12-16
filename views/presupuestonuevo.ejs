@@ -47,7 +47,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio1" name="precio1" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio1" name="precio1" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad1','precio1','total1')"></td>
       <td><input id="total1" name="total1" type="text" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona1" name="zona1" value="2"></td>
     </tr>
@@ -71,7 +71,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio2" name="precio2" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio2" name="precio2" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad2','precio2','total2')"></td>
       <td><input type="text" name="total2" id="total2" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona2" name="zona2" value="2"></td>
     </tr>
@@ -104,7 +104,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio3" name="precio3" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio3" name="precio3" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad3','precio3','total3')"></td>
       <td><input name="total3" id="total3" type="text" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona3" name="zona3" value="12"></td>
     </tr>
@@ -128,7 +128,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio4" name="precio4" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio4" name="precio4" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad4','precio4','total4')"></td>
       <td><input type="text" name="total4" id="total4" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona4" name="zona4" value="12"></td>
     </tr>
@@ -149,10 +149,10 @@
       <td><select name="unidad5" id="unidad5" class="form-control">
         <option value="m">m</option>
         <option value="m2">m2</option>
-        <option value="m3" selected>m3</option>
-        <option value="ton">ton</option>
+        <option value="m3">m3</option>
+        <option value="ton" selected>ton</option>
       </select></td>
-      <td><input id="precio5" name="precio5" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio5" name="precio5" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad5','precio5','total5')"></td>
       <td><input type="text" name="total5" id="total5" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona5" name="zona5" value="12"></td>
     </tr>
@@ -172,11 +172,11 @@
       <td><input type="number" name="cantidad6" id="cantidad6" min="0" class="form-control" placeholder="0"></td>
       <td><select name="unidad6" id="unidad6" class="form-control">
         <option value="m">m</option>
-        <option value="m2">m2</option>
-        <option value="m3" selected>m3</option>
+        <option value="m2" selected>m2</option>
+        <option value="m3">m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio6" name="precio6" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio6" name="precio6" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad6','precio6','total6')"></td>
       <td><input type="text" name="total6" id="total6" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona6" name="zona6" value="12"></td>
     </tr>
@@ -208,7 +208,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio7" name="precio7" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio7" name="precio7" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad7','precio7','total7')"></td>
       <td><input type="text" name="total7" id="total7" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona7" name="zona7" value="22"></td>
     </tr>
@@ -232,7 +232,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio8" name="precio8" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio8" name="precio8" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad8','precio8','total8')"></td>
       <td><input type="text" name="total8" id="total8" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona8" name="zona8" value="22"></td>
     </tr>
@@ -250,13 +250,13 @@
         <option value="52">Carpeta 7 cm</option>
       </select></td>
       <td><input type="number" name="cantidad9" id="cantidad9" min="0" class="form-control" placeholder="0"></td>
-      <td><select name="unidad1" id="unidad1" class="form-control">
+      <td><select name="unidad9" id="unidad9" class="form-control">
         <option value="m">m</option>
         <option value="m2">m2</option>
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio9" name="precio9" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio9" name="precio9" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad9','precio9','total9')"></td>
       <td><input type="text" name="total9" id="total9" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona9" name="zona9" value="22"></td>
     </tr>
@@ -280,7 +280,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio10" name="precio10" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio10" name="precio10" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad10','precio10','total10')"></td>
       <td><input type="text" name="total10" id="total10" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona10" name="zona10" value="22"></td>
     </tr>
@@ -298,13 +298,13 @@
         <option value="52">Carpeta 7 cm</option>
       </select></td>
       <td><input type="number" name="cantidad11" id="cantidad11" min="0" class="form-control" placeholder="0"></td>
-      <td><select name="unidad1" id="unidad1" class="form-control">
+      <td><select name="unidad11" id="unidad11" class="form-control">
         <option value="m">m</option>
         <option value="m2">m2</option>
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio11" name="precio11" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio11" name="precio11" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad11','precio11','total11')"></td>
       <td><input type="text" name="total11" id="total11" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona11" name="zona11" value="22"></td>
     </tr>
@@ -325,10 +325,10 @@
       <td><select name="unidad12" id="unidad12" class="form-control">
         <option value="m">m</option>
         <option value="m2">m2</option>
-        <option value="m3" selected>m3</option>
-        <option value="ton">ton</option>
+        <option value="m3">m3</option>
+        <option value="ton" selected>ton</option>
       </select></td>
-      <td><input id="precio12" name="precio12" type="text" min="0" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio12" name="precio12" type="text" min="0" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad12','precio12','total12')"></td>
       <td><input type="text" name="total12" id="total12" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona12" name="zona12" value="22"></td>
     </tr>
@@ -348,11 +348,11 @@
       <td><input type="number" name="cantidad13" id="cantidad13" min="0" class="form-control" placeholder="0"></td>
       <td><select name="unidad13" id="unidad13" class="form-control">
         <option value="m">m</option>
-        <option value="m2">m2</option>
-        <option value="m3" selected>m3</option>
+        <option value="m2" selected>m2</option>
+        <option value="m3">m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio13" name="precio13" type="text" min="0" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio13" name="precio13" type="text" min="0" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad13','precio13','total13')"></td>
       <td><input type="text" name="total13" id="total13" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona13" name="zona13" value="22"></td>
     </tr>
@@ -372,11 +372,11 @@
       <td><input type="number" name="cantidad14" id="cantidad14" min="0" class="form-control" placeholder="0"></td>
       <td><select name="unidad14" id="unidad14" class="form-control">
         <option value="m">m</option>
-        <option value="m2">m2</option>
-        <option value="m3" selected>m3</option>
+        <option value="m2" selected>m2</option>
+        <option value="m3">m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio14" name="precio14" type="text" min="0" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio14" name="precio14" type="text" min="0" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad14','precio14','total14')"></td>
       <td><input type="text" name="total14" id="total14" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona14" name="zona14" value="22"></td>
     </tr>
@@ -408,7 +408,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio15" name="precio15" type="text" min="0" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio15" name="precio15" type="text" min="0" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad15','precio15','total15')"></td>
       <td><input type="text" name="total15" id="total15" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona15" name="zona15" value="32"></td>
     </tr>
@@ -432,7 +432,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio16" name="precio16" type="text" min="0" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio16" name="precio16" type="text" min="0" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad16','precio16','total16')"></td>
       <td><input type="text" name="total16" id="total16" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona16" name="zona16" value="32"></td>
     </tr>
@@ -456,7 +456,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio17" name="precio17" type="text" min="0" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio17" name="precio17" type="text" min="0" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad17','precio17','total17')"></td>
       <td><input type="text" name="total17" id="total17" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona17" name="zona17" value="32"></td>
     </tr>
@@ -480,7 +480,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio18" name="precio18" type="text" min="0" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio18" name="precio18" type="text" min="0" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad18','precio18','total18')"></td>
       <td><input type="text" name="total18" id="total18" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona18" name="zona18" value="32"></td>
     </tr>
@@ -504,7 +504,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio19" name="precio19" type="text" min="0" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio19" name="precio19" type="text" min="0" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad19','precio19','total19')"></td>
       <td><input type="text" name="total19" id="total19" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona19" name="zona19" value="32"></td>
     </tr>
@@ -525,10 +525,10 @@
       <td><select name="unidad20" id="unidad20" class="form-control">
         <option value="m">m</option>
         <option value="m2">m2</option>
-        <option value="m3" selected>m3</option>
-        <option value="ton">ton</option>
+        <option value="m3">m3</option>
+        <option value="ton" selected>ton</option>
       </select></td>
-      <td><input id="precio20" name="precio20" type="text" min="0" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio20" name="precio20" type="text" min="0" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad20','precio20','total20')"></td>
       <td><input type="text" name="total20" id="total20" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona20" name="zona20" value="32"></td>
     </tr>
@@ -548,11 +548,11 @@
       <td><input type="number" name="cantidad21" id="cantidad21" min="0" class="form-control" placeholder="0"></td>
       <td><select name="unidad21" id="unidad21" class="form-control">
         <option value="m">m</option>
-        <option value="m2">m2</option>
-        <option value="m3" selected>m3</option>
+        <option value="m2" selected>m2</option>
+        <option value="m3">m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio21" name="precio21" type="text" min="0" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio21" name="precio21" type="text" min="0" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad21','precio21','total21')"></td>
       <td><input type="text" name="total21" id="total21" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona21" name="zona21" value="32"></td>
     </tr>
@@ -570,13 +570,13 @@
         <option value="52">Carpeta 7 cm</option>
       </select></td>
       <td><input type="number" name="cantidad22" id="cantidad22" min="0" class="form-control" placeholder="0"></td>
-      <td><select name="unidad1" id="unidad1" class="form-control">
+      <td><select name="unidad22" id="unidad22" class="form-control">
         <option value="m">m</option>
-        <option value="m2">m2</option>
-        <option value="m3" selected>m3</option>
+        <option value="m2" selected>m2</option>
+        <option value="m3">m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio22" name="precio22" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio22" name="precio22" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad22','precio22','total22')"></td>
       <td><input type="text" name="total22" id="total22" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona22" name="zona22" value="32"></td>
     </tr>
@@ -608,7 +608,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio23" name="precio23" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio23" name="precio23" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad23','precio23','total23')"></td>
       <td><input type="text" name="total23" id="total23" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona23" name="zona23" value="42"></td>
     </tr>
@@ -632,7 +632,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio24" name="precio24" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio24" name="precio24" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad24','precio24','total24')"></td>
       <td><input type="text" name="total24" id="total24" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona24" name="zona24" value="42"></td>
     </tr>
@@ -653,10 +653,10 @@
       <td><select name="unidad25" id="unidad25" class="form-control">
         <option value="m">m</option>
         <option value="m2">m2</option>
-        <option value="m3" selected>m3</option>
-        <option value="ton">ton</option>
+        <option value="m3">m3</option>
+        <option value="ton" selected>ton</option>
       </select></td>
-      <td><input id="precio25" name="precio25" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio25" name="precio25" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad25','precio25','total25')"></td>
       <td><input type="text" name="total25" id="total25" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona25" name="zona25" value="42"></td>
     </tr>
@@ -676,11 +676,11 @@
       <td><input type="number" name="cantidad26" id="cantidad26" class="form-control" placeholder="0"></td>
       <td><select name="unidad26" id="unidad26" class="form-control">
         <option value="m">m</option>
-        <option value="m2">m2</option>
-        <option value="m3" selected>m3</option>
+        <option value="m2" selected>m2</option>
+        <option value="m3">m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio26" name="precio26" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio26" name="precio26" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad26','precio26','total26')"></td>
       <td><input type="text" name="total26" id="total26" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona26" name="zona26" value="42"></td>
     </tr>
@@ -712,7 +712,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio27" name="precio27" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio27" name="precio27" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad27','precio27','total27')"></td>
       <td><input type="text" name="total27" id="total27" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona27" name="zona27" value="52"></td>
     </tr>
@@ -736,7 +736,7 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio28" name="precio28" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio28" name="precio28" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad28','precio28','total28')"></td>
       <td><input type="text" name="total28" id="total28" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona28" name="zona28" value="52"></td>
     </tr>
@@ -767,12 +767,12 @@
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio29" name="precio29" type="text" class="form-control" placeholder="$0.00"></td>
+      <td><input id="precio29" name="precio29" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad29','precio29','total29')"></td>
       <td><input type="text" name="total29" id="total29" class="form-control" placeholder="$0.00" disabled></td>
       <td><input type="hidden" id="zona29" name="zona29" value="62"></td>
     </tr>
     <tr>
-      <td><select name="concepto29" id="concepto29" class="form-control">
+      <td><select name="concepto30" id="concepto30" class="form-control">
         <option value="72" >Agua Tratada</option>
         <option value="92">Acarreo Externo</option>
         <option value="82" selected>Acarreo Interno</option>
@@ -784,16 +784,16 @@
         <option value="62">Carpeta 5 cm</option>
         <option value="52">Carpeta 7 cm</option>
       </select></td>
-      <td><input type="number" name="cantidad29" id="cantidad29" min="0" class="form-control" placeholder="0"></td>
-      <td><select name="unidad29" id="unidad29" class="form-control">
+      <td><input type="number" name="cantidad30" id="cantidad30" min="0" class="form-control" placeholder="0"></td>
+      <td><select name="unidad30" id="unidad30" class="form-control">
         <option value="m">m</option>
         <option value="m2">m2</option>
         <option value="m3" selected>m3</option>
         <option value="ton">ton</option>
       </select></td>
-      <td><input id="precio29" name="precio29" type="text" class="form-control" placeholder="$0.00"></td>
-      <td><input type="text" name="total29" id="total29" class="form-control" placeholder="$0.00" disabled></td>
-      <td><input type="hidden" id="zona29" name="zona29" value="62"></td>
+      <td><input id="precio30" name="precio30" type="text" class="form-control" placeholder="$0.00" oninput="totalesPresupuesto('cantidad30','precio30','total30')"></td>
+      <td><input type="text" name="total30" id="total30" class="form-control" placeholder="$0.00" disabled></td>
+      <td><input type="hidden" id="zona30" name="zona30" value="62"></td>
     </tr>
     </table>
     </div>

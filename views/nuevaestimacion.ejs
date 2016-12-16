@@ -3,9 +3,10 @@
   <meta charset="UTF-8">
   <title>DYM Ingenieros Constructores | Estimación Nueva</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
 <body>
@@ -33,6 +34,7 @@
   <div class="panel panel-default">
   <!-- Default panel contents -->
   <div class="panel-heading">Acarreos</div>
+  <h4><%= message %></h4>
      <table class="table" id="tabla-acarreos-material">
        <tr>
         <td>
@@ -45,7 +47,7 @@
            Concepto
          </td>
          <td>
-           Proveedor
+           Zona
          </td>
          <td>
            Cantidad
@@ -55,9 +57,6 @@
          </td>
          <td>
            Total
-         </td>
-         <td>
-         Agregar
          </td>
        </tr>
        <% for (var i = 0; i < acarreos.length ; i++ ) { %>
@@ -72,7 +71,7 @@
         <p><%=acarreos[i].nombre_concepto %></p>
          </td>
          <td>
-           <p><%=acarreos[i].razon_social %></p>
+        <p><%=acarreos[i].nombre_zona %></p>
          </td>
          <td>
            <p><%=acarreos[i].cantidad %> <%=acarreos[i].unidad %></p>
@@ -83,15 +82,12 @@
          <td>
            <p>$<%=acarreos[i].total %></p>
          </td>
-         <td>
-        <input type="checkbox" id="<%=acarreos[i].acarreo_id%>" onclick="agregarId(<%=acarreos[i].acarreo_id%>)"/>
-         </td>
        </tr>
        <% } %>
      </table>
      </div>
      </div>
-  <div id="button"><button type="submit" class="btn btn-primary">Guardar</button></div>
+  <div id="button"><button type="submit" class="btn btn-primary" onclick="createArticulos('(<%= ids %>)', '<%= categoria %>', '<%=obra%>','<%=proveedor%>','<%=date1 %>','<%=date2 %>')" >Guardar</button></div>
   </form>
 </div>
 <% } else if (categoria === "flete") { %>
@@ -107,11 +103,14 @@
          <td>
            Fecha
          </td>
-        <td>
-           No. Camión
-         </td>
          <td>
-           Proveedor
+           Camión
+         </td>
+        <td>
+           Concepto
+         </td>
+          <td>
+           Zona
          </td>
          <td>
            Cantidad
@@ -135,7 +134,10 @@
         <p><%=acarreos[i].numero %></p>
          </td>
          <td>
-           <p><%=acarreos[i].razon_social %></p>
+        <p><%=acarreos[i].nombre_concepto %></p>
+         </td>
+         <td>
+        <p><%=acarreos[i].nombre_zona %></p>
          </td>
          <td>
            <p><%=acarreos[i].cantidad %> <%=acarreos[i].unidad_camion %></p>

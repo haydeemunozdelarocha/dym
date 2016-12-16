@@ -1,0 +1,138 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DYM Ingenieros Constructores | <%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
+</head>
+<body>
+<% include ./partials/residentesheader.ejs %>
+  <div id="content-container">
+  <div class="content-header">  <p><h2><%= title %></h2></p></div>
+<div class="row">
+  <div class="col-sm-4">
+  <div class="panel panel-default">
+    <div class="panel-heading">Información</div>
+  <div class="panel-body">
+  <p>Nombre: <%= obra.nombre_obra %></p>
+  <p>Residente: <%= obra.residente_id %></p>
+  <p>Código: <%= obra.codigo %></p>
+  <p>Ciudad: <%= obra.ciudad %></p>
+  <p>Estado: <%= obra.estado %></p>
+  </div>
+</div>
+  <div class="panel panel-default">
+    <div class="panel-heading">Empleados</div>
+  <div class="panel-body">
+ <table class="table table-striped" style="font-size: 14px">
+    <tr>
+      <td></td>
+      <td>Nombre</td>
+      <td>Puesto</td>
+     </tr>
+    <% for(var i=0; i<empleados.length; i++) {%>
+    <tr>
+    <% if(empleados[i].activo === 'Y'){ %>
+      <td><span class="glyphicon glyphicon-user" style="color:rgba(10, 83, 201,1)"></span></td>
+    <% } else { %>
+      <td><span class="glyphicon glyphicon-user" style="color:lightgray"></span></td>
+    <% } %>
+      <td><%= empleados[i].nombre %></td>
+     <td><%= empleados[i].puesto %></td>
+     </tr>
+    <% } %>
+    </table>
+  </div>
+</div>
+</div>
+  <div class="col-sm-8">
+    <div class="panel panel-default">
+      <div class="panel-heading">Presupuestado vs Actual</div>
+      <div class="panel-body">
+      <canvas id="myChart"></canvas>
+</div>
+</div>
+  <div class="panel panel-default">
+      <div class="panel-heading">Presupuesto (Por Zona)</div>
+      <div class="panel-body">
+      <table class="table table-striped" style="font-size: 14px">
+    <tr>
+      <td>Concepto</td>
+      <td>Zona</td>
+      <td>Total</td>
+      <td>Cantidad</td>
+      <td>Acumulado</td>
+     </tr>
+    <% for(var i=0; i<presupuestos.length; i++) {%>
+    <tr>
+      <td><%= presupuestos[i].nombre_concepto %></td>
+     <td><%= presupuestos[i].nombre_zona %></td>
+     <%if (presupuestos[i].acumulado > presupuestos[i].cantidad){ %>
+      <td style="color: red">$<%= presupuestos[i].total %></td>
+      <td style="color: red"><%= presupuestos[i].cantidad %> <%= presupuestos[i].unidad %></td>
+      <td style="color: red"><%= presupuestos[i].acumulado %> <%= presupuestos[i].unidad %></td>
+     <% } else { %>
+      <td>$<%= presupuestos[i].total %></td>
+      <td><%= presupuestos[i].cantidad %> <%= presupuestos[i].unidad %></td>
+      <td><%= presupuestos[i].acumulado %> <%= presupuestos[i].unidad %></td>
+     </tr>
+     <% } %>
+    <% } %>
+    </table></div>
+</div>
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+getPresupuestos()
+var x = [];
+var presupuestado = [];
+var actual = []
+
+function getPresupuestos() {
+ console.log('getting presupuestos')
+var presupuestos = $.ajax({
+    url: '/api/presupuestos/totales/'+<%=obra.obra_id%>,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  presupuestos.done(function(data){
+    for(var i = 0; i < data.length ; i ++){
+      x.push(data[i].nombre_concepto);
+      presupuestado.push(data[i].total_cantidad)
+      actual.push(data[i].total_acumulado);
+    }
+    var ctx = document.getElementById('myChart').getContext('2d');
+
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: x,
+        datasets: [{
+          label: 'Presupuestado',
+          data: presupuestado,
+          backgroundColor: "rgba(10, 83, 201,0.7)"
+        }, {
+          label: 'Actual',
+          data: actual,
+          backgroundColor: "rgba(10, 83, 201,0.4)"
+        }]
+      }
+    });
+  });
+
+  presupuestos.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+          console.log('error');
+  });
+
+}
+</script>
+</body>
+</html>

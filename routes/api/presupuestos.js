@@ -9,7 +9,7 @@ var db = require('../../db.js');
 var nuevoPresupuesto = 'INSERT INTO presupuestos(obra, concepto, cantidad, unidad,zona, precio_unitario, total) VALUE(?,?,?,?,?,?,?)';
 var listaPresupuestos = 'SELECT presupuestos.*, conceptos.*, zonas.*, obras.* FROM presupuestos JOIN obras ON presupuestos.obra=obras.obra_id JOIN zonas ON presupuestos.zona = zonas.zonas_id JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id' ;
 var editarPresupuesto = 'UPDATE presupuestos SET obra = ?, concepto = ?, cantidad= ?, zona= ?, precio_unitario = ?, total=? WHERE presupuesto_id= ?';
-var getPresupuesto = 'SELECT * FROM presupuestos WHERE obra = ? AND concepto = ?';
+var getPresupuesto = 'SELECT * FROM presupuestos WHERE obra = ? AND concepto = ? AND zona = ?';
 
 //Read table.
 router.get('/', function(err,res){
@@ -28,6 +28,7 @@ router.get('/buscar/:articulo', function(req, res, next ){
   var estimacion_id;
   var acumulado_actual;
   var presupuesto_id;
+  var zona;
   var getArticulo = 'SELECT estimacion_articulo.*, estimaciones.obra FROM estimacion_articulo JOIN estimaciones ON estimacion_articulo.estimacion_id = estimaciones.estimaciones_id WHERE estimacion_articulo.articulo_id = ?;'
   var updateArticulo = 'UPDATE estimacion_articulo SET unidad = ?, cantidad_presupuestada = ?, acumulado_anterior = ?, acumulado_actual = ?, por_ejercer = ? WHERE articulo_id = ?;';
   var updatePresupuesto = 'UPDATE presupuestos SET acumulado = ? WHERE presupuestos_id = ?;';
@@ -38,8 +39,9 @@ router.get('/buscar/:articulo', function(req, res, next ){
       var concepto_id = articulo[0].concepto_id;
       esta_estimacion = Number(articulo[0].esta_estimacion);
       estimacion_id = articulo[0].estimacion_id;
+      zona = articulo[0].zona_id;
       console.log(articulo[0])
-      return db.query(getPresupuesto,[obra,concepto_id])
+      return db.query(getPresupuesto,[obra,concepto_id,zona])
     }
   }).then( function(presupuesto,err){
     if(err) throw err
@@ -69,6 +71,19 @@ router.get('/:obra', function(req, res, next ){
   var obra= req.params.obra;
   var concepto= req.params.concepto;
   var getPresupuesto = 'SELECT presupuestos.*,zonas.nombre_zona FROM presupuestos LEFT JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = ? ';
+  db.query(getPresupuesto,[obra], function(err, presupuesto){
+    if(err) throw err;
+    else {
+        console.log('Buscando presupuesto');
+        res.json(presupuesto)
+    }
+  });
+})
+
+router.get('/totales/:obra', function(req, res, next ){
+  var obra= req.params.obra;
+  var concepto= req.params.concepto;
+  var getPresupuesto = 'SELECT presupuestos.obra,presupuestos.unidad, conceptos.nombre_concepto, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad,sum(acumulado) AS total_acumulado FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id WHERE obra = ? GROUP BY nombre_concepto;';
   db.query(getPresupuesto,[obra], function(err, presupuesto){
     if(err) throw err;
     else {

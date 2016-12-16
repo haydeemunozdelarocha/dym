@@ -25,11 +25,10 @@ router.get('/', function(req,res,err){
 
 //agregar estimacion de flete
 router.post('/nueva', function(req,res,next){
-console.log(req.body)
 var acarreos = req.body.acarreos;
 var categoria = req.body.categoria;
 var obra = req.body.obra;
-console.log(obra)
+var zona_id;
 var date = Date.now();
 var fecha = moment(date).format("YYYY-MM-DD HH:mm");
 var numero;
@@ -45,44 +44,51 @@ var periodo_final = moment(req.body.periodo_final).format("YYYY-MM-DD HH:mm");
 var proveedor_id = Number(req.body.proveedor);
 var getNumeroEstimacion = 'SELECT * FROM estimaciones WHERE obra = ? ORDER BY fecha DESC';
 var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero) VALUE(?,?,?,?,?,?,?)';
-var buscarAcarreosFlete = 'SELECT acarreos.camion_id, acarreos.concepto_flete, camiones.precio_flete, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos JOIN camiones ON acarreos.camion_id=camiones.camion_id WHERE acarreo_id IN '+acarreos+' GROUP BY concepto_flete;';
+var buscarAcarreosFlete = 'SELECT acarreos.material_id, acarreos.concepto_flete, camiones.precio_flete, recibos.zona_id, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos JOIN camiones ON acarreos.camion_id=camiones.camion_id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id WHERE acarreo_id IN '+acarreos+' GROUP BY concepto_flete,zona_id;';
+var buscarAcarreosMaterial = 'SELECT acarreos.camion_id, materiales.concepto, materiales.precio,recibos.zona_id, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos JOIN materiales ON acarreos.material_id=materiales.id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id WHERE acarreo_id IN '+acarreos+' GROUP BY materiales.concepto;';
 var editarAcarreos = 'UPDATE acarreos SET estimacion = "Y", estimacion_id = ? WHERE acarreo_id IN '+acarreos;
-var nuevoArticuloEstimacion = 'INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id) VALUE(?,?,?,?,?);';
-var getPresupuesto = 'SELECT * FROM presupuestos WHERE obra = ? AND concepto = ?';
-var articulos=[];
-var conceptos = [];
+var nuevoArticuloEstimacion = 'INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id) VALUE(?,?,?,?,?,?);';
  db.query(getNumeroEstimacion,[obra]).then( function(estimaciones,err){
       if(err) throw err;
       else {
-        console.log(getNumeroEstimacion)
             if (estimaciones.length > 0){
+              console.log(estimaciones[0].numero)
               numero = estimaciones[0].numero + 1;
+              console.log(numero)
             } else if (estimaciones.length == 0){
               numero = 1;
             }
             return db.query(nuevaEstimacion,[obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero])
       }
   }).then(function (estimacion, err){
-                 console.log(estimacion.insertId);
               estimacion_id = estimacion.insertId;
               console.log('Estimacion creada exitosamente!');
               return db.query(editarAcarreos,[estimacion_id])
   }).then(function(acarreos,err){
     console.log('Acarreos editados')
-    return db.query(buscarAcarreosFlete)
+    if(categoria === "flete"){
+      return db.query(buscarAcarreosFlete)
+    } else if (categoria === "material"){
+      return db.query(buscarAcarreosMaterial)
+    }
   }).then(function(acarreos,err){
     console.log(acarreos)
     for (var i = 0; i < acarreos.length ; i++) {
         console.log(i);
         console.log(acarreos[i]);
         importe = acarreos[i].total_concepto;
-        concepto_id = acarreos[i].concepto_flete;
-        conceptos.push(concepto_id)
-        console.log(conceptos)
+        if (categoria === "flete"){
+           concepto_id = acarreos[i].concepto_flete;
+           zona_id = acarreos[i].zona_id;
+          precio_unitario = acarreos[i].precio_flete;
+        } else if (categoria === "material"){
+          concepto_id = acarreos[i].concepto;
+          precio_unitario = acarreos[i].precio;
+          zona_id = acarreos[i].zona_id;
+        }
         esta_estimacion = acarreos[i].total_cantidad;
-        precio_unitario = acarreos[i].precio_flete;
 
-        rp.post('http://localhost:3000/api/estimaciones/articulos',{form: {importe: importe, concepto_id: concepto_id, esta_estimacion: esta_estimacion, precio_unitario: precio_unitario, estimacion_id:estimacion_id }}).then(function (response) {
+        rp.post('http://localhost:3000/api/estimaciones/articulos',{form: {importe: importe, concepto_id: concepto_id, esta_estimacion: esta_estimacion, precio_unitario: precio_unitario, estimacion_id:estimacion_id, zona_id: zona_id }}).then(function (response) {
                 var articulo_id = response;
                 return rp.get('http://localhost:3000/api/presupuestos/buscar/'+articulo_id)
           }).then(function(response){
@@ -104,8 +110,9 @@ router.post('/articulos', function(req,res,err){
   var precio_unitario = req.body.precio_unitario;
   var importe = req.body.importe;
   var estimacion_id = req.body.estimacion_id;
-  var nuevoArticuloEstimacion = 'INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id) VALUE(?,?,?,?,?);';
-  db.query(nuevoArticuloEstimacion,[concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id], function(err,articulo){
+  var zona_id = req.body.zona_id;
+  var nuevoArticuloEstimacion = 'INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id) VALUE(?,?,?,?,?,?);';
+  db.query(nuevoArticuloEstimacion,[concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id], function(err,articulo){
     if (err) throw err;
     else {
         console.log(nuevoArticuloEstimacion)

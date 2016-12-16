@@ -31,7 +31,7 @@
     <% for(var i=0; i<obras.length; i++) {%>
     <tr>
       <td><%= obras[i].obra_id %></td>
-     <td><%= obras[i].nombre_obra %></td>
+     <td><a href="/obra/<%= obras[i].obra_id %>"><%= obras[i].nombre_obra %></a></td>
       <td><%= obras[i].codigo %></td>
       <td><%= obras[i].nombre %></td>
       <td><%= obras[i].ciudad %></td>

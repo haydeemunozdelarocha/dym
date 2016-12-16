@@ -25,6 +25,35 @@ router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Express' });
 });
 
+router.get('/residentes/login', function(req, res, next) {
+  res.render('login', { title: 'Express' });
+});
+
+router.post('/residentes/signin', function(req,res,next){
+  var username = req.body.username;
+  var password = req.body.password;
+      db.query("SELECT * FROM `residentes` WHERE `username` = '" + username + "'",function(err,rows){
+      if (err)
+                return err;
+       if (!rows.length) {
+                 res.send('No user found.');
+            }
+
+      // if the user is found but the password is wrong
+            if (!( rows[0].password == password))
+                res.send('Wrong password.');// create the loginMessage and save it to session as flashdata
+
+            // all is well, return successful user
+            return  req.logIn(rows[0], function (err) {
+                    if (err) {
+                        return err;
+                    }
+                        return res.redirect('/residentes');
+                });
+
+    });
+});
+
 router.post('/signin', function(req,res,next){
   var username = req.body.username;
   var password = req.body.password;
@@ -61,6 +90,40 @@ router.get('/register/:accessToken', function(req, res, next) {
   });
 });
 
+router.post('/residentes/signup', function(req, res, next){
+  var username = req.body.username;
+   var password = req.body.password;
+   var empleado_id= req.body.empleado_id;
+      db.query("select * from residentes where username = '"+username+"'",function(err,rows){
+      console.log("above row object");
+      if (err)
+                return err;
+       if (rows.length) {
+                res.redirect('/register');
+            } else {
+                var newUserMysql = new Object();
+
+        newUserMysql.username    = username;
+        newUserMysql.password    = password;
+        newUserMysql.empleado_id    = empleado_id;
+
+        var insertQuery = "INSERT INTO residentes ( username, password, empleado_id) values ('"+username+"','"+password+"','"+empleado_id+")";
+        db.query(insertQuery,function(err,rows){
+          newUserMysql.id_checador = rows.insertId;
+                    if (err) {
+                        return err;
+                    }
+                        console.log(req.user)
+                        return res.redirect('/residentes');
+        });
+      }
+    });
+});
+
+
+router.get('/auth/nest', passport.authenticate('nest'), function(req, res){
+  console.log('sending request')
+});
 router.post('/signup/:accessToken', function(req, res, next){
   var accessToken = req.params.accessToken;
   var username = req.body.username;
@@ -154,7 +217,7 @@ router.get('/checadores', function(req, res, next) {
 
 router.get('/residentes', function(req, res, next) {
   var readTable = 'SELECT * FROM residentes';
-    con.query(readTable, function(err, residentes){
+    db.query(readTable, function(err, residentes){
     if(err) throw err;
     else {
       res.render('residentes', { title: 'Residentes', residentes: residentes });
@@ -169,6 +232,29 @@ router.get('/obras', function(req, res, next) {
     else {
       console.log(obras)
       res.render('obras', { title: 'Obras', obras: obras });
+    }
+  });
+});
+
+router.get('/obra/:obraid', function(req, res, next) {
+  var obra_id = req.params.obraid;
+  var getObra = 'SELECT * FROM obras WHERE obra_id = ?;';
+  var getEmpleados = 'SELECT * FROM empleados WHERE obra = ?;';
+  var getPresupuesto = 'SELECT presupuestos.*,conceptos.nombre_concepto,zonas.nombre_zona FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = ? ORDER BY zona;';
+    db.query(getObra,[obra_id], function(err, obra){
+    if(err) throw err;
+    else {
+        db.query(getPresupuesto,[obra_id], function(err, presupuestos){
+        if(err) throw err;
+        else {
+              db.query(getEmpleados,[obra_id], function(err, empleados){
+              if(err) throw err;
+              else {
+                res.render('obra', { title: obra[0].nombre_obra, obra: obra[0], presupuestos:presupuestos,empleados:empleados });
+              }
+            });
+        }
+      });
     }
   });
 });

@@ -149,33 +149,6 @@ function allowSubmit(){
   $('#material_id').removeAttr("disabled")
 }
 
-function getPresupuestos(){
-  console.log('getting presupuestos')
-  var obra_id = $('#obraselect').val();
-  var presupuestos = $.ajax({
-    url: '/api/presupuestos/'+obra_id,
-    type: 'GET',
-    dataType: 'json'
-  });
-
-  presupuestos.done(function(data){
-    if(data[0]){
-      console.log(data)
-      $('#presupuestos-table').append('<tr><td>Concepto</td><td>Zona</td><td>Cantidad</td><td>Unidad</td><td>Precio Unitario</td><td>Total</td><td>Acumulado</td><td></td></tr>');
-      for(var i = 0; i < data.length ; i ++){
-              $('#presupuestos-table').append('<tr><td>'+data[i].concepto+'</td><td>'+data[i].nombre_zona+'</td><td>'+data[i].cantidad+'</td><td>'+data[i].unidad+'</td><td>$'+data[i].precio_unitario+'</td><td>$'+data[i].total+'</td><td>'+data[i].acumulado+'</td><td><a href="/api/presupuestos/borrar/'+data[i].presupuestos_id+'?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td></tr>')
-      }
-    } else {
-
-    }
-
-    });
-
-  presupuestos.fail(function(jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-
-  });
-}
 
 function savePresupuesto(){
   $('#submit').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
@@ -206,4 +179,17 @@ function savePresupuesto(){
 
       });
 }
+redirectPresupuestos()
+}
+
+function redirectPresupuestos(){
+window.location.replace('http://localhost:3000/presupuestos');
+
+}
+function totalesPresupuesto(id1,id2,id3){
+  $("#"+id3+"").val('');
+  var cantidad = Number($("#"+id1+"").val());
+  var precio = Number($("#"+id2+"").val());
+  var total = cantidad * precio;
+  $("#"+id3+"").val(total);
 }

@@ -139,3 +139,8 @@ border: none;
     color: #fff;
     background: #fff;
 }
+@media(max-width: 770px){
+  .navbar{
+  min-height:74px;
+}
+}
