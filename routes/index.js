@@ -226,7 +226,7 @@ router.get('/residentes', function(req, res, next) {
 });
 
 router.get('/obras', function(req, res, next) {
-  var listaObras = 'SELECT obras.*, residentes.nombre FROM obras JOIN residentes ON residentes.id = obras.residente_id';
+  var listaObras = 'SELECT obras.*, empleados.nombre,residentes.empleado_id FROM obras LEFT JOIN residentes ON residentes.id = obras.residente_id LEFT JOIN empleados ON residentes.empleado_id = empleados.id';
     db.query(listaObras, function(err, obras){
     if(err) throw err;
     else {
