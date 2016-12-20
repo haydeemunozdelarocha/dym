@@ -1,7 +1,7 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background: #8999A8;
+  background: #FFF;
 }
 
 a {
@@ -81,66 +81,142 @@ width:25%;
   width:50%;
 }
 .navbar .nav{
-  min-height:74px;
+  height:74px;
 }
 
 .navbar .nav li{
-  min-height:74px;
+  height:73px;
 }
 
+.navbar .nav li:hover{
+  height:73px;
+}
 .navbar, .dropdown-menu{
-  background: #0a53c9;
+background: #0a53c9;
 border: none;
 
 }
+.dropdown-menu>li>a, .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover{
+  color:#0a0354;
+}
 
-.nav>li>a, .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover, .dropdown-menu>li>a, .dropdown-menu>li{
-  border-bottom: 3px solid transparent;
+.dropdown-menu>li:hover{
+  background-color: rgba(255,255,255,.6);
+}
+.dropdown-menu{
+  background-color: #f2f4f7;
+}
+.nav>li>a, .dropdown-menu>li>a:focus, .dropdown-menu>li>a, .dropdown-menu>li{
+  background-color: 4px solid transparent;
 }
 .nav>li>a:focus, .nav>li>a:hover,.nav .open>a, .nav .open>a:focus, .nav .open>a:hover, .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover{
-  border-bottom: 3px solid transparent;
+  border-bottom: 4px solid transparent;
   background: none;
   min-height:74px;
 }
-.navbar a, .dropdown-menu>li>a, .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover, .navbar-toggle{
+.navbar a, .navbar-toggle{
  color: #fff;
 }
-.dropdown-menu{
-      -webkit-box-shadow: none;
-    box-shadow:none;
-}
+
 
 .nav li:hover:nth-child(8n+1), .nav li.active:nth-child(8n+1){
-  border-bottom: #fff 3px solid;
+  border-bottom: #2eb7f2 4px solid;
 }
 .nav li:hover:nth-child(8n+2), .nav li.active:nth-child(8n+2){
-  border-bottom: #fff 3px solid;
+  border-bottom: #2eb7f2 4px solid;
 }
 .nav li:hover:nth-child(8n+3), .nav li.active:nth-child(8n+3){
-  border-bottom: #fff 3px solid;
+  border-bottom: #2eb7f2 4px solid;
 }
 .nav li:hover:nth-child(8n+4), .nav li.active:nth-child(8n+4){
-  border-bottom: #fff 3px solid;
+  border-bottom: #2eb7f2 4px solid;
 }
 .nav li:hover:nth-child(8n+5), .nav li.active:nth-child(8n+5){
-  border-bottom: #fff 3px solid;
+  border-bottom: #2eb7f2 4px solid;
 }
 .nav li:hover:nth-child(8n+6), .nav li.active:nth-child(8n+6){
-  border-bottom: #fff 3px solid;
+  border-bottom: #2eb7f2 4px solid;
 }
 .nav li:hover:nth-child(8n+7), .nav li.active:nth-child(8n+7){
-  border-bottom: #fff 3px solid;
+  border-bottom: #2eb7f2 4px solid;
 }
 .nav li:hover:nth-child(8n+8), .nav li.active:nth-child(8n+8){
-  border-bottom: #fff 3px solid;
+  border-bottom: #2eb7f2 4px solid;
 }
 
 .navbar-toggle .icon-bar{
     color: #fff;
     background: #fff;
 }
+@media(max-width: 991px) and (min-width:768px){
+  .container{
+    width: 95%;
+  }
+}
 @media(max-width: 770px){
-  .navbar{
-  min-height:74px;
+.navbar{
+  min-height:75px;
+}
+.navbar-header{
+  min-height:75px;
+}
+.nav li:hover:nth-child(8n+1), .nav li.active:nth-child(8n+1){
+  border-bottom: none;
+}
+.nav li:hover:nth-child(8n+2), .nav li.active:nth-child(8n+2){
+  border-bottom: none;
+}
+.nav li:hover:nth-child(8n+3), .nav li.active:nth-child(8n+3){
+  border-bottom: none;
+}
+.nav li:hover:nth-child(8n+4), .nav li.active:nth-child(8n+4){
+  border-bottom: none;
+}
+.nav li:hover:nth-child(8n+5), .nav li.active:nth-child(8n+5){
+  border-bottom: none;
+}
+.nav li:hover:nth-child(8n+6), .nav li.active:nth-child(8n+6){
+  border-bottom: none;
+}
+.nav li:hover:nth-child(8n+7), .nav li.active:nth-child(8n+7){
+  border-bottom: none;
+}
+.nav li:hover:nth-child(8n+8), .nav li.active:nth-child(8n+8){
+  border-bottom: none;
+}
+.navbar .nav li{
+  min-height:54px;
+}
+.nav>li>a:focus, .nav>li>a:hover,.nav .open>a, .nav .open>a:focus, .nav .open>a:hover, .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover{
+  border-bottom: none;
+  background: none;
+  min-height:54px;
+}
+.pull-right{
+  float:left!important;
+}
+.dropdown-menu>li>a{
+  color: #FFF;
+}
+.dropdown-menu{
+      -webkit-box-shadow: none;
+    box-shadow:none;
+}
+.nav .open>a, .nav .open>a:focus, .nav .open>a:hover{
+  background-color: navy;
+  border: none;
+}
+#content-container{
+  margin-top: 10%;
+}
+.navbar-collapse, .colapse{
+  border-top:none;
+  box-shadow:none;
+  -webkit-box-shadow:none;
 }
 }
+@media(max-width: 480px){
+  #content-container{
+  margin-top: 15%;
+}
+  }
