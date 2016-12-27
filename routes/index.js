@@ -55,42 +55,6 @@ router.post('/residentes/signin', function(req,res,next){
     });
 });
 
-router.post('/signin', function(req,res,next){
-  var username = req.body.username;
-  var password = req.body.password;
-      db.query("SELECT * FROM `checadores` WHERE `username` = '" + username + "'",function(err,rows){
-      if (err)
-                return err;
-       if (!rows.length) {
-                 res.send('No user found.');
-            }
-
-      // if the user is found but the password is wrong
-            if (!( rows[0].password == password))
-                res.send('Wrong password.');// create the loginMessage and save it to session as flashdata
-
-            // all is well, return successful user
-            return  req.logIn(rows[0], function (err) {
-                    if (err) {
-                        return err;
-                    }
-                        return res.redirect('/captura');
-                });
-
-    });
-});
-
-router.get('/register/:accessToken', function(req, res, next) {
-  var accessToken = req.params.accessToken;
-  var readObras = 'SELECT * FROM obras';
-    db.query(readObras, function(err, obras){
-    if(err) throw err;
-    else {
-      res.render('register', { title: 'Register', obras: obras, accessToken:accessToken });
-    }
-  });
-});
-
 router.post('/residentes/signup', function(req, res, next){
   var username = req.body.username;
    var password = req.body.password;
@@ -121,6 +85,51 @@ router.post('/residentes/signup', function(req, res, next){
     });
 });
 
+router.post('/signin', function(req,res,next){
+  var username = req.body.username;
+  var password = req.body.password;
+      db.query("SELECT * FROM `usuarios` WHERE `username` = '" + username + "'",function(err,rows){
+      if (err)
+                return err;
+       if (!rows.length) {
+                 res.send('No user found.');
+            }
+
+      // if the user is found but the password is wrong
+            if (!( rows[0].password == password))
+                res.send('Wrong password.');// create the loginMessage and save it to session as flashdata
+
+            // all is well, return successful user
+            return  req.logIn(rows[0], function (err) {
+                    if (err) {
+                        return err;
+                    }
+                        return res.redirect('/captura');
+                });
+
+    });
+});
+
+router.get('/residentes/register', function(req, res, next) {
+  var readObras = 'SELECT * FROM obras';
+    db.query(readObras, function(err, obras){
+    if(err) throw err;
+    else {
+      res.render('register', { title: 'Register', obras: obras});
+    }
+  });
+});
+
+router.get('/register/:accessToken', function(req, res, next) {
+  var accessToken = req.params.accessToken;
+  var readObras = 'SELECT * FROM obras';
+    db.query(readObras, function(err, obras){
+    if(err) throw err;
+    else {
+      res.render('register', { title: 'Register', obras: obras, accessToken:accessToken });
+    }
+  });
+});
 
 router.get('/auth/nest', passport.authenticate('nest'), function(req, res){
   console.log('sending request')
@@ -131,7 +140,7 @@ router.post('/signup/:accessToken', function(req, res, next){
    var password = req.body.password;
    var empleado_id= req.body.empleado_id;
      var obra_id= req.body.obra_id;
-      db.query("select * from checadores where username = '"+username+"'",function(err,rows){
+      db.query("select * from usuarios where username = '"+username+"'",function(err,rows){
       console.log("above row object");
       if (err)
                 return err;
@@ -146,7 +155,7 @@ router.post('/signup/:accessToken', function(req, res, next){
         newUserMysql.empleado_id    = empleado_id;
         newUserMysql.obra_id    = obra_id;
 
-        var insertQuery = "INSERT INTO checadores ( accessToken, username, password, empleado_id, obra_id ) values ('" + accessToken+"','"+username+"','"+password+"','"+empleado_id+"',"+obra_id+")";
+        var insertQuery = "INSERT INTO usuarios ( accessToken, username, password, empleado_id, obra_id ) values ('" + accessToken+"','"+username+"','"+password+"','"+empleado_id+"',"+obra_id+")";
         db.query(insertQuery,function(err,rows){
           newUserMysql.id_checador = rows.insertId;
                     if (err) {

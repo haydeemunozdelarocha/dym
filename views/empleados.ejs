@@ -33,9 +33,9 @@
       <td><%= empleados[i].nombre_obra %></td>
       <td><%= empleados[i].puesto %></td>
       <% if(!empleados[i].username && empleados[i].puesto === "residente" || empleados[i].puesto === "Residente") { %>
-      <td><a href="/residentes/signup">Agregar usuario</a></td>
+      <td><a href="/register/<%=empleados[i].id %>">Agregar usuario</a></td>
       <% } else if(!empleados[i].username && empleados[i].puesto === "checador")  { %>
-      <td><a href="/auth/nest">Agregar usuario</a></td>
+      <td><a href="/auth/nest/<%=empleados[i].id %>">Agregar usuario</a></td>
       <% } else if(!empleados[i].username)  { %>
       <td><a href="/empleados/signup">Agregar usuario</a></td>
       <% } else if (empleados[i].username) { %>

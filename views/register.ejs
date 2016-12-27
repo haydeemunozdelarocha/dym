@@ -10,15 +10,12 @@
   </head>
   <body>
     <div class="container">
-      <div class="jumbotron text-center">
-        <h1>Checador Nuevo</h1>
-      </div>
             <div class="panel-body">
 
-              <form action="/signup/<%=accessToken %>" method="post">
+              <form action="/signup" method="post">
                 <div class="form-group">
-                  <label for="empleado_id">ID:</label>
-                  <input type="text" name="empleado_id" class="form-control">
+                  <label for="empleado_id">Empleado ID:</label>
+                  <input type="text" name="empleado_id" value="<%= empleado_id %>" class="form-control">
                 </div>
                 <div class="form-group">
                 <select class="form-control" name="obra_id" id="obra_id">
@@ -36,6 +33,16 @@
                 <div class="form-group">
                   <label for="password">Password:</label>
                   <input type="password" name="password" class="form-control">
+                </div>
+
+                  <div class="form-group">
+                  <label for="categoria">Categoria:</label>
+                  <select name="categoria" id="categoria">
+                    <option value="residente">Residente</option>
+                    <option value="checador">Checador</option>
+                    <option value="administrador">Administrador</option>
+                    <option value="tesoreria">Tesorería</option>
+                  </select>
                 </div>
 
                 <input type="submit" value="Registrar" class="btn btn-default">
