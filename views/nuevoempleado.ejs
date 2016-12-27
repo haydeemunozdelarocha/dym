@@ -1,0 +1,56 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DYM Ingenieros Constructores | Nuevo Empleado</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+<% include ./partials/recursosheader.ejs %>
+<div id="content-container">
+<form action="/api/empleados" method="POST" enctype="application/x-www-form-urlencoded">
+<div class="input-group">
+  <label>Nombre:</label>
+  <input type="text" class="form-control" name="nombre" id="nombre">
+</div>
+
+<div class="input-group">
+  <label>Obra:</label>
+  <select class="form-control" name="obra" id="obra">
+            <option value="">Obra</option>
+      <% for(var i=0; i<obras.length; i++) {%>
+            <option value="<%= obras[i].obra_id %>"><%= obras[i].nombre_obra %></option>
+    <% } %>
+    </select>
+</div>
+
+<div class="input-group">
+  <label>Puesto:</label>
+    <input type="text" class="form-control" placeholder="Puesto" name="puesto" id="puesto">
+</div>
+
+<div class="input-group">
+  <label>Sueldo:</label>
+    <input type="number" min="0" class="form-control" placeholder="Sueldo" name="sueldo" id="sueldo"> / semana
+</div>
+
+<div class="input-group">
+  <label>Fecha de Nacimiento:</label>
+  <input type="date" class="form-control" name="fecha_nacimiento" id="fecha_nacimiento">
+</div>
+
+<div class="input-group">
+<label>Fecha de Contratación:</label>
+  <input type="date" class="form-control" name="fecha_contratacion" id="fecha_contratacion">
+</div>
+
+<br>
+  <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+</div>
+</body>
+</html>

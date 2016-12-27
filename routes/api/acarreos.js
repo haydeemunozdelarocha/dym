@@ -103,7 +103,7 @@ router.post('/buscar', function(req,res,next){
     if (acarreos.length === 0){
       console.log('no se encontraron acarreos')
           var message = "No se encontraron acarreos sin estimación en éstas fechas."
-            res.json({message: message});
+            res.render('error',{message: message});
     }
     else if (acarreos.length > 0){
           var ids = [];

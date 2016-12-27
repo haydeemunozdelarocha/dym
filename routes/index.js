@@ -4,6 +4,7 @@ var mysql = require('mysql');
 var request = require('request');
 var db = require('../db.js');
 var passport = require('passport');
+var rp = require('request-promise');
 
 var readTable = 'SELECT * FROM obras';
 var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.concepto, materiales.precio, materiales.proveedor_id, conceptos.nombre_concepto, recibos.hora,recibos.foto FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON materiales.id = acarreos.material_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON materiales.concepto=conceptos.conceptos_id OR acarreos.concepto_flete = conceptos.conceptos_id ORDER BY recibo_id, categoria DESC';
@@ -503,7 +504,7 @@ router.get('/estimaciones/:id', function(req,res,err){
   var estimacion_id = req.params.id;
   console.log(estimacion_id)
   var getEstimacion = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON proveedores.id = estimaciones.proveedor_id WHERE estimaciones_id = ?';
-  var getEstimacionArticulos = 'SELECT estimacion_articulo.*,conceptos.nombre_concepto FROM estimacion_articulo JOIN conceptos ON estimacion_articulo.concepto_id = conceptos.conceptos_id WHERE estimacion_id = ?';
+  var getEstimacionArticulos = 'SELECT estimacion_articulo.*,conceptos.nombre_concepto,zonas.nombre_zona FROM estimacion_articulo JOIN conceptos ON estimacion_articulo.concepto_id = conceptos.conceptos_id JOIN zonas ON estimacion_articulo.zona_id = zonas.zonas_id WHERE estimacion_id = ?';
     db.query(getEstimacion,[estimacion_id], function(err, estimacion){
     if(err) throw err;
     else {
@@ -532,13 +533,42 @@ router.get('/estimaciones/editar/:id', function(req, res, next) {
 });
 
 router.get('/empleados', function(req, res, next) {
-  var readTable = 'SELECT * FROM empleados';
-    db.query(readTable, function(err, empleados){
+    request.get(path+'api/empleados', function (error, response, body) {
+  if (!error && response.statusCode == 200) {
+    var empleados = JSON.parse(body);
+    res.render('empleados', { title: 'Empleados', empleados: empleados });
+  }
+})
+});
+
+router.get('/empleados/nuevo', function(req, res, next) {
+  var readTable = 'SELECT * FROM obras';
+    db.query(readTable, function(err, obras){
     if(err) throw err;
     else {
-      res.render('empleados', { title: 'Empleados', empleados: empleados });
+      res.render('nuevoempleado', { title: 'Empleados', obras: obras });
     }
   });
+});
+
+router.get('/empleados/editar/:idempleado', function(req, res, next) {
+  var empleado_id = req.params.idempleado;
+  var obras;
+  var empleado;
+  rp.get(path+'api/obras').then(function (response) {
+    if (response) {
+    obras = JSON.parse(response);
+    console.log(obras)
+      return rp.get(path+'api/empleados/'+empleado_id)
+    }
+  }).then(function (response) {
+        if (response) {
+          response = JSON.parse(response);
+          empleado = response[0];
+          console.log(empleado);
+           return res.render('editarempleado',{obras:obras,empleado:empleado});
+        }
+      })
 });
 
 router.get('/camiones', function(req, res, next) {

@@ -1,4 +1,6 @@
 
+var path = "http://localhost:3000/";
+
 function createArticulos(acarreos, categoria, obra_id, proveedor, periodo_inicial, periodo_final) {
   $('#button').html('')
   $('#button').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
@@ -11,7 +13,7 @@ var estimacion = $.ajax({
   });
 
   estimacion.done(function(data){
-    window.location.replace('http://localhost:3000/estimaciones/'+data.estimacion_id);
+    window.location.replace(path+'estimaciones/'+data.estimacion_id);
     });
 
   estimacion.fail(function(jqXHR, textStatus, errorThrown){
@@ -124,6 +126,7 @@ var camion_id = $('#scanner').val();
 function getProveedores(){
   $('#proveedor_id').removeAttr("disabled");
 }
+
 function getPhoto() {
 document.getElementById("loading").innerHTML = "Loading..";
 var xhr = new XMLHttpRequest();
@@ -182,10 +185,39 @@ function savePresupuesto(){
 redirectPresupuestos()
 }
 
-function redirectPresupuestos(){
-window.location.replace('http://localhost:3000/presupuestos');
+function saveMaterial(){
+    var concepto = $('#concepto'+i).val();
+    var proveedor_id = $('#proveedor_id').val();
+    var unidad = $('#unidad').val();
+    var precio = $('#precio').val();
+    concepto = Number(concepto);
+      var material = $.ajax({
+        url: '/api/materiales/',
+        type: 'POST',
+        dataType: 'json',
+        data:{concepto:concepto,proveedor_id:proveedor_id,unidad:unidad,precio:precio}
+      });
 
+      material.done(function(data){
+        console.log(data);
+        });
+
+      material.fail(function(jqXHR, textStatus, errorThrown){
+        console.log(errorThrown);
+
+      });
+
+redirectMateriales()
 }
+
+function redirectPresupuestos(){
+window.location.replace(path+'/presupuestos');
+}
+
+function redirectPresupuestos(){
+window.location.replace(path+'/materiales');
+}
+
 function totalesPresupuesto(id1,id2,id3){
   $("#"+id3+"").val('');
   var cantidad = Number($("#"+id1+"").val());

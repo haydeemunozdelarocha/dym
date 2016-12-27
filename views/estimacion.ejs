@@ -11,24 +11,28 @@
 <body>
 <% include ./partials/residentesheader.ejs %>
 <div id="content-container">
+<div class="row">
+  <div class="col-sm-6">
 <div class="input-group">
   <label>Proveedor:</label>
-  <input type="text" class="form-control" name="proveedor" id="proveedor" value="<%= estimacion[0].razon_social %>" disabled>
+  <p><%= estimacion[0].razon_social %></p>
 </div>
 <div class="input-group">
   <label>Obra:</label>
-  <input type="text" class="form-control" name="obra" id="obra" value="<%= estimacion[0].nombre_obra %>" disabled>
+  <p><%= estimacion[0].nombre_obra %></p>
 </div>
+</div>
+  <div class="col-sm-6">
 <div class="input-group">
   <label>Periódo:</label>
-<input type="text" class="form-control" name="date1" id="date1" value="<%=estimacion[0].periodo_inicio %>" disabled>
-<br>
-<input type="text" class="form-control" name="date2" id="date2" value="<%= estimacion[0].periodo_final %>" disabled>
+<p>Del <%=estimacion[0].periodo_inicio %> al <%= estimacion[0].periodo_final %></p>
 </div>
 <br>
 <div class="input-group">
   <label>Número:</label>
-  <input type="text" class="form-control" name="numero" id="numero" value="<%= estimacion[0].numero %>" disabled>
+<p><%= estimacion[0].numero %></p>
+</div>
+</div>
 </div>
 <br>
 <div class="form-group">
@@ -39,6 +43,9 @@
        <tr>
          <td>
            Concepto
+         </td>
+         <td>
+           Zona
          </td>
         <td>
            Unidad
@@ -71,6 +78,9 @@
            <p><%=articulos[i].nombre_concepto %></p>
          </td>
         <td>
+        <p><%=articulos[i].nombre_zona %></p>
+         </td>
+        <td>
         <p><%=articulos[i].unidad %></p>
          </td>
          <td>
@@ -99,13 +109,30 @@
       </table>
      </div>
      </div>
-     Subtotal: $<%= estimacion[0].subtotal %>
+<div class="row">
+  <div class="col-sm-3">
+        <div style="width:200px; height:100px; background-color: lightgrey;"></div>
+      <p><%= estimacion[0].razon_social %></p>
+    </div>
+    <div class="col-sm-3">
+      <div style="width:200px; height:100px; background-color: lightgrey;"></div>
+      <p><%= estimacion[0].residente %></p>
+    </div>
+    <div class="col-sm-3">
+          <div style="width:200px; height:100px; background-color: lightgrey;"></div>
+      <p>Ing. Carlos Reyes</p>
+    </div>
+  <div class="col-sm-3" style="text-align: right;">
+     <p>Subtotal: $<%= estimacion[0].subtotal %></p>
      <br>
-     Retencion: $<%= estimacion[0].retencion %>
+     <p>Retencion: $<%= estimacion[0].retencion %></p>
      <br>
-     IVA: $<%= estimacion[0].iva %>
+     <p>IVA: $<%= estimacion[0].iva %></p>
      <br>
-     Total: $<%= estimacion[0].total %>
+     <p>Total: $<%= estimacion[0].total %></p>
+     </div>
+</div>
+
 </div>
 <script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>

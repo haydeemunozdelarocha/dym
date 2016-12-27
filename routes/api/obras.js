@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var db = require('../../db.js');
 
-var listaObras = 'SELECT obras.*, residentes.nombre FROM obras JOIN residentes ON residentes.id = obras.residente_id';
+var listaObras = 'SELECT obras.*, empleados.nombre FROM obras LEFT JOIN empleados ON empleados.id = obras.residente_id';
  var editarObra = 'UPDATE obras SET codigo = ?, nombre_obra = ?, residente_id = ?, ciudad = ?, estado=? WHERE obra_id=?';
 var getObra = "SELECT * FROM `obras` WHERE `obra_id` = ?";
 

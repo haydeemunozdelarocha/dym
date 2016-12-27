@@ -9,8 +9,9 @@ var db_config      =    mysql.createPool({
     database : 'heroku_aa5f4bff4de7c3d',
     debug    :  false,
     multipleStatements: true,
-    queueLimit: 30,
-    acquireTimeout: 1000000
+    queueLimit: 50,
+    acquireTimeout:30000,
+    connectTimeout:0
 });
 
 function handle_database(req,res) {
@@ -28,18 +29,30 @@ db_config.getConnection(function(err){
 db_config.on('error', function(err) {
     console.log('db error', err);
     if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+      db_config.release();
       handleDisconnect();
       console.log('reconnecting')                       // lost due to either server restart, or a
-    } else {                                      // connnection idle timeout (the wait_timeout
-      throw err;                                  // server variable configures this)
+    } else if(err.code === 'ECONNREFUSED'){
+      console.log(err.code)
+      db_config.release();
+      handleDisconnect();
+    }else {
+    db_config.release();                             // connnection idle timeout (the wait_timeout
+      handleDisconnect();                                // server variable configures this)
     }
   });
+
+db_config.on('end', function() {
+  console.log('ending connection')
+  db_config.end();
+});
 
 function handleDisconnect() {
 console.log('reconnecting...')
 db_config.getConnection(function(err){
   if(err){
     console.log('No se pudo conectar a la base de datos');
+    disconnect();
     handle_database();
     return;
   }

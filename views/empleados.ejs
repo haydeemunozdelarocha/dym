@@ -12,7 +12,6 @@
   <% include ./partials/residentesheader.ejs %>
   <div id="content-container">
     <p><h2>Empleados</h2></p>
-   <p><a href="/proveedores/nuevo"><span class="glyphicon glyphicon-plus-sign"></span> Agregar</a></p>
   <div id="table">
 <div class="panel panel-default">
   <!-- Default panel contents -->
@@ -20,13 +19,30 @@
 
   <!-- Table -->
     <table class="table">
+    <tr>
+      <td>ID</td>
+     <td>Nombre</td>
+      <td>Obra</td>
+      <td>Puesto</td>
+      <td>Usuario</td>
+     </tr>
     <% for(var i=0; i<empleados.length; i++) {%>
     <tr>
       <td><%= empleados[i].id %></td>
      <td><%= empleados[i].nombre %></td>
-      <td><%= empleados[i].obra %></td>
-      <td><a href="empleados/<%= empleados[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
-      <td><a href="empleados/<%= empleados[i].id %>"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+      <td><%= empleados[i].nombre_obra %></td>
+      <td><%= empleados[i].puesto %></td>
+      <% if(!empleados[i].username && empleados[i].puesto === "residente" || empleados[i].puesto === "Residente") { %>
+      <td><a href="/residentes/signup">Agregar usuario</a></td>
+      <% } else if(!empleados[i].username && empleados[i].puesto === "checador")  { %>
+      <td><a href="/auth/nest">Agregar usuario</a></td>
+      <% } else if(!empleados[i].username)  { %>
+      <td><a href="/empleados/signup">Agregar usuario</a></td>
+      <% } else if (empleados[i].username) { %>
+      <td><a href="/usuarios/editar/"><%= empleados[i].username %></a></td>
+      <% } %>
+      <td><a href="/empleados/editar/<%= empleados[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+      <td><a href="/api/empleados/borrar/<%= empleados[i].id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
      </tr>
     <% } %>
     </table>

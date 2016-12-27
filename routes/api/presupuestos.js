@@ -44,7 +44,16 @@ router.get('/buscar/:articulo', function(req, res, next ){
       return db.query(getPresupuesto,[obra,concepto_id,zona])
     }
   }).then( function(presupuesto,err){
-    if(err) throw err
+    if(presupuesto.length === 0 ){
+      console.log(presupuesto[0])
+      presupuesto_id = null;
+      var unidad = null;
+      var cantidad_presupuestada = 0;
+      var acumulado_anterior = 0;
+      acumulado_actual = acumulado_anterior + esta_estimacion;
+      var por_ejercer = cantidad_presupuestada - acumulado_actual;
+      return db.query(updateArticulo,[unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer,articulo_id,acumulado_actual,presupuesto_id]);
+    }
     else {
       console.log(presupuesto[0])
       presupuesto_id = presupuesto[0].presupuestos_id;
