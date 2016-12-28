@@ -9,7 +9,7 @@ var rp = require('request-promise');
 
 var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero,concepto,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer,precio_unitario,importe,subtotal,iva,retencion,total) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 var listaEstimaciones = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON estimaciones.proveedor_id = proveedores.id;';
-var path = 'http://localhost:3000';
+var path = 'https://dymingernieros.herokuapp.com/';
 var numero;
 
 //Read table.
@@ -88,14 +88,14 @@ var nuevoArticuloEstimacion = 'INSERT INTO estimacion_articulo(concepto_id,esta_
         }
         esta_estimacion = acarreos[i].total_cantidad;
 
-        rp.post('http://localhost:3000/api/estimaciones/articulos',{form: {importe: importe, concepto_id: concepto_id, esta_estimacion: esta_estimacion, precio_unitario: precio_unitario, estimacion_id:estimacion_id, zona_id: zona_id }}).then(function (response) {
+        rp.post(path+'api/estimaciones/articulos',{form: {importe: importe, concepto_id: concepto_id, esta_estimacion: esta_estimacion, precio_unitario: precio_unitario, estimacion_id:estimacion_id, zona_id: zona_id }}).then(function (response) {
                 var articulo_id = response;
-                return rp.get('http://localhost:3000/api/presupuestos/buscar/'+articulo_id)
+                return rp.get(path+'api/presupuestos/buscar/'+articulo_id)
           }).then(function(response){
             console.log(response)
           })
         }
-          return rp.get('http://localhost:3000/api/estimaciones/sumar/'+estimacion_id)
+          return rp.get(path+'api/estimaciones/sumar/'+estimacion_id)
           }).then(function(response){
             res.json({estimacion_id:estimacion_id})
           })

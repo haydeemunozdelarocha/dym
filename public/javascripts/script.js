@@ -1,5 +1,5 @@
 
-var path = "http://localhost:3000/";
+var path = "https://dymingernieros.herokuapp.com/";
 
 function createArticulos(acarreos, categoria, obra_id, proveedor, periodo_inicial, periodo_final) {
   $('#button').html('')
@@ -33,10 +33,15 @@ var image = $.ajax({
   });
 
   image.done(function(data){
-    $('#photo-status').html("")
-    $('#photo').val(data);
-    allowSubmit()
-    $('#photo-button').attr("disabled", true);
+    if (data === "Camera offline"){
+      alert('Cámara desconectada!');
+      $('#photo-status').html("")
+    } else {
+        $('#photo-status').html("")
+        $('#photo').val(data);
+        allowSubmit()
+        $('#photo-button').attr("disabled", true);
+    }
     });
 
   image.fail(function(jqXHR, textStatus, errorThrown){
@@ -49,6 +54,8 @@ var image = $.ajax({
 
 function getMateriales() {
 console.log("getting materiales");
+$('#material-status').html("");
+$('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
 var proveedor_id = $('#proveedor_id').val();
   var materiales = $.ajax({
     url: '/api/materiales/'+proveedor_id,
@@ -61,8 +68,9 @@ var proveedor_id = $('#proveedor_id').val();
     $('#material_id').removeAttr("disabled")
     $('#material_id').html('');
     $('#material_id').html('<option value="">Material</option>');
+    $('#material-status').html("");
     for(var i = 0; i < data.length ; i ++){
-          $('#material_id').append('<option value="'+data[i].id+'">'+data[i].nombre_concepto+'</option>');
+      $('#material_id').append('<option value="'+data[i].id+'">'+data[i].nombre_concepto+'</option>');
     }
     });
 
@@ -95,6 +103,7 @@ var material_id = $('#material_id').val();
 
 function getCamion() {
   $('#search-status').html("");
+  $('#search-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
 console.log("getting camion");
 var camion_id = $('#scanner').val();
   var camion = $.ajax({

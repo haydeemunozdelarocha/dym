@@ -29,8 +29,14 @@ router.get('/', function(req, res, err) {
 };
 
 function callback(error, response, body) {
+  if(error){
+    res.json("Camera offline")
+  }
   if (!error && response.statusCode == 200) {
-    body = new Buffer(body, 'binary')
+    if(!body){
+      res.json("Camera offline")
+    }
+    body = new Buffer(body, 'binary');
     var date= Date.now();
     var hora = moment(date).format("DD-MM-YYYY-hh-mm");
     var path =''+hora+'.jpg';

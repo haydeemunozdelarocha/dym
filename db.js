@@ -42,10 +42,10 @@ db_config.on('error', function(err) {
     }
   });
 
-// db_config.on('end', function() {
-//   console.log('ending connection')
-//   db_config.end();
-// });
+db_config.on('end', function() {
+  console.log('end db config')
+  db_config.end();
+});
 
 function handleDisconnect() {
 console.log('reconnecting...')

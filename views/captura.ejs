@@ -15,7 +15,7 @@
 
    <div class="form-group" id="camion_id">
       <label for="camion_id">Camión ID</label>
-      <input type="text" class="form-control" id="scanner" name="numero" oninput="getCamion()" required autofocus autocomplete="off">
+      <input type="text" class="form-control" id="scanner" name="numero" onchange="getCamion()" required autofocus autocomplete="off">
       <div id="search-status"></div>
     </div>
 
@@ -48,6 +48,7 @@
         <select class="form-control" name="material_id" id="material_id" onchange="getMaterial()" required disabled>
         <option value="">Material</option>
         </select>
+        <div id="material-status"></div>
     </div>
     </div>
     <div class="form-group" id="precio">
