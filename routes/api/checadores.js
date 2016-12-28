@@ -5,9 +5,9 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var db = require('../../db.js');
 
-var listaChecadores = 'SELECT checadores.*, obras.nombre_obra FROM checadores LEFT JOIN obras ON checadores.obra_id = obras.obra_id';
-var getChecador = "SELECT * FROM `checadores` WHERE `id_checador` = ?";
-var editarChecador = 'UPDATE checadores SET username = ?, password = ?, accessToken = ?, empleado_id = ?, obra_id = ? WHERE id_checador= ?';
+var listaChecadores = 'SELECT usuarios.*, obras.nombre_obra FROM usuarios LEFT JOIN obras ON usuarios.obra_id = obras.obra_id';
+var getChecador = "SELECT * FROM `usuarios` WHERE `id_checador` = ?";
+var editarChecador = 'UPDATE usuarios SET username = ?, password = ?, accessToken = ?, empleado_id = ?, obra_id = ? WHERE id_usuario= ?';
 
 //Read table.
 router.get('/', function(err,res){
@@ -20,8 +20,8 @@ router.get('/', function(err,res){
 })
 
 router.get('/:id', function(req, res, next ){
-  var id_checador= req.params.id;
-  db.query(getChecador,[id_checador], function(err, checador){
+  var id_usuario= req.params.id;
+  db.query(getChecador,[id_usuario], function(err, checador){
     if(err) throw err;
     else {
         console.log('Buscando checador por id');

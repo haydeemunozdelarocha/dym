@@ -42,17 +42,16 @@ db_config.on('error', function(err) {
     }
   });
 
-db_config.on('end', function() {
-  console.log('ending connection')
-  db_config.end();
-});
+// db_config.on('end', function() {
+//   console.log('ending connection')
+//   db_config.end();
+// });
 
 function handleDisconnect() {
 console.log('reconnecting...')
 db_config.getConnection(function(err){
   if(err){
     console.log('No se pudo conectar a la base de datos');
-    disconnect();
     handle_database();
     return;
   }

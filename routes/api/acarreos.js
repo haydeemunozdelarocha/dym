@@ -7,13 +7,13 @@ var db = require('../../db.js');
 var nuevoAcarreoFlete = 'INSERT INTO acarreos(cantidad,camion_id,total,categoria,recibo_id,concepto_flete) VALUE(?,?,?,?,?,?)';
 var nuevoAcarreoMaterial = 'INSERT INTO acarreos(material_id,cantidad,total,categoria,recibo_id) VALUE(?,?,?,?,?)';
 var listaAcarreos = 'SELECT acarreos.*, camiones.capacidad, proveedores.razon_social, materiales.concepto, materiales.precio FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN proveedores ON proveedores.id = camiones.proveedor_id LEFT JOIN materiales ON materiales.id = acarreos.material_id';
-var nuevoRecibo = 'INSERT INTO recibos(checador_id,zona_id,foto,hora,obra_id) VALUE (?,?,?,?,?)';
+var nuevoRecibo = 'INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id) VALUE (?,?,?,?,?)';
 
 //agregar acarreo
 router.post('/', function(req,res, next){
 console.log(req.user)
 var recibo;
-var checador_id= Number(req.user.id_checador);
+var usuario_id= Number(req.user.id_usuario);
 var obra_id = Number(req.user.obra_id);
 var numero= req.body.numero;
 var precio = req.body.precio;
@@ -25,7 +25,8 @@ var cantidad;
 var date= Date.now();
 var hora = moment(date).format("YYYY-MM-DD HH:mm");
 var getCamion = 'SELECT * FROM `camiones` WHERE `numero` = ' + numero ;
-  db.query(nuevoRecibo,[checador_id,zona_id,foto,hora,obra_id], function(err,recibo){
+console.log()
+  db.query(nuevoRecibo,[usuario_id,zona_id,foto,hora,obra_id], function(err,recibo){
       if(err) throw err;
       else {
         console.log(nuevoRecibo)
