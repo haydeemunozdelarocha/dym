@@ -60,7 +60,7 @@ var periodo_inicio = moment(req.body.periodo_inicio).format("YYYY-MM-DD HH:mm");
 var periodo_final = moment(req.body.periodo_final).format("YYYY-MM-DD HH:mm");
 var proveedor_id = Number(req.body.proveedor);
 var getNumeroEstimacion = 'SELECT * FROM estimaciones WHERE obra = ? ORDER BY fecha DESC';
-var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero) VALUE(?,?,?,?,?,?,?)';
+var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero,categoria) VALUE(?,?,?,?,?,?,?,?)';
 var buscarAcarreosFlete = 'SELECT acarreos.material_id, acarreos.concepto_flete, camiones.precio_flete, recibos.zona_id, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos JOIN camiones ON acarreos.camion_id=camiones.camion_id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id WHERE acarreo_id IN '+acarreos+' GROUP BY concepto_flete,zona_id;';
 var buscarAcarreosMaterial = 'SELECT acarreos.camion_id, materiales.concepto, materiales.precio,recibos.zona_id, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos JOIN materiales ON acarreos.material_id=materiales.id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id WHERE acarreo_id IN '+acarreos+' GROUP BY materiales.concepto,recibos.zona_id;';
 var editarAcarreos = 'UPDATE acarreos SET estimacion = "Y", estimacion_id = ? WHERE acarreo_id IN '+acarreos;
@@ -75,7 +75,7 @@ var nuevoArticuloEstimacion = 'INSERT INTO estimacion_articulo(concepto_id,esta_
             } else if (estimaciones.length == 0){
               numero = 1;
             }
-            return db.query(nuevaEstimacion,[obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero])
+            return db.query(nuevaEstimacion,[obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero,categoria])
       }
   }).then(function (estimacion, err){
               estimacion_id = estimacion.insertId;
@@ -144,13 +144,17 @@ router.post('/articulos', function(req,res,err){
 router.get('/sumar/:id', function(req,res,err){
   console.log('sumar')
   var estimacion_id = req.params.id;
-  var sumarConceptos = 'SELECT sum(importe) AS subtotal FROM estimacion_articulo WHERE estimacion_id = ? GROUP BY estimacion_articulo.concepto_id';
+  var sumarConceptos = 'SELECT estimaciones.categoria sum(importe) AS subtotal FROM estimacion_articulo WHERE estimacion_id = ? GROUP BY estimacion_articulo.concepto_id';
   var updateTotals = 'UPDATE estimaciones SET subtotal = ?, iva = ?, retencion = ?, total = ? WHERE estimaciones_id = ?';
         db.query(sumarConceptos,[estimacion_id],function(err,totales){
           if(err) throw err;
           else {
               subtotal = Number(totales[0].subtotal);
-              retencion = subtotal * .4;
+              if (totales[0].categoria === "flete"){
+                retencion = subtotal * .4;
+              } else if (totales[0].categoria === "material"){
+                retencion = 0;
+              }
               iva = (subtotal-retencion) * .16;
               total = subtotal - retencion + iva;
               db.query(updateTotals,[subtotal, iva,retencion,total,estimacion_id],function(err,totales){
