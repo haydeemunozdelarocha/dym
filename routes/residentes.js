@@ -50,6 +50,7 @@ router.get('/obra', isLoggedIn, function(req, res, next) {
 });
 
 router.get('/acarreos',isLoggedIn, function(req,res,err){
+    console.log('getting acarreos');
   var usuario = req.user;
   var obra_id = req.user.obra_id;
     request(path+'api/acarreos/obra/'+obra_id, function (error, response, body) {
