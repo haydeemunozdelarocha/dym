@@ -40,6 +40,7 @@ router.get('/obra/:obraid', function(req,res,err){
 router.post('/nueva', function(req,res,next){
 var acarreos = req.body.acarreos;
 var categoria = req.body.categoria;
+console.log(categoria)
 var obra = req.body.obra;
 var zona_id;
 var date = Date.now();
@@ -75,6 +76,7 @@ var nuevoArticuloEstimacion = 'INSERT INTO estimacion_articulo(concepto_id,esta_
             } else if (estimaciones.length == 0){
               numero = 1;
             }
+            console.log(obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero,categoria)
             return db.query(nuevaEstimacion,[obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero,categoria])
       }
   }).then(function (estimacion, err){
