@@ -1,5 +1,5 @@
 
-var path = "https://dymingernieros.herokuapp.com/";
+var path = "https://dymingenieros.herokuapp.com/";
 
 function createArticulos(acarreos, categoria, obra_id, proveedor, periodo_inicial, periodo_final) {
   $('#button').html('')
