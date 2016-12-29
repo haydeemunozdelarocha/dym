@@ -62,7 +62,7 @@ var proveedor_id = Number(req.body.proveedor);
 var getNumeroEstimacion = 'SELECT * FROM estimaciones WHERE obra = ? ORDER BY fecha DESC';
 var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero) VALUE(?,?,?,?,?,?,?)';
 var buscarAcarreosFlete = 'SELECT acarreos.material_id, acarreos.concepto_flete, camiones.precio_flete, recibos.zona_id, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos JOIN camiones ON acarreos.camion_id=camiones.camion_id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id WHERE acarreo_id IN '+acarreos+' GROUP BY concepto_flete,zona_id;';
-var buscarAcarreosMaterial = 'SELECT acarreos.camion_id, materiales.concepto, materiales.precio,recibos.zona_id, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos JOIN materiales ON acarreos.material_id=materiales.id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id WHERE acarreo_id IN '+acarreos+' GROUP BY materiales.concepto;';
+var buscarAcarreosMaterial = 'SELECT acarreos.camion_id, materiales.concepto, materiales.precio,recibos.zona_id, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos JOIN materiales ON acarreos.material_id=materiales.id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id WHERE acarreo_id IN '+acarreos+' GROUP BY materiales.concepto,acarreos.zona_id;';
 var editarAcarreos = 'UPDATE acarreos SET estimacion = "Y", estimacion_id = ? WHERE acarreo_id IN '+acarreos;
 var nuevoArticuloEstimacion = 'INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id) VALUE(?,?,?,?,?,?);';
  db.query(getNumeroEstimacion,[obra]).then( function(estimaciones,err){
