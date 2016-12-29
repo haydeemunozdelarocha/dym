@@ -10,7 +10,9 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
+<% if (usuario.categoria === "residente"){ %>
   <% include ./partials/residentesheader.ejs %>
+<% } %>
   <div id="content-container">
     <p><h2>Acarreos</h2></p>
   <ul class="nav">
@@ -29,6 +31,7 @@
       <td>Proveedor</td>
       <td>Recibo</td>
       <td>Fecha</td>
+      <td>Estimación</td>
       <td>Foto</td>
     </tr>
     <% for(var i=0; i<acarreos.length; i++) {%>
@@ -43,6 +46,7 @@
       <td><%= acarreos[i].razon_social %></td>
       <td><%= acarreos[i].recibo_id %></td>
       <td><%= acarreos[i].hora %></td>
+      <td><%= acarreos[i].estimacion %></td>
       <% if (acarreos[i].categoria === "material") { %>
      <td></td>
      <% } else { %>

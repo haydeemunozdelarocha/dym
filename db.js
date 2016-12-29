@@ -16,15 +16,23 @@ var db_config      =    mysql.createPool({
 
 function handle_database(req,res) {
   console.log('connecting')
-db_config.getConnection(function(err){
-  if(err){
-    console.log('No se pudo conectar a la base de datos');
-    setTimeout(handleDisconnect, 2000);
-    return;
-  }
+db_config.getConnection().then(function(connection) {
+    conn = connection;
+    return connection;
+  }).catch(function(error) {
+    console.log("Connect failed", error);
+   setTimeout(handleDisconnect, 2000);
+   return
+  }).finally(function() {
+    if (conn) {
+      console.log('done using connection')
+      conn.connection.release();
+      return
+    }
+  });
   console.log('Conectado');
-});
 }
+
 
 db_config.on('error', function(err) {
     console.log('db error', err);
@@ -42,9 +50,13 @@ db_config.on('error', function(err) {
     }
   });
 
+db_config.on('data', function(){
+  console.log('getting data')
+});
+
 db_config.on('end', function() {
   console.log('end db config')
-  db_config.end();
+  db_config.release();
 });
 
 function handleDisconnect() {
@@ -64,6 +76,7 @@ handle_database();
 function disconnect() {
   db_config.end(function onEnd(error) {
   console.log('ending connection')
+  db.release()
   if (error) throw error;
   // All connections are now closed once they have been returned with connection.release()
   // i.e. this waits for all consumers to finish their use of the connections and ends them.

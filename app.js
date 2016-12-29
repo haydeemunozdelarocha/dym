@@ -15,6 +15,7 @@ var db = require('./db.js');
 var routes = require('./routes/index');
 var photo = require('./routes/photo');
 var users = require('./routes/users');
+var residentes = require('./routes/residentes');
 var obras = require('./routes/api/obras');
 var proveedores = require('./routes/api/proveedores');
 var materiales = require('./routes/api/materiales');
@@ -49,10 +50,10 @@ var options = {
     password : process.env.DYM_DB_PSS,
     database : 'heroku_aa5f4bff4de7c3d',
     checkExpirationInterval: 900000,// How frequently expired sessions will be cleared; milliseconds.
-    expiration: 86400000,// The maximum age of a valid session; milliseconds.
+    expiration: 3600000*24,// The maximum age of a valid session; milliseconds.
     createDatabaseTable: true,// Whether or not to create the sessions database table, if one does not already exist.
     connectionLimit: 1,// Number of connections when creating a connection pool
-    cookie : { httpOnly: true, maxAge: 2419200000 },
+    cookie : { httpOnly: true, maxAge: 3600000*24 },
     schema: {
         tableName: 'sessions',
         columnNames: {
@@ -93,7 +94,7 @@ app.use(session({
   secret: SUPER_SECRET_KEY,
   resave: true,
   saveUninitialized: false,
-  cookie:{maxAge:new Date(Date.now() + 3600000)},
+  cookie:{maxAge:new Date(Date.now() + (3600000*24))},
   store: sessionStore
 }));
 app.use(passport.initialize());
@@ -104,6 +105,7 @@ app.use(flash());
 app.use('/', routes);
 app.use('/users', users);
 app.use('/photo', photo);
+app.use('/residentes', residentes);
 app.use('/api/obras', obras);
 app.use('/api/proveedores', proveedores);
 app.use('/api/materiales', materiales);
@@ -136,10 +138,12 @@ app.use(function(req, res, next) {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
+  var usuario = req.user;
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
-    error: {}
+    error: {},
+    usuario: usuario
   });
 });
 

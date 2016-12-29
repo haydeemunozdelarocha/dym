@@ -23,6 +23,19 @@ router.get('/', function(req,res,err){
   });
 })
 
+router.get('/obra/:obraid', function(req,res,err){
+  var obra_id = req.params.obraid;
+  console.log('getting request')
+  var listaEstimaciones = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON estimaciones.proveedor_id = proveedores.id WHERE obra = ?;';
+
+    db.query(listaEstimaciones,[obra_id], function(err, rows){
+    if(err) throw err;
+    else {
+        res.json(rows);
+    }
+  });
+})
+
 //agregar estimacion de flete
 router.post('/nueva', function(req,res,next){
 var acarreos = req.body.acarreos;
@@ -38,6 +51,10 @@ var cantidad_presupuestada;
 var acumulado_anterior;
 var acumulado_actual;
 var por_ejercer;
+var importe;
+var concepto_id;
+var precio_unitario;
+var esta_estimacion;
 acarreos = acarreos.toString();
 var periodo_inicio = moment(req.body.periodo_inicio).format("YYYY-MM-DD HH:mm");
 var periodo_final = moment(req.body.periodo_final).format("YYYY-MM-DD HH:mm");
@@ -187,8 +204,8 @@ router.use( function( req, res, next ) {
 router.delete('/borrar/:id', function(req,res,err){
   var estimaciones_id = req.params.id;
   console.log(estimaciones_id)
-  var borrarEstimacion = 'DELETE FROM estimacion_articulo WHERE estimacion_id = ?; DELETE FROM estimaciones WHERE estimaciones_id = ?;';
-  db.query(borrarEstimacion,[estimaciones_id, estimaciones_id], function(err,estimacion){
+  var borrarEstimacion = 'UPDATE acarreos SET estimacion = "N" WHERE estimacion_id = ?; DELETE FROM estimacion_articulo WHERE estimacion_id = ?; DELETE FROM estimaciones WHERE estimaciones_id = ?;';
+  db.query(borrarEstimacion,[estimaciones_id, estimaciones_id, estimaciones_id], function(err,estimacion){
     if(err) throw err;
     else {
         console.log('Esta estimación ha sido eliminada');

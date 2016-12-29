@@ -9,7 +9,7 @@ var rp = require('request-promise');
 var readTable = 'SELECT * FROM obras';
 var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.concepto, materiales.precio, materiales.proveedor_id, conceptos.nombre_concepto, recibos.hora,recibos.foto FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON materiales.id = acarreos.material_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON materiales.concepto=conceptos.conceptos_id OR acarreos.concepto_flete = conceptos.conceptos_id ORDER BY recibo_id, categoria DESC';
 
-var path = 'http://localhost:3000/';
+var path = 'https://dymingernieros.herokuapp.com/';
 
 router.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -24,65 +24,6 @@ router.get('/', function(req, res, next) {
 
 router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Express' });
-});
-
-router.get('/residentes/login', function(req, res, next) {
-  res.render('login', { title: 'Express' });
-});
-
-router.post('/residentes/signin', function(req,res,next){
-  var username = req.body.username;
-  var password = req.body.password;
-      db.query("SELECT * FROM `residentes` WHERE `username` = '" + username + "'",function(err,rows){
-      if (err)
-                return err;
-       if (!rows.length) {
-                 res.send('No user found.');
-            }
-
-      // if the user is found but the password is wrong
-            if (!( rows[0].password == password))
-                res.send('Wrong password.');// create the loginMessage and save it to session as flashdata
-
-            // all is well, return successful user
-            return  req.logIn(rows[0], function (err) {
-                    if (err) {
-                        return err;
-                    }
-                        return res.redirect('/residentes');
-                });
-
-    });
-});
-
-router.post('/residentes/signup', function(req, res, next){
-  var username = req.body.username;
-   var password = req.body.password;
-   var empleado_id= req.body.empleado_id;
-      db.query("select * from residentes where username = '"+username+"'",function(err,rows){
-      console.log("above row object");
-      if (err)
-                return err;
-       if (rows.length) {
-                res.redirect('/register');
-            } else {
-                var newUserMysql = new Object();
-
-        newUserMysql.username    = username;
-        newUserMysql.password    = password;
-        newUserMysql.empleado_id    = empleado_id;
-
-        var insertQuery = "INSERT INTO residentes ( username, password, empleado_id) values ('"+username+"','"+password+"','"+empleado_id+")";
-        db.query(insertQuery,function(err,rows){
-          newUserMysql.id_checador = rows.insertId;
-                    if (err) {
-                        return err;
-                    }
-                        console.log(req.user)
-                        return res.redirect('/residentes');
-        });
-      }
-    });
 });
 
 router.post('/signin', function(req,res,next){
@@ -103,30 +44,28 @@ router.post('/signin', function(req,res,next){
             return  req.logIn(rows[0], function (err) {
                     if (err) {
                         return err;
-                    }
+                    } else if(req.user.categoria === "checador") {
+                        if(!req.user.accessToken) {
+                        res.cookie('user', req.user,{ maxAge: 900000 });
+                          return res.redirect('/auth/nest')
+                        }
                         return res.redirect('/captura');
+                    } else if (req.user.categoria === "residente"){
+                      var obra = req.user.obra_id;
+                      return res.redirect('/residentes/obra');
+                    }
                 });
 
     });
 });
 
-router.get('/residentes/register', function(req, res, next) {
-  var readObras = 'SELECT * FROM obras';
-    db.query(readObras, function(err, obras){
+router.get('/registrar/:idempleado', function(req, res, next) {
+  var empleado_id = req.params.idempleado;
+  var getEmpleado = 'SELECT * FROM empleados WHERE id = ?';
+    db.query(getEmpleado,[empleado_id], function(err, empleado){
     if(err) throw err;
     else {
-      res.render('register', { title: 'Register', obras: obras});
-    }
-  });
-});
-
-router.get('/register/:accessToken', function(req, res, next) {
-  var accessToken = req.params.accessToken;
-  var readObras = 'SELECT * FROM obras';
-    db.query(readObras, function(err, obras){
-    if(err) throw err;
-    else {
-      res.render('register', { title: 'Register', obras: obras, accessToken:accessToken });
+      res.render('register', { title: 'Register', empleado:empleado });
     }
   });
 });
@@ -134,8 +73,8 @@ router.get('/register/:accessToken', function(req, res, next) {
 router.get('/auth/nest', passport.authenticate('nest'), function(req, res){
   console.log('sending request')
 });
-router.post('/signup/:accessToken', function(req, res, next){
-  var accessToken = req.params.accessToken;
+router.post('/signup', function(req, res, next){
+  var categoria = req.body.categoria;
   var username = req.body.username;
    var password = req.body.password;
    var empleado_id= req.body.empleado_id;
@@ -145,24 +84,24 @@ router.post('/signup/:accessToken', function(req, res, next){
       if (err)
                 return err;
        if (rows.length) {
-                res.redirect('/register');
+                res.redirect('/registrar');
             } else {
                 var newUserMysql = new Object();
 
-        newUserMysql.accessToken    = accessToken;
+        newUserMysql.categoria    = categoria;
         newUserMysql.username    = username;
         newUserMysql.password    = password;
         newUserMysql.empleado_id    = empleado_id;
         newUserMysql.obra_id    = obra_id;
 
-        var insertQuery = "INSERT INTO usuarios ( accessToken, username, password, empleado_id, obra_id ) values ('" + accessToken+"','"+username+"','"+password+"','"+empleado_id+"',"+obra_id+")";
+        var insertQuery = "INSERT INTO usuarios ( categoria, username, password, empleado_id, obra_id ) values ('" + categoria+"','"+username+"','"+password+"','"+empleado_id+"',"+obra_id+")";
         db.query(insertQuery,function(err,rows){
-          newUserMysql.id_checador = rows.insertId;
+          newUserMysql.id_usuario = rows.insertId;
                     if (err) {
                         return err;
                     }
-                        console.log(req.user)
-                        return res.redirect('/checadores');
+                      res.redirect('/empleados')
+
         });
       }
     });
@@ -176,10 +115,17 @@ router.get('/auth/nest', passport.authenticate('nest'), function(req, res){
 router.get('/auth/nest/callback', passport.authenticate('nest'),
   function(req, res) {
     console.log("callback")
-    res.cookie('nest_token', req.user.accessToken,{ maxAge: 900000 });
+    var user = req.cookies.user;
+    var user_id = user.id_usuario;
+    console.log(user);
     var accessToken = req.user.accessToken;
-        console.log(accessToken)
-        res.redirect('/register/'+accessToken)
+    var updateUsuario = 'UPDATE usuarios SET accessToken = ? WHERE id_usuario = ?';
+    db.query(updateUsuario,[accessToken,user_id], function(err, usuario){
+    if(err) throw err;
+    else {
+          res.redirect('/captura')
+          }
+    });
   });
 
 
@@ -198,7 +144,8 @@ req.logout();
 res.redirect('/');
 });
 
-router.get('/buscar', function(req, res, next) {
+router.get('/buscar',isLoggedIn, function(req, res, next) {
+  var usuario=req.user;
   var readTable = 'SELECT * FROM proveedores';
   var readObras = 'SELECT * FROM obras';
     db.query(readTable, function(err, proveedores){
@@ -207,7 +154,7 @@ router.get('/buscar', function(req, res, next) {
           db.query(readObras, function(err, obras){
             if(err) throw err;
             else {
-              res.render('buscar', { title: 'Buscar', proveedores: proveedores, obras: obras });
+              res.render('buscar', { title: 'Buscar', proveedores: proveedores, obras: obras,usuario:usuario });
             }
           });
     }
@@ -246,7 +193,7 @@ router.get('/obras', function(req, res, next) {
   });
 });
 
-router.get('/obra/:obraid', function(req, res, next) {
+router.get('/obra/:obraid',isLoggedIn,function(req, res, next) {
   var obra_id = req.params.obraid;
   var getObra = 'SELECT * FROM obras WHERE obra_id = ?;';
   var getEmpleados = 'SELECT * FROM empleados WHERE obra = ?;';
@@ -358,6 +305,7 @@ router.get('/acarreos', function(err,res){
     }
   });
 })
+
 
 router.get('/captura', isLoggedIn, function(req, res){
   var infoProveedores = 'SELECT * FROM proveedores';
@@ -475,14 +423,15 @@ router.get('/materiales/editar/:id', function(req, res, next) {
 });
 
 
-router.get('/estimaciones', function(req, res, next) {
+router.get('/estimaciones',isLoggedIn, function(req, res, next) {
+  var usuario = req.user;
   console.log('sending request')
   var estimaciones;
     request(path+'api/estimaciones/', function (error, response, body) {
     if (!error && response.statusCode == 200) {
       estimaciones = JSON.parse(body);
       console.log(estimaciones)
-          res.render('estimaciones', { title: 'Estimaciones', estimaciones: estimaciones });
+          res.render('estimaciones', { title: 'Estimaciones', estimaciones: estimaciones, usuario: usuario });
     }
   });
 });

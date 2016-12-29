@@ -10,10 +10,13 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
-<% include ./partials/residentesheader.ejs %>
+<% if (usuario.categoria === "residente"){ %>
+  <% include ./partials/residentesheader.ejs %>
+<% } %>
 <div id="content-container">
 <form action="/api/acarreos/buscar" method="POST">
-  <div class="form-group">
+<% if (usuario.categoria === "administrador"){ %>
+    <div class="form-group">
     <label for="obras">Obras</label>
     <select class="form-control" id="obra_id" name="obra_id">
     <% for(var i=0; i<obras.length; i++) {%>
@@ -21,6 +24,7 @@
     <% } %>
     </select>
   </div>
+<% } %>
   <div class="form-group" id="fechas">
     <label for="fecha">Periódo</label>
     <input type="date" class="form-control" id="date1" name="date1">

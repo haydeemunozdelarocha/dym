@@ -7,13 +7,28 @@ var db = require('../../db.js');
 var moment= require('moment');
 
 var nuevoEmpleado = 'INSERT INTO empleados(nombre,obra,puesto,fecha_nacimiento,fecha_contratacion,sueldo) VALUE(?,?,?,?,?,?)';
-var listaEmpleados = 'SELECT empleados.*,obras.nombre_obra,usuarios.username FROM empleados LEFT JOIN obras ON empleados.obra = obras.obra_id LEFT JOIN usuarios ON empleados.id = usuarios.id_usuario';
+var listaEmpleados = 'SELECT empleados.*,obras.nombre_obra,usuarios.username FROM empleados LEFT JOIN obras ON empleados.obra = obras.obra_id LEFT JOIN usuarios ON empleados.id = usuarios.empleado_id';
 var getEmpleado = "SELECT *, DATE_FORMAT(fecha_contratacion,'%Y-%m-%d') AS contratacion, DATE_FORMAT(fecha_nacimiento,'%Y-%m-%d') AS nacimiento FROM `empleados` WHERE `id` = ?";
 var editarEmpleado = 'UPDATE empleados SET nombre = ?, obra = ?, puesto= ?, fecha_nacimiento= ?, fecha_contratacion = ?, sueldo = ? WHERE id= ?';
 
 //Read table.
 router.get('/', function(err,res){
     db.query(listaEmpleados, function(err, rows){
+    if(err) throw err;
+    else {
+      console.log(rows)
+        res.send(rows);
+    }
+  });
+})
+
+router.get('/obra/:obraid', function(req,res,err){
+  console.log('getting empleados')
+  var obra_id= req.params.obraid;
+  console.log(obra_id)
+  var listaEmpleados = 'SELECT empleados.*,obras.nombre_obra,usuarios.username FROM empleados LEFT JOIN obras ON empleados.obra = obras.obra_id LEFT JOIN usuarios ON empleados.id = usuarios.empleado_id WHERE obra = ?;';
+
+    db.query(listaEmpleados,[obra_id], function(err, rows){
     if(err) throw err;
     else {
       console.log(rows)

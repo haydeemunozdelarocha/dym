@@ -86,12 +86,27 @@ router.get('/', function(err,res){
   });
 })
 
+router.get('/obra/:obraid', function(req,res,err){
+  console.log('getting acarreos por obra')
+var obra_id = req.params.obraid;
+var listaAcarreos = 'SELECT recibos.*, acarreos.*,camiones.*,materiales.*,proveedores.razon_social, conceptos.nombre_concepto FROM recibos JOIN acarreos ON recibos.recibo_id = acarreos.recibo_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id JOIN conceptos ON acarreos.concepto_flete=conceptos.conceptos_id OR materiales.concepto = conceptos.conceptos_id WHERE recibos.obra_id = ? ORDER BY acarreos.acarreo_id ASC';
+;
+
+    db.query(listaAcarreos,[obra_id],function(err, rows){
+    if(err){
+      return console.log (err)
+    } else {
+        return res.send(rows);
+    }
+  });
+})
+
 router.post('/buscar', function(req,res,next){
   var proveedor_id = req.body.proveedor_id;
   var categoria = req.body.categoria;
   var date1 = moment(req.body.date1).format("YYYY-MM-DD HH:mm");
   var date2 = moment(req.body.date2).format("YYYY-MM-DD HH:mm");
-  var obra_id = req.body.obra_id;
+  var obra_id = req.user.obra_id;
   var categoriaProveedor;
   if (categoria === "material"){
     categoriaProveedor = "materiales";

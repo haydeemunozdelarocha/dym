@@ -11,7 +11,9 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
-<% include ./partials/residentesheader.ejs %>
+<% if (usuario.categoria === "residente"){ %>
+  <% include ./partials/residentesheader.ejs %>
+<% } %>
   <div id="content-container">
   <div class="content-header">  <p><h2><%= title %></h2></p></div>
 <div class="row">

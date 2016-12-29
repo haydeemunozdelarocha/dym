@@ -45,8 +45,8 @@ var image = $.ajax({
     });
 
   image.fail(function(jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-          console.log('error');
+      alert('Cámara desconectada!');
+      $('#photo-status').html("")
   });
 
 
