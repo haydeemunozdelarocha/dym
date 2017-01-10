@@ -353,7 +353,7 @@ router.get('/recibo/:id', function(req, res, next) {
               console.log(acarreo[0].hora)
               var html = '<img src='+image+'/><h2>DYM INGENIEROS CONSTRUCTORES SA DE CV</h2><h2>RECIBO ACARREOS</h2><div id="recibo-style" style="font-size: 20px;"><h3><strong>Fecha: </strong>'+acarreo[0].hora+'</h3><h3><strong>Recibo No.:</strong>'+acarreo[0].recibo_id+'</h3><h3><strong>No. Camión:</strong>'+camion[0].camion_id+'</h3><h3><strong>Placas:</strong>'+camion[0].placas+'</h3><h3><strong>Modelo:</strong>'+camion[0].modelo+'</h3><h3><strong>Fletero:</strong>'+camion[0].razon_social+'</h3><br><h3><strong>Material:</strong>'+material[0].nombre_concepto+'</h3><h3><strong>Proveedor:</strong>'+material[0].razon_social+'</h3><h3><strong>Cantidad:</strong>'+acarreo[0].cantidad+' '+material[0].unidad+'</h3><h3><strong>Precio Unitario: </strong>$'+material[0].precio+'</h3>';
               html = encodeURIComponent(html);
-              res.json(html);
+              res.json({html:html});
             }
           });
         }
