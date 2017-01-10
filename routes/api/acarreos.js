@@ -60,7 +60,7 @@ console.log(usuario_id,zona_id,foto,hora,obra_id)
                             db.query(nuevoAcarreoMaterial,[material_id,cantidad,total,categoria,recibo_id], function(err,acarreo){
                             if(err) throw err;
                             else {
-                              res.json(recibo)
+                              res.json({recibo:recibo})
                             }
                         });
                       }
