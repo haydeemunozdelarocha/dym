@@ -5,11 +5,19 @@ var request = require('request');
 var db = require('../db.js');
 var passport = require('passport');
 var rp = require('request-promise');
+var fs = require('fs');
 
 var readTable = 'SELECT * FROM obras';
 var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.concepto, materiales.precio, materiales.proveedor_id, conceptos.nombre_concepto, recibos.hora,recibos.foto FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON materiales.id = acarreos.material_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON materiales.concepto=conceptos.conceptos_id OR acarreos.concepto_flete = conceptos.conceptos_id ORDER BY recibo_id, categoria DESC';
 
 var path = 'http://locahost:3000/';
+
+function base64_encode(file) {
+    // read binary data
+    var bitmap = fs.readFileSync(file);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+}
 
 router.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -29,6 +37,8 @@ router.get('/login', function(req, res, next) {
 router.post('/signin', function(req,res,next){
   var username = req.body.username;
   var password = req.body.password;
+  console.log(req.body.username)
+  console.log(req.body.password)
       db.query("SELECT * FROM `usuarios` WHERE `username` = '" + username + "'",function(err,rows){
       if (err)
                 return err;
@@ -339,7 +349,11 @@ router.get('/recibo/:id', function(req, res, next) {
           db.query(readCamion,[camion_id], function(err, camion){
             if(err) throw err;
             else {
-              res.render('recibo', { title: 'Recibo', acarreo: acarreo, material:material, camion:camion});
+              var image = base64_encode('./public/images/dym-logo copy.bmp');
+              console.log(acarreo[0].hora)
+              var html = '<img src='+image+'/><h2>DYM INGENIEROS CONSTRUCTORES SA DE CV</h2><h2>RECIBO ACARREOS</h2><div id="recibo-style" style="font-size: 20px;"><h3><strong>Fecha: </strong>'+acarreo[0].hora+'</h3><h3><strong>Recibo No.:</strong>'+acarreo[0].recibo_id+'</h3><h3><strong>No. Camión:</strong>'+camion[0].camion_id+'</h3><h3><strong>Placas:</strong>'+camion[0].placas+'</h3><h3><strong>Modelo:</strong>'+camion[0].modelo+'</h3><h3><strong>Fletero:</strong>'+camion[0].razon_social+'</h3><br><h3><strong>Material:</strong>'+material[0].nombre_concepto+'</h3><h3><strong>Proveedor:</strong>'+material[0].razon_social+'</h3><h3><strong>Cantidad:</strong>'+acarreo[0].cantidad+' '+material[0].unidad+'</h3><h3><strong>Precio Unitario: </strong>$'+material[0].precio+'</h3>';
+              html = encodeURIComponent(html);
+              res.json(html);
             }
           });
         }

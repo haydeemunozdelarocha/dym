@@ -11,21 +11,20 @@ var nuevoRecibo = 'INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id) VAL
 
 //agregar acarreo
 router.post('/', function(req,res, next){
-console.log(req.user)
+console.log(req.body)
 var recibo;
 var usuario_id= Number(req.user.id_usuario);
 var obra_id = Number(req.user.obra_id);
 var numero= req.body.numero;
-var precio = req.body.precio;
 var foto = req.body.photo;
 var concepto_flete = req.body.concepto_flete;
-var zona_id = Number(req.body.zona);
+var zona_id = Number(req.body.zona_id);
 var material_id= Number(req.body.material_id);
 var cantidad;
 var date= Date.now();
 var hora = moment(date).format("YYYY-MM-DD HH:mm");
 var getCamion = 'SELECT * FROM `camiones` WHERE `numero` = ' + numero ;
-console.log()
+console.log(usuario_id,zona_id,foto,hora,obra_id)
   db.query(nuevoRecibo,[usuario_id,zona_id,foto,hora,obra_id], function(err,recibo){
       if(err) throw err;
       else {
@@ -61,7 +60,7 @@ console.log()
                             db.query(nuevoAcarreoMaterial,[material_id,cantidad,total,categoria,recibo_id], function(err,acarreo){
                             if(err) throw err;
                             else {
-                              res.redirect('/recibo/'+recibo)
+                              res.json(recibo)
                             }
                         });
                       }

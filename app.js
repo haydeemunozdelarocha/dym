@@ -27,6 +27,7 @@ var zonas = require('./routes/api/zonas');
 var estimaciones = require('./routes/api/estimaciones');
 var presupuestos = require('./routes/api/presupuestos');
 var checadores = require('./routes/api/checadores');
+var auth = require('./routes/api/auth');
 
 var app = express();
 
@@ -117,6 +118,7 @@ app.use('/api/zonas', zonas);
 app.use('/api/presupuestos', presupuestos);
 app.use('/api/estimaciones', estimaciones);
 app.use('/api/checadores', checadores);
+app.use('/api/auth', auth);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
