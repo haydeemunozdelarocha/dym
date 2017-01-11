@@ -15,8 +15,9 @@ res.redirect('/');
 
 router.post('/signin', function(req,res,next){
   if(req.user){
-    res.send{req.user}
-  }
+    console.log(req.user);
+    res.send(req.user);
+  } else {
   var username = req.body.username;
   var password = req.body.password;
   console.log(req.body.username)
@@ -46,6 +47,7 @@ router.post('/signin', function(req,res,next){
                 });
 
     });
+  }
 });
 
 module.exports = router;
