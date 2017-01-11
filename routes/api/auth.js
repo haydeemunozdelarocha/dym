@@ -14,6 +14,9 @@ res.redirect('/');
 });
 
 router.post('/signin', function(req,res,next){
+  if(req.user){
+    res.send{req.user}
+  }
   var username = req.body.username;
   var password = req.body.password;
   console.log(req.body.username)
