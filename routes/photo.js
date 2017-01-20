@@ -11,22 +11,22 @@ var fsImpl = new S3FS('dymingenieros', {
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
-router.get('/', function(req, res, err) {
-  console.log('getting photo')
-  // if (req.user.accessToken){
-  var auth_token = req.user.accessToken;
-  console.log(auth_token)
-  var url='https://www.dropcam.com/api/wwn.get_snapshot/CjZrVXNJUjJ4cWhHT0UxcVNGbVR3dm9odDZYZllsNVhnMkQyRnozNmFoV0V4VDBuZjNhUUIyalESFkFMbS1GV2JXVUNwTFlINi1hcGNYckEaNkF3TnM5cXlKamxERVYwdVhnLUM2b3J6cDg3ZGNfV05mM1BYVXRRTm1GRGF1eGhJR1JVY3J3UQ?auth='+auth_token;
-  var photo;
-  console.log(url)
-  var options = {
-  url: url,
-  encoding: 'binary',
-  headers: {
-    'Authorization': 'Bearer '+ auth_token,
-    'Content-Type': 'application/x-www-form-urlencoded'
-  }
-};
+router.post('/', function(req, res, err) {
+//   console.log('getting photo')
+//   // if (req.user.accessToken){
+//   var auth_token = req.user.accessToken;
+//   console.log(auth_token)
+//   var url='https://www.dropcam.com/api/wwn.get_snapshot/CjZrVXNJUjJ4cWhHT0UxcVNGbVR3dm9odDZYZllsNVhnMkQyRnozNmFoV0V4VDBuZjNhUUIyalESFkFMbS1GV2JXVUNwTFlINi1hcGNYckEaNkF3TnM5cXlKamxERVYwdVhnLUM2b3J6cDg3ZGNfV05mM1BYVXRRTm1GRGF1eGhJR1JVY3J3UQ?auth='+auth_token;
+//   var photo;
+//   console.log(url)
+//   var options = {
+//   url: url,
+//   encoding: 'binary',
+//   headers: {
+//     'Authorization': 'Bearer '+ auth_token,
+//     'Content-Type': 'application/x-www-form-urlencoded'
+//   }
+// };
 
 function callback(error, response, body) {
   if(error){

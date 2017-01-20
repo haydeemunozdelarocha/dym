@@ -13,6 +13,16 @@ req.logout();
 res.redirect('/');
 });
 
+router.get('/session', function(req,res,next){
+  console.log(req.user)
+  if(req.user){
+    console.log(req.session)
+    res.json({session:req.session})
+  } else {
+    res.json({})
+  }
+})
+
 router.post('/signin', function(req,res,next){
   if(req.user){
     console.log(req.user);

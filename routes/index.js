@@ -203,7 +203,7 @@ router.get('/obras', function(req, res, next) {
   });
 });
 
-router.get('/obra/:obraid',isLoggedIn,function(req, res, next) {
+router.get('/obra/:obraid',function(req, res, next) {
   var obra_id = req.params.obraid;
   var getObra = 'SELECT * FROM obras WHERE obra_id = ?;';
   var getEmpleados = 'SELECT * FROM empleados WHERE obra = ?;';

@@ -26,7 +26,6 @@ db_config.getConnection().then(function(connection) {
   }).finally(function() {
     if (conn) {
       console.log('done using connection')
-      conn.connection.release();
       return
     }
   });
@@ -37,15 +36,12 @@ db_config.getConnection().then(function(connection) {
 db_config.on('error', function(err) {
     console.log('db error', err);
     if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-      db_config.release();
       handleDisconnect();
       console.log('reconnecting')                       // lost due to either server restart, or a
     } else if(err.code === 'ECONNREFUSED'){
       console.log(err.code)
-      db_config.release();
       handleDisconnect();
-    }else {
-    db_config.release();                             // connnection idle timeout (the wait_timeout
+    }else {                           // connnection idle timeout (the wait_timeout
       handleDisconnect();                                // server variable configures this)
     }
   });
@@ -56,7 +52,7 @@ db_config.on('data', function(){
 
 db_config.on('end', function() {
   console.log('end db config')
-  db_config.release();
+  db_config.end();
 });
 
 function handleDisconnect() {
@@ -76,7 +72,7 @@ handle_database();
 function disconnect() {
   db_config.end(function onEnd(error) {
   console.log('ending connection')
-  db.release()
+  db.end()
   if (error) throw error;
   // All connections are now closed once they have been returned with connection.release()
   // i.e. this waits for all consumers to finish their use of the connections and ends them.

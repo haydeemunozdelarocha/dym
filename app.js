@@ -14,6 +14,7 @@ var db = require('./db.js');
 
 var routes = require('./routes/index');
 var photo = require('./routes/photo');
+var camera = require('./routes/camera');
 var users = require('./routes/users');
 var residentes = require('./routes/residentes');
 var obras = require('./routes/api/obras');
@@ -118,6 +119,7 @@ app.use('/api/zonas', zonas);
 app.use('/api/presupuestos', presupuestos);
 app.use('/api/estimaciones', estimaciones);
 app.use('/api/checadores', checadores);
+app.use('/camera', camera);
 app.use('/api/auth', auth);
 
 // catch 404 and forward to error handler
