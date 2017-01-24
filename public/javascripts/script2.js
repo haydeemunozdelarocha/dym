@@ -5,7 +5,7 @@ canvas.setAttribute("width", "576");
 canvas.setAttribute("height", "100");
 canvas.style.visibility = "hidden"; // to hide the canvas
 canvas.style.display = "none"; // to not ruin the layout of the page
-
+console.log(canvas)
 var hidden, visibilityChange;
 if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
   hidden = "hidden";
@@ -47,6 +47,7 @@ function loadImages(src) {
     alert("Failed to load image."); // checking again
   }
   image.src = src;
+  console.log(src)
   console.log("Exiting Function, cross your fingers that your images loaded :|");
 }
 
@@ -69,6 +70,7 @@ function createImgElement(base64URL) {
 }
 
 function createImgElementBase64(htmlElement) {
+  console.log(htmlElement)
   var receipt = encodeURIComponent(htmlElement + document.getElementById("printData").innerHTML); // latter portion retrieves HTML from the DOM
   buildURLScheme(receipt);
 }

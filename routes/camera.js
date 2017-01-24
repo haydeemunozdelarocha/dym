@@ -116,10 +116,10 @@ router.get('/', function(req, res, err) {
 console.log('setting mode')
 
 
-
+turningOn()
     // get last media
-    cam.getMedia(lastDirectory.d, lastFile.n, lastFile.n).then(function (filename) {
-        console.log(filename, '[saved]');
+    // cam.getMedia(lastDirectory.d, lastFile.n, lastFile.n).then(function (filename) {
+    //     console.log(filename, '[saved]');
 
   //             WiFiControl.resetWiFi( function(err, response) {
   //   if (err) console.log(err);
@@ -134,7 +134,7 @@ console.log('setting mode')
 });
 
 
-});
+// });
 
 
 router.post('/', function(req, res, err) {
