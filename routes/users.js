@@ -5,7 +5,12 @@ var passport = require('passport');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  if(req.user.categoria === 'checador'){
+    res.redirect('/captura');
+  } else if(req.user.categoria === 'residente'){
+    var obra_id = req.user.obra_id;
+    res.redirect('/obra/'+obra_id)
+  }
 });
 
 router.post('/signup', passport.authenticate('local-signup', {
@@ -14,7 +19,7 @@ router.post('/signup', passport.authenticate('local-signup', {
 }));
 
 router.post('/login', passport.authenticate('local-login', {
-            successRedirect : '/captura',
+            successRedirect : '/users',
             failureRedirect : '/login'
 }));
 

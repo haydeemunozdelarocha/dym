@@ -7,17 +7,8 @@ var passport = require('passport');
 var rp = require('request-promise');
 var fs = require('fs');
 
-var readTable = 'SELECT * FROM obras';
-var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.concepto, materiales.precio, materiales.proveedor_id, conceptos.nombre_concepto, recibos.hora,recibos.foto FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON materiales.id = acarreos.material_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON materiales.concepto=conceptos.conceptos_id OR acarreos.concepto_flete = conceptos.conceptos_id ORDER BY recibo_id, categoria DESC';
-
 var path = 'http://localhost:3000/';
 
-function base64_encode(file) {
-    // read binary data
-    var bitmap = fs.readFileSync(file);
-    // convert binary data to base64 encoded string
-    return new Buffer(bitmap).toString('base64');
-}
 
 router.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -34,18 +25,7 @@ router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Express' });
 });
 
-
-router.get('/registrar/:idempleado', function(req, res, next) {
-  var empleado_id = req.params.idempleado;
-  var getEmpleado = 'SELECT * FROM empleados WHERE id = ?';
-    db.query(getEmpleado,[empleado_id], function(err, empleado){
-    if(err) throw err;
-    else {
-      res.render('register', { title: 'Register', empleado:empleado });
-    }
-  });
-});
-
+//Middleware
 function isLoggedIn(req, res, next){
     if (req.isAuthenticated()) {
       console.log(req.user)
@@ -64,6 +44,14 @@ function checkAuthToken(req, res, next) {
     }
 }
 
+function base64_encode(file) {
+    // read binary data
+    var bitmap = fs.readFileSync(file);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
+}
+
+//CAPTURA DE ACARREOS
 router.get('/captura', [isLoggedIn,checkAuthToken], function(req, res){
   var infoProveedores = 'SELECT * FROM proveedores';
   var infoZonas = 'SELECT * FROM zonas';
@@ -79,169 +67,6 @@ router.get('/captura', [isLoggedIn,checkAuthToken], function(req, res){
     }
   });
 })
-
-router.get('/buscar',isLoggedIn, function(req, res, next) {
-  var usuario=req.user;
-  var readTable = 'SELECT * FROM proveedores';
-  var readObras = 'SELECT * FROM obras';
-    db.query(readTable, function(err, proveedores){
-    if(err) throw err;
-    else {
-          db.query(readObras, function(err, obras){
-            if(err) throw err;
-            else {
-              res.render('buscar', { title: 'Buscar', proveedores: proveedores, obras: obras,usuario:usuario });
-            }
-          });
-    }
-  });
-});
-
-router.get('/checadores', function(req, res, next) {
-  var listaChecadores = 'SELECT checadores.*, obras.nombre_obra FROM checadores LEFT JOIN obras ON checadores.obra_id = obras.obra_id';
-    db.query(listaChecadores, function(err, checadores){
-    if(err) throw err;
-    else {
-      console.log(checadores)
-      res.render('checadores', { title: 'Checadores', checadores: checadores });
-    }
-  });
-});
-
-router.get('/residentes', function(req, res, next) {
-  var readTable = 'SELECT * FROM residentes';
-    db.query(readTable, function(err, residentes){
-    if(err) throw err;
-    else {
-      res.render('residentes', { title: 'Residentes', residentes: residentes });
-    }
-  });
-});
-
-router.get('/obras', function(req, res, next) {
-  var listaObras = 'SELECT obras.*, empleados.nombre,residentes.empleado_id FROM obras LEFT JOIN residentes ON residentes.id = obras.residente_id LEFT JOIN empleados ON residentes.empleado_id = empleados.id';
-    db.query(listaObras, function(err, obras){
-    if(err) throw err;
-    else {
-      console.log(obras)
-      res.render('obras', { title: 'Obras', obras: obras });
-    }
-  });
-});
-
-router.get('/obra/:obraid',function(req, res, next) {
-  var obra_id = req.params.obraid;
-  var getObra = 'SELECT * FROM obras WHERE obra_id = ?;';
-  var getEmpleados = 'SELECT * FROM empleados WHERE obra = ?;';
-  var getPresupuesto = 'SELECT presupuestos.*,conceptos.nombre_concepto,zonas.nombre_zona FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = ? ORDER BY zona;';
-    db.query(getObra,[obra_id], function(err, obra){
-    if(err) throw err;
-    else {
-        db.query(getPresupuesto,[obra_id], function(err, presupuestos){
-        if(err) throw err;
-        else {
-              db.query(getEmpleados,[obra_id], function(err, empleados){
-              if(err) throw err;
-              else {
-                res.render('obra', { title: obra[0].nombre_obra, obra: obra[0], presupuestos:presupuestos,empleados:empleados });
-              }
-            });
-        }
-      });
-    }
-  });
-});
-
-router.get('/obras/nueva', function(err,res){
-  var infoObras = 'SELECT * FROM residentes';
-    db.query(infoObras, function(err, info){
-    if(err) throw err;
-    else {
-        res.render('obranueva', { title: 'Obras', info: info });
-    }
-  });
-})
-
-router.get('/obras/editar/:idobra', function(req,res,err){
-    console.log(req.params.idobra)
-  var id =req.params.idobra;
-  var getObra = "SELECT * FROM `obras` WHERE `obra_id` = "+ id;
-    db.query(getObra, function(err, obra){
-    if(err) throw err;
-    else {
-        res.render('editarobra', { title: 'Obras', obra: obra });
-    }
-  });
-})
-
-router.post('/obras/editar/:idobra', function(req,res,err){
-request({
-  method: "PUT",
-  uri: site+"api/obras/"+req.params.idobra,
-  json: req.body
- });
-})
-
-router.get('/presupuestos', function(err,res){
-  var infoObras = 'SELECT * FROM obras';
-    db.query(infoObras, function(err, obras){
-    if(err) throw err;
-    else {
-          var infoConceptos = 'SELECT * FROM conceptos';
-          db.query(infoConceptos, function(err, conceptos){
-          if(err) throw err;
-          else {
-              var infoZonas = 'SELECT * FROM zonas';
-              db.query(infoZonas, function(err, zonas){
-              if(err) throw err;
-              else {
-                var getPresupuestos = 'SELECT presupuestos.*, conceptos.*, zonas.*, obras.* FROM presupuestos JOIN obras ON presupuestos.obra=obras.obra_id JOIN zonas ON presupuestos.zona = zonas.zonas_id JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id';
-                db.query(getPresupuestos, function(err, presupuestos){
-                if(err) throw err;
-                else {
-                res.render('presupuestonuevo', { title: 'Presupuesto', obras: obras, conceptos: conceptos, zonas: zonas, presupuestos: presupuestos });
-                    }
-                });
-            }
-        });
-        }
-      });
-    }
-  });
-})
-
-
-router.get('/obras/nueva', function(err,res){
-  var infoObras = 'SELECT * FROM residentes';
-    db.query(infoObras, function(err, info){
-    if(err) throw err;
-    else {
-        res.render('obranueva', { title: 'Obras', info: info });
-    }
-  });
-})
-
-router.get('/obras/editar/:idobra', function(req,res,err){
-    console.log(req.params.idobra)
-  var id =req.params.idobra;
-  var getObra = "SELECT * FROM `obras` WHERE `obra_id` = "+ id;
-    db.query(getObra, function(err, obra){
-    if(err) throw err;
-    else {
-        res.render('editarobra', { title: 'Obras', obra: obra });
-    }
-  });
-})
-
-router.get('/acarreos', function(err,res){
-    db.query(listaAcarreos, function(err, acarreos){
-    if(err) throw err;
-    else {
-        res.render('acarreos', { title: 'Acarreos', acarreos: acarreos });
-    }
-  });
-})
-
 
 router.get('/recibo/:id', function(req, res, next) {
   var id = req.params.id;
@@ -273,80 +98,24 @@ router.get('/recibo/:id', function(req, res, next) {
   });
 });
 
-router.get('/proveedores', function(req, res, next) {
+
+//ESTIMACIONES
+router.get('/buscar',isLoggedIn, function(req, res, next) {
+  var usuario=req.user;
   var readTable = 'SELECT * FROM proveedores';
+  var readObras = 'SELECT * FROM obras';
     db.query(readTable, function(err, proveedores){
     if(err) throw err;
     else {
-      res.render('proveedores', { title: 'Proveedores', proveedores: proveedores });
+          db.query(readObras, function(err, obras){
+            if(err) throw err;
+            else {
+              res.render('buscar', { title: 'Buscar', proveedores: proveedores, obras: obras,usuario:usuario });
+            }
+          });
     }
   });
 });
-
-router.get('/proveedores/nuevo', function(err,res){
-  var infoProveedores = 'SELECT * FROM proveedores';
-    db.query(infoProveedores, function(err, info){
-    if(err) throw err;
-    else {
-        res.render('proveedornuevo', { title: 'Obras', info: info });
-    }
-  });
-})
-
-router.get('/proveedores/editar/:id', function(req,res,err){
-  var id =req.params.id;
-  var getProveedor = "SELECT * FROM `proveedores` WHERE `id` = "+ id;
-    db.query(getProveedor, function(err, proveedor){
-    if(err) throw err;
-    else {
-        res.render('editarproveedor', { title: 'Editar Proveedor', proveedor: proveedor });
-    }
-  });
-})
-
-router.get('/materiales', function(req, res, next) {
-  var readTable = 'SELECT materiales.*, conceptos.nombre_concepto, proveedores.razon_social FROM materiales JOIN proveedores ON proveedores.id = materiales.proveedor_id JOIN conceptos ON conceptos.conceptos_id = materiales.concepto';
-    db.query(readTable, function(err, info){
-    if(err) throw err;
-    else {
-        var readConceptos = 'SELECT * FROM conceptos'
-        db.query(readConceptos, function(err, conceptos){
-        if(err) throw err;
-        else {
-          res.render('materiales', { title: 'Materiales', info: info, conceptos:conceptos });
-        }
-      });
-    }
-  });
-});
-
-router.get('/materiales/nuevo', function(req, res, next) {
-  var readTable = 'SELECT * FROM proveedores';
-    db.query(readTable, function(err, proveedores){
-    if(err) throw err;
-    else {
-      var readConceptos = 'SELECT * FROM conceptos'
-        db.query(readConceptos, function(err, conceptos){
-          if(err) throw err;
-          else {
-            res.render('nuevomaterial', { title: 'Proveedores', proveedores: proveedores, conceptos: conceptos });
-          }
-        });
-    }
-  });
-});
-
-router.get('/materiales/editar/:id', function(req, res, next) {
-  var id = req.params.id;
-  var getMaterial = "SELECT * FROM `materiales` WHERE `id` = " + id;
-    db.query(getMaterial, function(err, material){
-    if(err) throw err;
-    else {
-      res.render('editarmaterial', { title: 'Editar Material', material: material });
-    }
-  });
-});
-
 
 router.get('/estimaciones',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
@@ -415,6 +184,205 @@ router.get('/estimaciones/editar/:id', function(req, res, next) {
   });
 });
 
+//OBRAS
+
+router.get('/obras', function(req, res, next) {
+  var listaObras = 'SELECT obras.*, empleados.nombre,residentes.empleado_id FROM obras LEFT JOIN residentes ON residentes.id = obras.residente_id LEFT JOIN empleados ON residentes.empleado_id = empleados.id';
+    db.query(listaObras, function(err, obras){
+    if(err) throw err;
+    else {
+      console.log(obras)
+      res.render('obras', { title: 'Obras', obras: obras });
+    }
+  });
+});
+
+router.get('/obra/:obraid', isLoggedIn, function(req, res, next) {
+  var obra_id = req.params.obraid;
+  var usuario = req.user;
+  var getObra = 'SELECT * FROM obras WHERE obra_id = ?;';
+  var getEmpleados = 'SELECT * FROM empleados WHERE obra = ?;';
+  var getPresupuesto = 'SELECT presupuestos.*,conceptos.nombre_concepto,zonas.nombre_zona FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = ? ORDER BY zona;';
+    db.query(getObra,[obra_id], function(err, obra){
+    if(err) throw err;
+    else {
+        db.query(getPresupuesto,[obra_id], function(err, presupuestos){
+        if(err) throw err;
+        else {
+              db.query(getEmpleados,[obra_id], function(err, empleados){
+              if(err) throw err;
+              else {
+                res.render('obra', { title: obra[0].nombre_obra, obra: obra[0], presupuestos:presupuestos,empleados:empleados, usuario:usuario });
+              }
+            });
+        }
+      });
+    }
+  });
+});
+
+router.get('/obras/nueva', function(err,res){
+  var infoObras = 'SELECT * FROM residentes';
+    db.query(infoObras, function(err, info){
+    if(err) throw err;
+    else {
+        res.render('obranueva', { title: 'Obras', info: info });
+    }
+  });
+})
+
+router.get('/obras/editar/:idobra', function(req,res,err){
+    console.log(req.params.idobra)
+  var id =req.params.idobra;
+  var getObra = "SELECT * FROM `obras` WHERE `obra_id` = "+ id;
+    db.query(getObra, function(err, obra){
+    if(err) throw err;
+    else {
+        res.render('editarobra', { title: 'Obras', obra: obra });
+    }
+  });
+})
+
+router.post('/obras/editar/:idobra', function(req,res,err){
+request({
+  method: "PUT",
+  uri: site+"api/obras/"+req.params.idobra,
+  json: req.body
+ });
+})
+
+router.get('/obras/editar/:idobra', function(req,res,err){
+    console.log(req.params.idobra)
+  var id =req.params.idobra;
+  var getObra = "SELECT * FROM `obras` WHERE `obra_id` = "+ id;
+    db.query(getObra, function(err, obra){
+    if(err) throw err;
+    else {
+        res.render('editarobra', { title: 'Obras', obra: obra });
+    }
+  });
+})
+
+
+//PRESUPUESTOS
+router.get('/presupuestos', function(err,res){
+  var infoObras = 'SELECT * FROM obras';
+    db.query(infoObras, function(err, obras){
+    if(err) throw err;
+    else {
+          var infoConceptos = 'SELECT * FROM conceptos';
+          db.query(infoConceptos, function(err, conceptos){
+          if(err) throw err;
+          else {
+              var infoZonas = 'SELECT * FROM zonas';
+              db.query(infoZonas, function(err, zonas){
+              if(err) throw err;
+              else {
+                var getPresupuestos = 'SELECT presupuestos.*, conceptos.*, zonas.*, obras.* FROM presupuestos JOIN obras ON presupuestos.obra=obras.obra_id JOIN zonas ON presupuestos.zona = zonas.zonas_id JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id';
+                db.query(getPresupuestos, function(err, presupuestos){
+                if(err) throw err;
+                else {
+                res.render('presupuestonuevo', { title: 'Presupuesto', obras: obras, conceptos: conceptos, zonas: zonas, presupuestos: presupuestos });
+                    }
+                });
+            }
+        });
+        }
+      });
+    }
+  });
+})
+
+//ACARREOS
+
+router.get('/acarreos', function(err,res){
+  var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.concepto, materiales.precio, materiales.proveedor_id, conceptos.nombre_concepto, recibos.hora,recibos.foto FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON materiales.id = acarreos.material_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON materiales.concepto=conceptos.conceptos_id OR acarreos.concepto_flete = conceptos.conceptos_id ORDER BY recibo_id, categoria DESC';
+    db.query(listaAcarreos, function(err, acarreos){
+    if(err) throw err;
+    else {
+        res.render('acarreos', { title: 'Acarreos', acarreos: acarreos });
+    }
+  });
+})
+
+//PROVEEDORES
+router.get('/proveedores', function(req, res, next) {
+  var readTable = 'SELECT * FROM proveedores';
+    db.query(readTable, function(err, proveedores){
+    if(err) throw err;
+    else {
+      res.render('proveedores', { title: 'Proveedores', proveedores: proveedores });
+    }
+  });
+});
+
+router.get('/proveedores/nuevo', function(err,res){
+  var infoProveedores = 'SELECT * FROM proveedores';
+    db.query(infoProveedores, function(err, info){
+    if(err) throw err;
+    else {
+        res.render('proveedornuevo', { title: 'Obras', info: info });
+    }
+  });
+})
+
+router.get('/proveedores/editar/:id', function(req,res,err){
+  var id =req.params.id;
+  var getProveedor = "SELECT * FROM `proveedores` WHERE `id` = "+ id;
+    db.query(getProveedor, function(err, proveedor){
+    if(err) throw err;
+    else {
+        res.render('editarproveedor', { title: 'Editar Proveedor', proveedor: proveedor });
+    }
+  });
+})
+
+//MATERIALES
+router.get('/materiales', function(req, res, next) {
+  var readTable = 'SELECT materiales.*, conceptos.nombre_concepto, proveedores.razon_social FROM materiales JOIN proveedores ON proveedores.id = materiales.proveedor_id JOIN conceptos ON conceptos.conceptos_id = materiales.concepto';
+    db.query(readTable, function(err, info){
+    if(err) throw err;
+    else {
+        var readConceptos = 'SELECT * FROM conceptos'
+        db.query(readConceptos, function(err, conceptos){
+        if(err) throw err;
+        else {
+          res.render('materiales', { title: 'Materiales', info: info, conceptos:conceptos });
+        }
+      });
+    }
+  });
+});
+
+router.get('/materiales/nuevo', function(req, res, next) {
+  var readTable = 'SELECT * FROM proveedores';
+    db.query(readTable, function(err, proveedores){
+    if(err) throw err;
+    else {
+      var readConceptos = 'SELECT * FROM conceptos'
+        db.query(readConceptos, function(err, conceptos){
+          if(err) throw err;
+          else {
+            res.render('nuevomaterial', { title: 'Proveedores', proveedores: proveedores, conceptos: conceptos });
+          }
+        });
+    }
+  });
+});
+
+router.get('/materiales/editar/:id', function(req, res, next) {
+  var id = req.params.id;
+  var getMaterial = "SELECT * FROM `materiales` WHERE `id` = " + id;
+    db.query(getMaterial, function(err, material){
+    if(err) throw err;
+    else {
+      res.render('editarmaterial', { title: 'Editar Material', material: material });
+    }
+  });
+});
+
+//EMPLEADOS
+
 router.get('/empleados', function(req, res, next) {
   var usuario = req.user;
     rp(path+'api/empleados').then( function (body,err) {
@@ -455,6 +423,18 @@ router.get('/empleados/editar/:idempleado', function(req, res, next) {
       })
 });
 
+router.get('/registrar/:idempleado', function(req, res, next) {
+  var empleado_id = req.params.idempleado;
+  var getEmpleado = 'SELECT * FROM empleados WHERE id = ?';
+    db.query(getEmpleado,[empleado_id], function(err, empleado){
+    if(err) throw err;
+    else {
+      res.render('register', { title: 'Register', empleado:empleado });
+    }
+  });
+});
+
+//CAMIONES
 router.get('/camiones', function(req, res, next) {
   var readTable = 'SELECT camiones.*, proveedores.razon_social FROM camiones JOIN proveedores ON proveedores.id = camiones.proveedor_id';
     db.query(readTable, function(err, camiones){
