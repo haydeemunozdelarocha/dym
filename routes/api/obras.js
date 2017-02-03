@@ -16,7 +16,6 @@ var residente_id= req.body.residente_id;
 var ciudad= req.body.ciudad;
 var estado= req.body.estado;
 var codigo= req.body.codigo;
-console.log(typeof zonas);
 var nuevaObra = 'INSERT INTO obras(nombre_obra,codigo,residente_id,ciudad,estado) VALUE(?,?,?,?,?)';
   db.query(nuevaObra,[nombre_obra,codigo,residente_id,ciudad,estado], function(err,obra){
       if(err) throw err;
@@ -39,7 +38,7 @@ router.get('/', function(err,res){
 
 router.get('/:id', function(req, res, next ){
   var id= req.params.id;
-  con.query(getObra, function(err, obra){
+  db.query(getObra, function(err, obra){
     if(err) throw err;
     else {
         console.log('Buscando obra por id');
@@ -66,7 +65,7 @@ router.put('/:id', function(req,res,err){
   var residente_id = req.body.residente_id;
   var ciudad = req.body.ciudad;
   var estado = req.body.estado;
-    con.query(editarObra,[codigo,nombre_obra,residente_id,ciudad,estado,obra_id], function(err, obra){
+    db.query(editarObra,[codigo,nombre_obra,residente_id,ciudad,estado,obra_id], function(err, obra){
     if(err) throw err;
     else {
         console.log('Listo');
@@ -95,7 +94,7 @@ router.delete('/borrar/:idobra', function(req,res,err){
   var obra_id = req.params.idobra;
   var borrarObra = 'DELETE FROM obras WHERE obra_id = ?';
   console.log(req.params.idobra)
-  con.query(borrarObra,[obra_id], function(err,obra){
+  db.query(borrarObra,[obra_id], function(err,obra){
     if(err) throw err;
     else {
         console.log('Esta obra ha sido eliminada');

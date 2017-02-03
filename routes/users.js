@@ -23,11 +23,6 @@ router.post('/login', passport.authenticate('local-login', {
             failureRedirect : '/login'
 }));
 
-router.get('/logout', function(req, res, next) {
-  req.logout();
-  res.redirect('/');
-});
-
 router.get('/auth/nest', passport.authenticate('nest'), function(req, res){
   console.log('sending request')
 });

@@ -27,22 +27,29 @@ db_config.getConnection().then(function(connection) {
     if (conn) {
       console.log('done using connection')
       return
+    } else {
+      handleDisconnect()
     }
   });
   console.log('Conectado');
 }
 
-
 db_config.on('error', function(err) {
     console.log('db error', err);
-    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
       handleDisconnect();
-      console.log('reconnecting')                       // lost due to either server restart, or a
+      console.log('reconnecting')
     } else if(err.code === 'ECONNREFUSED'){
       console.log(err.code)
       handleDisconnect();
-    } else {                           // connnection idle timeout (the wait_timeout
-      handleDisconnect();                                // server variable configures this)
+    } else if(err.code === 'ER_BAD_FIELD_ERROR'){
+      console.log(err.code)
+      handleDisconnect();
+    } else if(err.code === 'ER_USER_LIMIT_REACHED'){
+      console.log(err.code)
+      handleDisconnect();
+    }else {
+      handleDisconnect();
     }
   });
 
@@ -64,6 +71,8 @@ db_config.getConnection(function(err){
     return;
   }
   console.log('Conectado');
+  console.log(req.get('referer'))
+  res.redirect(req.get('referer'));
 });
 }
 

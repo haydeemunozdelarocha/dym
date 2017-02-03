@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
-var request = require('request');
 var db = require('../db.js');
 var passport = require('passport');
 var rp = require('request-promise');
@@ -10,22 +9,14 @@ var fs = require('fs');
 var path = 'http://localhost:3000/';
 
 
+//Middleware
+
 router.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-router.get('/login', function(req, res, next) {
-  res.render('login', { title: 'Express' });
-});
-
-//Middleware
 function isLoggedIn(req, res, next){
     if (req.isAuthenticated()) {
       console.log(req.user)
@@ -45,11 +36,24 @@ function checkAuthToken(req, res, next) {
 }
 
 function base64_encode(file) {
-    // read binary data
     var bitmap = fs.readFileSync(file);
-    // convert binary data to base64 encoded string
     return new Buffer(bitmap).toString('base64');
 }
+
+/* HOME PAGE */
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'DYM INGENIEROS CONSTRUCTORES' });
+});
+
+//LOGIN & LOGOUT
+router.get('/login', function(req, res, next) {
+  res.render('login', { title: 'DYM INGENIEROS CONSTRUCTORES' });
+});
+
+router.get('/logout', function(req, res, next) {
+  req.logout();
+  res.redirect('/');
+});
 
 //CAPTURA DE ACARREOS
 router.get('/captura', [isLoggedIn,checkAuthToken], function(req, res){
@@ -121,13 +125,13 @@ router.get('/estimaciones',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
   console.log('sending request')
   var estimaciones;
-    request(path+'api/estimaciones/', function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      estimaciones = JSON.parse(body);
+    rp(path+'api/estimaciones/').then(function (error, response) {
+    if (!error) {
+      estimaciones = JSON.parse(response);
       console.log(estimaciones)
           res.render('estimaciones', { title: 'Estimaciones', estimaciones: estimaciones, usuario: usuario });
     }
-  });
+  })
 });
 
 router.get('/estimaciones/nueva', function(req, res, next) {
@@ -144,11 +148,11 @@ router.get('/estimaciones/nueva', function(req, res, next) {
               if(err) throw err;
               else {
                 res.render('nuevaestimacion', { title: 'Estimaciones', obras: obras, proveedores: proveedores, ultimaEstimacion: ultimaEstimacion });
-          }
+                }
+              });
+            }
         });
-          }
-        });
-  }
+      }
   });
 });
 
@@ -169,8 +173,8 @@ router.get('/estimaciones/:id', function(req,res,err){
               console.log(articulos)
                 res.render('estimacion',{estimacion:estimacion, articulos:articulos});
             }
-          });
-    }
+        });
+      }
   });
 })
 router.get('/estimaciones/editar/:id', function(req, res, next) {
@@ -187,7 +191,7 @@ router.get('/estimaciones/editar/:id', function(req, res, next) {
 //OBRAS
 
 router.get('/obras', function(req, res, next) {
-  var listaObras = 'SELECT obras.*, empleados.nombre,residentes.empleado_id FROM obras LEFT JOIN residentes ON residentes.id = obras.residente_id LEFT JOIN empleados ON residentes.empleado_id = empleados.id';
+  var listaObras = 'SELECT obras.*, empleados.nombre, empleados.id, usuarios.categoria  FROM obras LEFT JOIN empleados ON empleados.obra = obras.obra_id LEFT JOIN usuarios ON usuarios.empleado_id = empleados.id WHERE usuarios.categoria = "residente"';
     db.query(listaObras, function(err, obras){
     if(err) throw err;
     else {
@@ -222,33 +226,14 @@ router.get('/obra/:obraid', isLoggedIn, function(req, res, next) {
 });
 
 router.get('/obras/nueva', function(err,res){
-  var infoObras = 'SELECT * FROM residentes';
+  var infoObras = 'SELECT usuarios.empleado_id, empleados.nombre FROM usuarios JOIN empleados ON usuarios.empleado_id = empleados.id WHERE categoria = "residente"';
     db.query(infoObras, function(err, info){
+      console.log(info)
     if(err) throw err;
     else {
         res.render('obranueva', { title: 'Obras', info: info });
     }
   });
-})
-
-router.get('/obras/editar/:idobra', function(req,res,err){
-    console.log(req.params.idobra)
-  var id =req.params.idobra;
-  var getObra = "SELECT * FROM `obras` WHERE `obra_id` = "+ id;
-    db.query(getObra, function(err, obra){
-    if(err) throw err;
-    else {
-        res.render('editarobra', { title: 'Obras', obra: obra });
-    }
-  });
-})
-
-router.post('/obras/editar/:idobra', function(req,res,err){
-request({
-  method: "PUT",
-  uri: site+"api/obras/"+req.params.idobra,
-  json: req.body
- });
 })
 
 router.get('/obras/editar/:idobra', function(req,res,err){
