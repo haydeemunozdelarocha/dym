@@ -10,7 +10,7 @@ var fs = require('fs');
 var readTable = 'SELECT * FROM obras';
 var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.concepto, materiales.precio, materiales.proveedor_id, conceptos.nombre_concepto, recibos.hora,recibos.foto FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON materiales.id = acarreos.material_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON materiales.concepto=conceptos.conceptos_id OR acarreos.concepto_flete = conceptos.conceptos_id ORDER BY recibo_id, categoria DESC';
 
-var path = 'http://locahost:3000/';
+var path = 'http://localhost:3000/';
 
 function base64_encode(file) {
     // read binary data
@@ -34,40 +34,6 @@ router.get('/login', function(req, res, next) {
   res.render('login', { title: 'Express' });
 });
 
-router.post('/signin', function(req,res,next){
-  var username = req.body.username;
-  var password = req.body.password;
-  console.log(req.body.username)
-  console.log(req.body.password)
-      db.query("SELECT * FROM `usuarios` WHERE `username` = '" + username + "'",function(err,rows){
-      if (err)
-                return err;
-       if (!rows.length) {
-                 res.send('No user found.');
-            }
-
-      // if the user is found but the password is wrong
-            if (!( rows[0].password == password))
-                res.send('Wrong password.');// create the loginMessage and save it to session as flashdata
-
-            // all is well, return successful user
-            return  req.logIn(rows[0], function (err) {
-                    if (err) {
-                        return err;
-                    } else if(req.user.categoria === "checador") {
-                        if(!req.user.accessToken) {
-                        res.cookie('user', req.user,{ maxAge: 900000 });
-                          return res.redirect('/auth/nest')
-                        }
-                        return res.redirect('/captura');
-                    } else if (req.user.categoria === "residente"){
-                      var obra = req.user.obra_id;
-                      return res.redirect('/residentes/obra');
-                    }
-                });
-
-    });
-});
 
 router.get('/registrar/:idempleado', function(req, res, next) {
   var empleado_id = req.params.idempleado;
@@ -80,79 +46,39 @@ router.get('/registrar/:idempleado', function(req, res, next) {
   });
 });
 
-router.get('/auth/nest', passport.authenticate('nest'), function(req, res){
-  console.log('sending request')
-});
-router.post('/signup', function(req, res, next){
-  var categoria = req.body.categoria;
-  var username = req.body.username;
-   var password = req.body.password;
-   var empleado_id= req.body.empleado_id;
-     var obra_id= req.body.obra_id;
-      db.query("select * from usuarios where username = '"+username+"'",function(err,rows){
-      console.log("above row object");
-      if (err)
-                return err;
-       if (rows.length) {
-                res.redirect('/registrar');
-            } else {
-                var newUserMysql = new Object();
-
-        newUserMysql.categoria    = categoria;
-        newUserMysql.username    = username;
-        newUserMysql.password    = password;
-        newUserMysql.empleado_id    = empleado_id;
-        newUserMysql.obra_id    = obra_id;
-
-        var insertQuery = "INSERT INTO usuarios ( categoria, username, password, empleado_id, obra_id ) values ('" + categoria+"','"+username+"','"+password+"','"+empleado_id+"',"+obra_id+")";
-        db.query(insertQuery,function(err,rows){
-          newUserMysql.id_usuario = rows.insertId;
-                    if (err) {
-                        return err;
-                    }
-                      res.redirect('/empleados')
-
-        });
-      }
-    });
-});
-
-
-router.get('/auth/nest', passport.authenticate('nest'), function(req, res){
-  console.log('sending request')
-});
-
-router.get('/auth/nest/callback', passport.authenticate('nest'),
-  function(req, res) {
-    console.log("callback")
-    var user = req.cookies.user;
-    var user_id = user.id_usuario;
-    console.log(user);
-    var accessToken = req.user.accessToken;
-    var updateUsuario = 'UPDATE usuarios SET accessToken = ? WHERE id_usuario = ?';
-    db.query(updateUsuario,[accessToken,user_id], function(err, usuario){
-    if(err) throw err;
-    else {
-          res.redirect('/captura')
-          }
-    });
-  });
-
-
- function isLoggedIn(req, res, next){
-  console.log('is logged in?')
+function isLoggedIn(req, res, next){
     if (req.isAuthenticated()) {
       console.log(req.user)
       next();
-    }else{
+    } else{
       res.redirect('/login');
     }
-  };
+};
 
-router.get('/logout', function(req, res, next) {
-req.logout();
-res.redirect('/');
-});
+function checkAuthToken(req, res, next) {
+    if(!req.user.accessToken) {
+      res.cookie('user', req.user,{ maxAge: 900000 });
+      return res.redirect('/users/auth/nest')
+    } else {
+      next()
+    }
+}
+
+router.get('/captura', [isLoggedIn,checkAuthToken], function(req, res){
+  var infoProveedores = 'SELECT * FROM proveedores';
+  var infoZonas = 'SELECT * FROM zonas';
+    db.query(infoProveedores, function(err, proveedores){
+    if(err) throw err;
+    else {
+        db.query(infoZonas, function(err, zonas){
+          if(err) throw err;
+          else {
+        res.render('captura', { title: 'Acarreos', proveedores: proveedores, zonas:zonas });
+          }
+        });
+    }
+  });
+})
 
 router.get('/buscar',isLoggedIn, function(req, res, next) {
   var usuario=req.user;
@@ -316,22 +242,6 @@ router.get('/acarreos', function(err,res){
   });
 })
 
-
-router.get('/captura', isLoggedIn, function(req, res){
-  var infoProveedores = 'SELECT * FROM proveedores';
-  var infoZonas = 'SELECT * FROM zonas';
-    db.query(infoProveedores, function(err, proveedores){
-    if(err) throw err;
-    else {
-        db.query(infoZonas, function(err, zonas){
-          if(err) throw err;
-          else {
-        res.render('captura', { title: 'Acarreos', proveedores: proveedores, zonas:zonas });
-          }
-        });
-    }
-  });
-})
 
 router.get('/recibo/:id', function(req, res, next) {
   var id = req.params.id;
@@ -506,10 +416,11 @@ router.get('/estimaciones/editar/:id', function(req, res, next) {
 });
 
 router.get('/empleados', function(req, res, next) {
-    request.get(path+'api/empleados', function (error, response, body) {
-  if (!error && response.statusCode == 200) {
+  var usuario = req.user;
+    rp(path+'api/empleados').then( function (body,err) {
+  if (!err) {
     var empleados = JSON.parse(body);
-    res.render('empleados', { title: 'Empleados', empleados: empleados });
+    res.render('empleados', { title: 'Empleados', empleados: empleados, usuario:usuario });
   }
 })
 });

@@ -16,7 +16,6 @@ router.get('/', function(err,res){
     db.query(listaEmpleados, function(err, rows){
     if(err) throw err;
     else {
-      console.log(rows)
         res.send(rows);
     }
   });

@@ -156,7 +156,7 @@ router.delete('/:id', function(req, err,res){
   db.query(borrarAcarreo, function(err, res){
     if(err) throw err;
     else {
-        console.log('El acarreo ha sido eliminado');
+        res.redirect('/residentes/estimaciones');
     }
   });
 })

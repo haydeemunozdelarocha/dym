@@ -146,7 +146,7 @@ router.post('/articulos', function(req,res,err){
 
 router.get('/sumar/:id', function(req,res,err){
   console.log('sumar')
-  var estimacion_id = req.params.id;
+  var estimacion_id = Number(req.params.id);
   var sumarConceptos = 'SELECT estimaciones.categoria sum(importe) AS subtotal FROM estimacion_articulo WHERE estimacion_id = ? GROUP BY estimacion_articulo.concepto_id';
   var updateTotals = 'UPDATE estimaciones SET subtotal = ?, iva = ?, retencion = ?, total = ? WHERE estimaciones_id = ?';
         db.query(sumarConceptos,[estimacion_id],function(err,totales){
@@ -216,7 +216,7 @@ router.delete('/borrar/:id', function(req,res,err){
     if(err) throw err;
     else {
         console.log('Esta estimación ha sido eliminada');
-        res.redirect('/estimaciones');
+        res.redirect('/residentes/estimaciones');
     }
   });
 })

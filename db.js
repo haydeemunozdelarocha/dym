@@ -10,7 +10,7 @@ var db_config      =    mysql.createPool({
     debug    :  false,
     multipleStatements: true,
     queueLimit: 50,
-    acquireTimeout:30000,
+    acquireTimeout:1000000,
     connectTimeout:0
 });
 
@@ -41,7 +41,7 @@ db_config.on('error', function(err) {
     } else if(err.code === 'ECONNREFUSED'){
       console.log(err.code)
       handleDisconnect();
-    }else {                           // connnection idle timeout (the wait_timeout
+    } else {                           // connnection idle timeout (the wait_timeout
       handleDisconnect();                                // server variable configures this)
     }
   });
