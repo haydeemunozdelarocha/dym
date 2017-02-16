@@ -4,6 +4,7 @@ var mysql = require('mysql');
 var db = require('../db.js');
 var passport = require('passport');
 var rp = require('request-promise');
+var moment= require('moment');
 var fs = require('fs');
 
 var path = 'http://localhost:3000/';
@@ -88,12 +89,7 @@ router.get('/recibo/:id', function(req, res, next) {
           db.query(readCamion,[camion_id], function(err, camion){
             if(err) throw err;
             else {
-              var image = base64_encode('./public/images/dym-logo copy.bmp');
-              console.log(acarreo[0].hora)
-              var html = '<img height="100px" src="data:image/bmp;base64,'+image+'"/><h2>DYM INGENIEROS CONSTRUCTORES SA DE CV</h2><h2>RECIBO ACARREOS</h2><div id="recibo-style" style="font-size: 20px;"><h3><strong>Fecha: </strong>'+acarreo[0].hora+'</h3><h3><strong>Recibo No.:</strong>'+acarreo[0].recibo_id+'</h3><h3><strong>No. Camión:</strong>'+camion[0].camion_id+'</h3><h3><strong>Placas:</strong>'+camion[0].placas+'</h3><h3><strong>Modelo:</strong>'+camion[0].modelo+'</h3><h3><strong>Fletero:</strong>'+camion[0].razon_social+'</h3><br><h3><strong>Material:</strong>'+material[0].nombre_concepto+'</h3><h3><strong>Proveedor:</strong>'+material[0].razon_social+'</h3><h3><strong>Cantidad:</strong>'+acarreo[0].cantidad+' '+material[0].unidad+'</h3><h3><strong>Precio Unitario: </strong>$'+material[0].precio+'</h3>';
-              html = encodeURIComponent(html);
-              console.log(html)
-              res.send(html);
+              res.render('recibo',{acarreo:acarreo,camion:camion,material:material})
             }
           });
         }
@@ -102,6 +98,36 @@ router.get('/recibo/:id', function(req, res, next) {
   });
 });
 
+// //recibo returning Encoded HTML
+// router.get('/recibo/:id', function(req, res, next) {
+//   var id = req.params.id;
+//   var readTable = 'SELECT acarreos.*, recibos.* FROM acarreos JOIN recibos ON acarreos.recibo_id = recibos.recibo_id WHERE acarreos.recibo_id = ?';
+//   var readMaterial = 'SELECT materiales.*, proveedores.razon_social, conceptos.* FROM materiales JOIN proveedores ON materiales.proveedor_id = proveedores.id JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.id = ?';
+//     var readCamion = 'SELECT camiones.*,proveedores.razon_social FROM camiones JOIN proveedores ON camiones.proveedor_id = proveedores.id WHERE camion_id = ?';
+//     db.query(readTable,[id], function(err, acarreo){
+//     if(err) throw err;
+//     else {
+//       var material_id = acarreo[1].material_id;
+//       var camion_id = acarreo[0].camion_id;
+//       db.query(readMaterial,[material_id], function(err, material){
+//         if(err) throw err;
+//         else {
+//           db.query(readCamion,[camion_id], function(err, camion){
+//             if(err) throw err;
+//             else {
+//               var image = base64_encode('./public/images/dym-logo copy.bmp');
+//               console.log(acarreo[0].hora)
+//               var html = '<img height="100px" src="data:image/bmp;base64,'+image+'"/><h2>DYM INGENIEROS CONSTRUCTORES SA DE CV</h2><h2>RECIBO ACARREOS</h2><div id="recibo-style" style="font-size: 20px;"><h3><strong>Fecha: </strong>'+acarreo[0].hora+'</h3><h3><strong>Recibo No.:</strong>'+acarreo[0].recibo_id+'</h3><h3><strong>No. Camión:</strong>'+camion[0].camion_id+'</h3><h3><strong>Placas:</strong>'+camion[0].placas+'</h3><h3><strong>Modelo:</strong>'+camion[0].modelo+'</h3><h3><strong>Fletero:</strong>'+camion[0].razon_social+'</h3><br><h3><strong>Material:</strong>'+material[0].nombre_concepto+'</h3><h3><strong>Proveedor:</strong>'+material[0].razon_social+'</h3><h3><strong>Cantidad:</strong>'+acarreo[0].cantidad+' '+material[0].unidad+'</h3><h3><strong>Precio Unitario: </strong>$'+material[0].precio+'</h3>';
+//               html = encodeURIComponent(html);
+//               console.log(html)
+//               res.send(html);
+//             }
+//           });
+//         }
+//       });
+//     }
+//   });
+// });
 
 //ESTIMACIONES
 router.get('/buscar',isLoggedIn, function(req, res, next) {
@@ -135,26 +161,41 @@ router.get('/estimaciones',isLoggedIn, function(req, res, next) {
 });
 
 router.get('/estimaciones/nueva', function(req, res, next) {
+  var obra_id=req.user.obra_id;
+  var estimacion_id;
+  var obras;
+  var proveedores;
+  var date = Date.now();
+  var fecha = moment(date).format("YYYY-MM-DD HH:mm");
+  var periodo_inicio = req.body.date1;
+  var periodo_final = req.body.date2;
+  var proveedor_id = req.body.proveedor;
+    var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,proveedor_id) VALUE(?,?,?,?,?)';
     var readObras = 'SELECT * FROM obras ORDER BY codigo ASC';
-    db.query(readObras, function(err, obras){
-    if(err) throw err;
-    else {
-          var readProveedores = 'SELECT * FROM proveedores ORDER BY razon_social ASC';
-          db.query(readProveedores, function(err, proveedores){
-          if(err) throw err;
-          else {
-          var getLastEstimacion = 'SELECT * FROM estimaciones ORDER BY id DESC LIMIT 1';
-              db.query(getLastEstimacion, function(err, ultimaEstimacion){
-              if(err) throw err;
-              else {
-                res.render('nuevaestimacion', { title: 'Estimaciones', obras: obras, proveedores: proveedores, ultimaEstimacion: ultimaEstimacion });
-                }
-              });
-            }
-        });
-      }
-  });
+    var getLastEstimacion = 'SELECT * FROM estimaciones ORDER BY estimaciones_id DESC LIMIT 1';
+    var readProveedores = 'SELECT * FROM proveedores ORDER BY razon_social ASC';
+
+     db.query(nuevaEstimacion,[obra_id,fecha,periodo_inicio,periodo_final,proveedor_id])
+     .then( function(estimaciones,err){
+      if(err) throw err;
+        else {
+          estimacion_id=estimaciones.insertId;
+          return db.query(readObras)
+        }
+      }).then(function(rows, err){
+      if(err) throw err;
+        else {
+          obras = rows;
+          return db.query(readProveedores);
+        }
+      }).then(function (rows, err){
+      proveedores = rows;
+     }).then(()=>{
+         res.render('nuevaestimacion', { title: 'Estimaciones', obras: obras, proveedores: proveedores, estimacion_id:estimacion_id, obra_id:obra_id });
+     })
 });
+
+
 
 router.get('/estimaciones/:id', function(req,res,err){
   var estimacion_id = req.params.id;
@@ -177,6 +218,7 @@ router.get('/estimaciones/:id', function(req,res,err){
       }
   });
 })
+
 router.get('/estimaciones/editar/:id', function(req, res, next) {
   var id = req.params.id;
   var getEstimacion = "SELECT * FROM `estimacion` WHERE `id` = " + id;

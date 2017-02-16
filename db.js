@@ -62,7 +62,7 @@ db_config.on('end', function() {
   db_config.end();
 });
 
-function handleDisconnect() {
+function handleDisconnect(res,req,err) {
 console.log('reconnecting...')
 db_config.getConnection(function(err){
   if(err){
@@ -71,7 +71,7 @@ db_config.getConnection(function(err){
     return;
   }
   console.log('Conectado');
-  console.log(req.get('referer'))
+  console.log(req)
   res.redirect(req.get('referer'));
 });
 }

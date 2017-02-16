@@ -62,7 +62,7 @@ console.log(usuario_id,zona_id,foto,hora,obra_id)
                             else {
                               console.log(acarreo)
                               console.log(recibo)
-                              res.json({recibo:recibo})
+                              res.redirect('/recibo/'+recibo)
                             }
                         });
                       }
@@ -123,15 +123,7 @@ router.post('/buscar', function(req,res,next){
             res.render('error',{message: message});
     }
     else if (acarreos.length > 0){
-          var ids = [];
-          for (var i = 0 ; i < acarreos.length ; i++){
-            ids.push(acarreos[i].acarreo_id)
-          }
-          console.log(ids)
-          date1 = moment(date1).format("YYYY-MM-DD HH:mm");
-          date2 = moment(date2).format("YYYY-MM-DD HH:mm");
-          var message = ""
-            res.render('nuevaestimacion', { title: 'Nueva Estimación', acarreos: acarreos, date1: date1, date2:date2, proveedor:proveedor_id, categoria: categoria, obra: obra_id, ids: ids , message:message});
+            res.send({acarreos: acarreos, message:message});
       }
   });
 })

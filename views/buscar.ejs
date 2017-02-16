@@ -14,7 +14,6 @@
   <% include ./partials/residentesheader.ejs %>
 <% } %>
 <div id="content-container">
-<form action="/api/acarreos/buscar" method="POST">
 <% if (usuario.categoria === "administrador"){ %>
     <div class="form-group">
     <label for="obras">Obras</label>
@@ -27,12 +26,12 @@
 <% } %>
   <div class="form-group" id="fechas">
     <label for="fecha">Periódo</label>
-    <input type="date" class="form-control" id="date1" name="date1">
-    <input type="date" class="form-control" id="date2" name="date2">
+    <input type="date" class="form-control" id="date1" name="date1" onchange="clearResultados()">
+    <input type="date" class="form-control" id="date2" name="date2" onchange="clearResultados()">
 </div>
   <div class="form-group">
     <label for="proveedor">Proveedor</label>
-    <select class="form-control" id="proveedor_id" name="proveedor_id">
+    <select class="form-control" id="proveedor_id" name="proveedor_id" onchange="clearResultados()">
     <% for(var i=0; i<proveedores.length; i++) {%>
       <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
     <% } %>
@@ -40,14 +39,17 @@
   </div>
     <div class="form-group">
     <label for="categoria">Categoría</label>
-    <select class="form-control" id="categoria" name="categoria">
+    <select class="form-control" id="categoria" name="categoria" onchange="clearResultados()">
       <option value="">Categoria</option>
       <option value="flete">Fletes</option>
       <option value="material">Materiales</option>
     </select>
   </div>
-  <button type="submit" class="btn btn-primary">Buscar</button>
-</form>
+  <button type="submit" class="btn btn-primary" style="margin-bottom:3%; display:block;float:right" onclick="buscarAcarreos()">Buscar</button>
+  <br>
+<div id = "resultados" style="margin-top: 5%">
+
+</div>
 </div>
 <script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>

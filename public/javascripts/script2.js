@@ -86,7 +86,6 @@ function buildURLScheme(encodedReceiptBase64) {
 
   //var testString = "<body><div><ul><li>test</li><li>test1</li><li>test2</li><li>test3</li><li>test4</li></ul><div></body>";
   console.log("Base64Encoded Data: " + encodedReceiptBase64);
-  alert("Base64Encoded Data: " + encodedReceiptBase64);
 
   var passprntURL = urlStart + encodedReceiptBase64 + urlEnd;
   //window.open(passprntURL, "");

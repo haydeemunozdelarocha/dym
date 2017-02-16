@@ -12,150 +12,35 @@
 <body>
 <% include ./partials/residentesheader.ejs %>
 <div id="content-container">
-<div class="input-group">
-  <label>Proveedor:</label>
-  <input type="text" class="form-control" name="proveedor-nombre" id="proveedor_nombre" value="<%= acarreos[0].razon_social %>" disabled>
-  <input type="hidden" class="form-control" name="proveedor" id="proveedor" value="<%= proveedor %>">
+ <input type="hidden" class="form-control" id="estimacion_id" name="estimacion_id" value="<%=estimacion_id%>">
+ <div class="form-group" id="fechas">
+    <label for="fecha">Periódo</label>
+    <input type="date" class="form-control" id="date1" name="date1" onchange="clearResultados()">
+    <input type="date" class="form-control" id="date2" name="date2" onchange="clearResultados()">
 </div>
-<div class="input-group">
-  <label>Obra:</label>
-  <input type="text" class="form-control" name="obra-nombre" id="obra-nombre" value="<%= acarreos[0].nombre_obra %>" disabled>
-  <input type="hidden" class="form-control" name="obra" id="obra" value="<%= obra %>" disabled>
+  <div class="form-group">
+    <label for="proveedor">Proveedor</label>
+    <select class="form-control" id="proveedor_id" name="proveedor_id" onchange="clearResultados()">
+    <% for(var i=0; i<proveedores.length; i++) {%>
+      <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
+    <% } %>
+    </select>
+  </div>
+    <div class="form-group">
+    <label for="categoria">Categoría</label>
+    <select class="form-control" id="categoria" name="categoria" onchange="clearResultados()">
+      <option value="">Categoria</option>
+      <option value="flete">Fletes</option>
+      <option value="material">Materiales</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary" style="margin-bottom:3%; display:block;float:right" onclick="buscarAcarreos()">Buscar</button>
+  <br>
+  <div id = "resultados" style="margin-top: 5%">
+  </div>
+    <div id = "totales" style="margin-top: 5%">
+  </div>
 </div>
-<div class="input-group">
-  <label>Periódo:</label>
-<input type="text" class="form-control" name="date1" id="date1" value="<%=date1 %>" disabled>
-<br>
-<input type="text" class="form-control" name="date2" id="date2" value="<%=date2 %>" disabled>
-</div>
-<br>
-  <% if (categoria === "material") { %>
-<div class="form-group">
-  <div class="panel panel-default">
-  <!-- Default panel contents -->
-  <div class="panel-heading">Acarreos</div>
-  <h4><%= message %></h4>
-     <table class="table" id="tabla-acarreos-material">
-       <tr>
-        <td>
-           ID
-         </td>
-         <td>
-           Fecha
-         </td>
-        <td>
-           Concepto
-         </td>
-         <td>
-           Zona
-         </td>
-         <td>
-           Cantidad
-         </td>
-         <td>
-           Precio Unitario
-         </td>
-         <td>
-           Total
-         </td>
-       </tr>
-       <% for (var i = 0; i < acarreos.length ; i++ ) { %>
-        <tr>
-         <td>
-           <p><%=acarreos[i].acarreo_id %></p>
-         </td>
-         <td>
-           <p><%=acarreos[i].hora %></p>
-         </td>
-        <td>
-        <p><%=acarreos[i].nombre_concepto %></p>
-         </td>
-         <td>
-        <p><%=acarreos[i].nombre_zona %></p>
-         </td>
-         <td>
-           <p><%=acarreos[i].cantidad %> <%=acarreos[i].unidad %></p>
-         </td>
-         <td>
-            <p>$<%=acarreos[i].precio %></p>
-         </td>
-         <td>
-           <p>$<%=acarreos[i].total %></p>
-         </td>
-       </tr>
-       <% } %>
-     </table>
-     </div>
-     </div>
-  <div id="button"><button type="submit" class="btn btn-primary" onclick="createArticulos('(<%= ids %>)', '<%= categoria %>', '<%=obra%>','<%=proveedor%>','<%=date1 %>','<%=date2 %>')" >Guardar</button></div>
-  </form>
-</div>
-<% } else if (categoria === "flete") { %>
-<div class="form-group">
-  <div class="panel panel-default">
-  <!-- Default panel contents -->
-  <div class="panel-heading">Acarreos</div>
-     <table class="table" id="tabla-acarreos-fletes">
-       <tr>
-        <td>
-           ID
-         </td>
-         <td>
-           Fecha
-         </td>
-         <td>
-           Camión
-         </td>
-        <td>
-           Concepto
-         </td>
-          <td>
-           Zona
-         </td>
-         <td>
-           Cantidad
-         </td>
-         <td>
-           Precio Unitario
-         </td>
-         <td>
-           Total
-         </td>
-       </tr>
-       <% for (var i = 0; i < acarreos.length ; i++ ) { %>
-        <tr>
-         <td>
-           <p name="id"><%=acarreos[i].acarreo_id %></p>
-         </td>
-         <td>
-           <p><%=acarreos[i].hora %></p>
-         </td>
-        <td>
-        <p><%=acarreos[i].numero %></p>
-         </td>
-         <td>
-        <p><%=acarreos[i].nombre_concepto %></p>
-         </td>
-         <td>
-        <p><%=acarreos[i].nombre_zona %></p>
-         </td>
-         <td>
-           <p><%=acarreos[i].cantidad %> <%=acarreos[i].unidad_camion %></p>
-         </td>
-         <td>
-            <p>$<%=acarreos[i].precio_flete %></p>
-         </td>
-         <td>
-           <p>$<%=acarreos[i].total %></p>
-         </td>
-       </tr>
-       <% } %>
-     </table>
-     </div>
-     </div>
-  <div id="button"><button type="submit" class="btn btn-primary" onclick="createArticulos('(<%= ids %>)', '<%= categoria %>', '<%=obra%>','<%=proveedor%>','<%=date1 %>','<%=date2 %>')" >Guardar</button></div>
-</div>
-<% } %>
 <script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>
 </html>
