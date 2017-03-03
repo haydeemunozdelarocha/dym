@@ -9,19 +9,32 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
+<% if (usuario.categoria === "residente"){ %>
   <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+  <% include ./partials/adminheader.ejs %>
+<% } %>
   <div id="content-container">
   <ul class="nav">
 </ul>
-    <div id="proveedor">
-      <label for="proveedor">Buscar por Proveedor:</label>
+    <div id="proveedor-container">
         <select class="form-control" name="proveedor_id" id="proveedor_id">
-          <% for(var i=0; i<info.length; i++) {%>
-            <option value="<%= info[i].id %>"><%= info[i].razon_social %></option>
+          <option value="">Proveedor</option>
+          <% for(var i=0; i<proveedores.length; i++) {%>
+            <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
           <% } %>
         </select>
     </div>
     <br>
+    <select class="form-control" name="obra_id" id="obra_id">
+            <option value="">Obra</option>
+      <% for(var i=0; i<obras.length; i++) {%>
+            <option value="<%= obras[i].obra_id %>"><%= obras[i].nombre_obra %></option>
+    <% } %>
+    </select>
+    <br>
+    <button type="submit" class="btn btn-primary" style="margin-bottom: 10px;" onclick="allMateriales()">Buscar</button>
+<br>
   <div id="table">
 <div class="panel panel-default">
   <!-- Default panel contents -->
@@ -37,13 +50,6 @@
             <option value="<%= conceptos[i].conceptos_id %>"><%= conceptos[i].nombre_concepto %></option>
     <% } %>
     </select></td>
-      <td><select class="form-control" name="proveedor_id" id="proveedor_id">
-            <option value="">Proveedor</option>
-      <% for(var i=0; i<info.length; i++) {%>
-            <option value="<%= info[i].id %>"><%= info[i].razon_social %></option>
-    <% } %>
-    </select>
-    </td>
     <td>
       <select class="form-control" name="unidad" id="unidad">
         <option value="">Unidad</option>
@@ -54,8 +60,10 @@
       </select>
     </td>
     <td><input type="text" class="form-control" placeholder="Precio" name="precio" id="precio"></td>
-    <td><a href="" onclick="saveMaterial()"><span class="glyphicon glyphicon-plus-sign save-material"></span></a></td>
+    <td><span onclick="saveMaterial()" class="glyphicon glyphicon-plus-sign save-material"></span></td>
      </tr>
+     </table>
+     <table class="table"id="todos-materiales">
     <tr>
       <td>ID</td>
       <td>Nombre</td>
@@ -64,19 +72,21 @@
       <td>Precio</td>
     </tr>
     <% for(var i=0; i<info.length; i++) {%>
-    <tr id="tabla-materiales">
+    <tr class="tabla-materiales">
       <td><%= info[i].id %></td>
      <td><%= info[i].nombre_concepto %></td>
       <td><%= info[i].razon_social %></td>
       <td><%= info[i].unidad %></td>
       <td>$<%= info[i].precio %></td>
       <td><a href="/materiales/editar/<%= info[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
-      <td><a href="/api/materiales/borrar/<%= info[i].id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+      <td><a onclick="deleteMaterial(<%= info[i].id %>)"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
      </tr>
     <% } %>
     </table>
 
   </div>
 </div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+
 </body>
 </html>

@@ -11,12 +11,12 @@
 <body>
 <% include ./partials/residentesheader.ejs %>
 <div id="content-container">
-  <form action="/api/camiones/<%= camion[0].id %>" method="post" enctype="application/x-www-form-urlencoded">
+  <form action="/api/camiones/<%= camion[0].camion_id %>" method="post" enctype="application/x-www-form-urlencoded">
   <input type="hidden" name="_method" value="put">
-  <input type="text" value="<%= camion[0].id %>" name="id" id="id">
+  <input type="text" value="<%= camion[0].camion_id %>" name="id" id="id">
 <div class="input-group">
   <label>Número:</label>
-  <input type="text" class="form-control" name="numero" id="numero">
+  <input type="text" class="form-control" name="numero" id="numero" value="<%=camion[0].numero%>">
 </div>
 
 <div class="input-group">

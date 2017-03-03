@@ -89,6 +89,21 @@ router.get('/:obra', function(req, res, next ){
   });
 })
 
+router.post('/totales', function(req, res, next ){
+  var obra_id= req.body.obra_id;
+  var concepto_id= req.body.concepto_id;
+  var zona_id= req.body.zona_id;
+  var getPresupuesto = 'SELECT * FROM presupuestos WHERE obra =? AND concepto = ? AND zona = ?';
+  console.log(obra_id,concepto_id,zona_id)
+  db.query(getPresupuesto,[obra_id,concepto_id,zona_id], function(err, presupuesto){
+    if(err) throw err;
+    else {
+        console.log(presupuesto);
+        res.json(presupuesto)
+    }
+  });
+})
+
 router.get('/totales/:obra', function(req, res, next ){
   var obra= req.params.obra;
   var concepto= req.params.concepto;
@@ -147,7 +162,19 @@ var total= req.body.total;
   });
 })
 
+//Agregar presupuesto a obra
+router.put('/agregar/:idobra', function(req,res,err){
+var id = req.params.idobra;
+var editarObra = 'UPDATE obras SET presupuesto = "Y" WHERE obra_id= ?';
 
+    db.query(editarObra,[id], function(err, obra){
+    if(err) throw err;
+    else {
+        console.log('Listo');
+        res.send(obra)
+    }
+  });
+})
 
 router.use( function( req, res, next ) {
     // this middleware will call for each requested

@@ -1,0 +1,31 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DYM Ingenieros Constructores | Estimación Nueva</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body><div id="signature-pad" class="m-signature-pad">
+    <div class="signature-pad-body" style="background-color: lightgray">
+      <canvas width="500px"></canvas>
+    </div>
+    <div class="signature-pad-footer">
+      <div class="signature-pad-left">
+        <button type="button" class="button clear btn btn-primary" data-action="clear">Clear</button>
+      </div>
+      <div class="signature-pad-right">
+        <button type="button" class="button save btn btn-primary" data-action="save-png">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="hidden" id="categoria" value="<%= categoria %>">
+<input type="hidden" id="estimacion_id" value="<%= estimacion_id %>">
+<script src="/javascripts/signature.js" type="text/javascript" charset="utf-8" async defer></script>
+
+</body>
+</html>

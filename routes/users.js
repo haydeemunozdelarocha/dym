@@ -5,12 +5,6 @@ var passport = require('passport');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  if(req.user.categoria === 'checador'){
-    res.redirect('/captura');
-  } else if(req.user.categoria === 'residente'){
-    var obra_id = req.user.obra_id;
-    res.redirect('/obra/'+obra_id)
-  }
 });
 
 router.post('/signup', passport.authenticate('local-signup', {
@@ -18,10 +12,19 @@ router.post('/signup', passport.authenticate('local-signup', {
             failureRedirect : '/'
 }));
 
-router.post('/login', passport.authenticate('local-login', {
-            successRedirect : '/users',
-            failureRedirect : '/login'
-}));
+router.post('/login', passport.authenticate('local-login'),function(req,res){
+    if(req.user.categoria === 'checador'){
+    res.redirect('/captura');
+  } else if(req.user.categoria === 'residente'){
+    var obra_id = req.user.obra_id;
+    res.redirect('/obra/'+obra_id)
+  } else if (req.user.categoria === 'administrador'){
+    res.redirect('/administrador')
+  } else {
+    console.log(req.user)
+  }
+}
+);
 
 router.get('/auth/nest', passport.authenticate('nest'), function(req, res){
   console.log('sending request')

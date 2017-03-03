@@ -5,7 +5,6 @@ canvas.setAttribute("width", "576");
 canvas.setAttribute("height", "100");
 canvas.style.visibility = "hidden"; // to hide the canvas
 canvas.style.display = "none"; // to not ruin the layout of the page
-console.log(canvas)
 var hidden, visibilityChange;
 if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
   hidden = "hidden";
@@ -38,17 +37,13 @@ function passPRNT() {
 }
 
 function loadImages(src) {
-  console.log("DOMContentLoaded"); // checking
     image = new Image();
     image.onload = function() {
-    console.log("image loaded, hopefully."); // checking again, this actually fires after the function exits
   }
   image.onerror = function() {
     alert("Failed to load image."); // checking again
   }
   image.src = src;
-  console.log(src)
-  console.log("Exiting Function, cross your fingers that your images loaded :|");
 }
 
 function drawCanvas(image) {
@@ -65,12 +60,10 @@ function createImgElement(base64URL) {
   var imgElement = document.createElement("img");
   imgElement.setAttribute("src", base64URL);
   // imgElement.setAttribute("style", "padding-bottom: 10px;");
-  console.log(imgElement.outerHTML)
   createImgElementBase64(imgElement.outerHTML);
 }
 
 function createImgElementBase64(htmlElement) {
-  console.log(htmlElement)
   var receipt = encodeURIComponent(htmlElement + document.getElementById("printData").innerHTML); // latter portion retrieves HTML from the DOM
   buildURLScheme(receipt);
 }
@@ -85,7 +78,6 @@ function buildURLScheme(encodedReceiptBase64) {
   var urlEnd = "&size=3&back=" + back;
 
   //var testString = "<body><div><ul><li>test</li><li>test1</li><li>test2</li><li>test3</li><li>test4</li></ul><div></body>";
-  console.log("Base64Encoded Data: " + encodedReceiptBase64);
 
   var passprntURL = urlStart + encodedReceiptBase64 + urlEnd;
   //window.open(passprntURL, "");

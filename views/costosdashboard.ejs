@@ -11,12 +11,20 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
-<% if (usuario.categoria === "residente"){ %>
-  <% include ./partials/residentesheader.ejs %>
-<% }  else if (usuario.categoria === "administrador"){%>
+<% if (usuario.categoria === "administrador"){ %>
   <% include ./partials/adminheader.ejs %>
 <% } %>
   <div id="content-container">
+
+  <label>
+  <select class="form-control" name="obra" id="obra">
+            <option value="">Obra</option>
+      <% for(var i=0; i<obras.length; i++) {%>
+            <option value="<%= obras[i].obra_id %>"><%= obras[i].nombre_obra %></option>
+  <% } %>
+    </select>
+    </label>
+
   <div class="content-header">  <p><h2><%= title %></h2></p></div>
 <div class="row">
   <div class="col-sm-4">

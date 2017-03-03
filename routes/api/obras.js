@@ -6,7 +6,6 @@ var methodOverride = require('method-override');
 var db = require('../../db.js');
 
 var listaObras = 'SELECT obras.*, empleados.nombre FROM obras LEFT JOIN empleados ON empleados.id = obras.residente_id';
- var editarObra = 'UPDATE obras SET codigo = ?, nombre_obra = ?, residente_id = ?, ciudad = ?, estado=? WHERE obra_id=?';
 var getObra = "SELECT * FROM `obras` WHERE `obra_id` = ?";
 
 //agregar obra
@@ -59,6 +58,7 @@ router.use(methodOverride(function(req, res){
 
   //Update a record.
 router.put('/:id', function(req,res,err){
+   var editarObra = 'UPDATE obras SET codigo = ?, nombre_obra = ?, residente_id = ?, ciudad = ?, estado=? WHERE obra_id=?';
   var obra_id= req.params.id;
   var nombre_obra = req.body.nombre;
   var codigo = req.body.codigo;
@@ -73,6 +73,7 @@ router.put('/:id', function(req,res,err){
     }
      });
 })
+
 
 router.use( function( req, res, next ) {
     // this middleware will call for each requested

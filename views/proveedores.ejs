@@ -9,7 +9,11 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
+<% if (usuario.categoria === "residente"){ %>
   <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+  <% include ./partials/adminheader.ejs %>
+<% } %>
   <div id="content-container">
 
  <p><a href="/proveedores/nuevo"><span class="glyphicon glyphicon-plus-sign"></span> Agregar</a></p>

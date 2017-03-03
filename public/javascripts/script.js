@@ -1,6 +1,7 @@
 
 var path = "http://locahost:3000/";
-
+var ids = [];
+var popUpWindow;
 function buscarAcarreos(){
   console.log('buscando')
   var proveedor_id= $('#proveedor_id').val();
@@ -21,15 +22,24 @@ function buscarAcarreos(){
   });
 
   acarreos.done(function(data){
-    var ids = [];
     var titles;
-    $('#resultados').html('<span class="glyphicon glyphicon-search"></span><div class="panel panel-default" style="visibility:hidden;><div class="panel-body" style="height: 200px; overflow-x:scroll;"><table id ="resultados-table" class="table table-striped"></table></div></div>')
-    var table = document.getElementById('resultados-table');
+    var container = document.getElementById('table')
+    var table = document.createElement('table');
+    var panel = document.createElement('div');
+    var panel2 = document.createElement('div');
+    panel.setAttribute('class','panel panel-default');
+    panel2.setAttribute('class','panel-heading');
+    panel2.innerHTML += 'Resultados';
+    table.setAttribute('id','resultados-table');
+    table.setAttribute('class','table');
+    container.appendChild(panel);
+    panel.appendChild(panel2);
+    panel.appendChild(table);
     var row = table.insertRow(row);
     if(categoria === 'flete'){
-      titles = ['Total','Precio Unitario','Cantidad','Zona', 'Concepto', 'Camión', 'Fecha','ID'];
+      titles = ['Foto','Total','Precio Unitario','Cantidad','Zona', 'Concepto', 'Fecha','ID'];
     } else if (categoria === 'material') {
-      titles = ['Total','Precio Unitario','Cantidad','Zona', 'Concepto', 'Material_id','Fecha','ID'];
+      titles = ['Foto','Total','Precio Unitario','Cantidad','Zona', 'Concepto', 'Fecha','ID'];
     }
       for(var i = 0; i < titles.length; i++) {
         this["cell"+i] = row.insertCell(0);
@@ -46,27 +56,23 @@ function buscarAcarreos(){
             var cell5 = this["row"+j].insertCell(4);
             var cell6 = this["row"+j].insertCell(5);
             var cell7 = this["row"+j].insertCell(6);
-            var cell8 = this["row"+j].insertCell(7);
+             var cell8 = this["row"+j].insertCell(7);
             cell1.innerHTML = data[j].acarreo_id;
             cell2.innerHTML = data[j].hora;
             if (categoria === 'flete'){
-              cell3.innerHTML = data[j].numero;
-              cell7.innerHTML = data[j].precio_flete;
+              cell6.innerHTML = data[j].precio;
             } else {
-              cell3.innerHTML = data[j].material_id;
-              cell7.innerHTML = data[j].precio;
+              cell6.innerHTML = data[j].precio;
             }
-            cell4.innerHTML = data[j].nombre_concepto;
-            cell5.innerHTML = data[j].nombre_zona;
-            cell6.innerHTML = data[j].cantidad;
-            cell8.innerHTML = data[j].total;
-            if(j==data.length-1) {
-              getTotales(ids,categoria);
-            }
+            cell3.innerHTML = data[j].nombre_concepto;
+            cell4.innerHTML = data[j].nombre_zona;
+            cell5.innerHTML = data[j].cantidad;
+            cell7.innerHTML = data[j].total;
+            cell8.innerHTML = '<a href="'+data[j].foto+'" onclick="window.open(this.href, "mywin","left=20,top=20,width=600,height=340,toolbar=1,resizable=0"); return false;"><span class="glyphicon glyphicon-camera"></span></a>'
          }
         }
       }
-    });
+      $('#estimacion-button').html('<button type="submit" class="btn btn-primary" style="margin-top:3%; margin-bottom:3%; display:block;float:right" onclick="getTotales()">Crear Estimación</button>')});
 
   acarreos.fail(function(jqXHR, textStatus, errorThrown){
     console.log(errorThrown);
@@ -78,90 +84,26 @@ function clearResultados(){
   $('#resultados').html('');
 }
 
-function getTotales(acarreos,categoria,obra,zona) {
-  // $('#button').html('')
-  // $('#button').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
+function getTotales() {
+  $('#estimacion-button').html('')
+  $('#estimacion-button').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
+  var proveedor_id= $('#proveedor_id').val();
+  var categoria = $('#categoria').val();
+  var date1 = $('#date1').val();
+  var date2 = $('#date2').val();
+  var acarreos = ids;
   console.log('sending')
   console.log(acarreos)
   acarreos = acarreos.toString()
 var estimacion = $.ajax({
-    url: '/api/estimaciones/sumar',
+    url: '/api/estimaciones/',
     type: 'POST',
-    data: {acarreos: acarreos, categoria:categoria}
+    data: {acarreos: acarreos, categoria:categoria, proveedor_id:proveedor_id,date1:date1,date2:date2}
   });
 
   estimacion.done(function(data){
     console.log(data)
-    var totales =data.totales;
-    var presupuestos = data.presupuestos;
-    $('#totales').html('<div class="panel panel-default"><div class="panel-body" style="height: 200px; overflow-x:scroll;"><table id ="totales-table" class="table table-striped"></table></div></div>')
-    var totalesTable = document.getElementById('totales-table');
-    var row = totalesTable.insertRow(row);
-        var cella1 = row.insertCell(0);
-        var cella2 = row.insertCell(0);
-        var cella3 = row.insertCell(0);
-        var cella4 = row.insertCell(0);
-        var cella5 = row.insertCell(0);
-        var cella6 = row.insertCell(0);
-        var cella7 = row.insertCell(0);
-        var cella8 = row.insertCell(0);
-        cella1.innerHTML = 'Subtotal';
-        cella2.innerHTML = 'Acumulado Actual';
-        cella3.innerHTML = 'Acumulado Anterior';
-        cella4.innerHTML = 'Esta Estimación';
-        cella5.innerHTML = 'Cantidad Presupuestada';
-        cella6.innerHTML = 'Zona';
-        cella7.innerHTML = 'Precio Unitario';
-        cella8.innerHTML = 'Concepto';
-
-          for(var j = 0 ; j < totales.length; j++){
-            this["row"+j] = totalesTable.insertRow(this["row"+j])
-            var cell1 = this["row"+j].insertCell(0);
-            var cell2 = this["row"+j].insertCell(1);
-            var cell3 = this["row"+j].insertCell(2);
-            var cell4 = this["row"+j].insertCell(3);
-            var cell5 = this["row"+j].insertCell(4);
-            var cell6 = this["row"+j].insertCell(5);
-            var cell7 = this["row"+j].insertCell(6);
-            var cell8 = this["row"+j].insertCell(7);
-            if (categoria === 'flete'){
-              cell1.innerHTML = totales[j].concepto_flete;
-              cell2.innerHTML = totales[j].precio_flete;
-            } else {
-              cell1.innerHTML = totales[j].material_id;
-            }
-            cell3.innerHTML = totales[j].zona_id;
-            console.log(presupuestos[j])
-            cell5.innerHTML = presupuestos[j].total;
-            cell4.innerHTML = totales[j].total_cantidad;
-            cell4.innerHTML = presupuestos[j].acumulado;
-            cell5.innerHTML = totales[j].total_concepto;
-            if(j==totales.length-1) {
-              console.log('done')
-            }
-         }
-    });
-
-  estimacion.fail(function(jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-          console.log('error');
-  });
-
-}
-
-function createArticulos(acarreos, categoria, obra_id, proveedor, periodo_inicial, periodo_final) {
-  // $('#button').html('')
-  // $('#button').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
-  console.log('sending')
-var estimacion = $.ajax({
-    url: '/api/estimaciones/nueva',
-    type: 'POST',
-    dataType: 'json',
-    data: { acarreos : acarreos, categoria: categoria, obra: obra_id, proveedor: proveedor, periodo_inicio: periodo_inicial, periodo_final: periodo_final}
-  });
-
-  estimacion.done(function(data){
-    console.log(data)
+    window.location.replace('/estimaciones/'+data.estimacion_id);
     });
 
   estimacion.fail(function(jqXHR, textStatus, errorThrown){
@@ -200,47 +142,170 @@ var image = $.ajax({
 
 }
 
-function getMateriales() {
+function guardarEstimacion() {
+console.log("getting image");
+var estimacion_id = $('#estimacion_id').val();
+var autorizacion = $.ajax({
+    url: '/api/estimaciones/autorizacion/' + estimacion_id,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  autorizacion.done(function(data){
+    console.log(data)
+    });
+
+  autorizacion.fail(function(jqXHR, textStatus, errorThrown){
+ console.log("error")
+  });
+
+
+}
+
+function getMateriales(categoria) {
+if (categoria === "material"){
 console.log("getting materiales");
+var proveedor_id = $('#proveedor_id').val();
 $('#material-status').html("");
 $('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
-var proveedor_id = $('#proveedor_id').val();
+} else if (categoria === "acarreo"){
+  var proveedor_id = $('#fletero').val();
+  $('#concepto-status').html("");
+  $('#concepto-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
+}
   var materiales = $.ajax({
-    url: '/api/materiales/'+proveedor_id,
+    url: '/api/materiales/proveedor/'+proveedor_id+'/'+categoria,
     type: 'GET',
     dataType: 'json'
   });
 
   materiales.done(function(data){
     console.log(data)
-    $('#material_id').removeAttr("disabled")
-    $('#material_id').html('');
-    $('#material_id').html('<option value="">Material</option>');
-    $('#material-status').html("");
-    for(var i = 0; i < data.length ; i ++){
-      $('#material_id').append('<option value="'+data[i].id+'">'+data[i].nombre_concepto+'</option>');
+    if(data.length < 1){
+      alert("No se han registrado los precios de este proveedor.")
+    } else if (categoria === "material"){
+          $('#material_id').removeAttr("disabled")
+          $('#material_id').html('');
+          $('#material_id').html('<option value="">Material</option>');
+          $('#material-status').html("");
+          for(var i = 0; i < data.length ; i ++){
+            $('#material_id').append('<option value="'+data[i].id+'">'+data[i].nombre_concepto+'</option>');
+          }
+    }
+    else if (categoria === "acarreo"){
+      console.log('acarreo')
+          $('#concepto').removeAttr("disabled")
+          $('#concepto').html('');
+          $('#concepto').html('<option value="">Concepto</option>');
+          $('#concepto-status').html("");
+          for(var i = 0; i < data.length ; i ++){
+            $('#concepto').append('<option value="'+data[i].id+'">'+data[i].nombre_concepto+'</option>');
+          }
     }
     });
 
   materiales.fail(function(jqXHR, textStatus, errorThrown){
     console.log(errorThrown);
-          console.log('no materiales');
+    console.log('no materiales');
   });
 }
 
-function getMaterial() {
+function printToPDF(){
+      var pdf = new jsPDF('l', 'pt', 'letter');
+    var canvas = pdf.canvas;
+
+    pdf.text(50, 40, "Header");
+
+    var width = 600;
+    //canvas.width=8.5*72;
+    // document.body.style.width=width + "px";
+    var signature1 = document.getElementById('signature1');
+    var signature2 = document.getElementById('signature2');
+    var signature3 = document.getElementById('signature3');
+    if(signature1.src){
+      getBase64Image(signature1.src,'signature1');
+    }
+    if(signature2.src){
+      getBase64Image(signature2.src,'signature2');
+    }
+    if (signature3 && signature3.src){
+        getBase64Image(signature3.src,'signature3');
+    }
+var canvasPhoto =  $('#firma_contratista');
+var ctx2 = canvas.getContext('2d');
+
+ctx2.fillStyle = '#fff';  /// set white fill style
+ctx2.fillRect(0, 0, canvas.width, canvas.height);
+    var table = document.getElementById('articulos');
+    var column = document.getElementsByTagName('td');
+    var panel = document.getElementsByClassName('panel');
+    console.log(column)
+    // panel.setAttribute('style', 'width:95%;');
+    table.setAttribute('style', 'font-size:10px;width:100%;');
+    for (var i =0;i<column.length;i++){
+      column[i].setAttribute('style', 'width:30px;');
+      if(i==column.length-1){
+            var content = document.getElementById('pdf-data');
+    content.setAttribute('style', 'top:0;padding-top:20px;margin-right:-10px;font-size:10px;height:60%; width:70%; background-color:white;');
+    var image1 = new Image();
+console.log(signature1.src)
+  image1.src = signature1.src;
+ ctx2.drawImage(image1, 0, 0);
+  console.log(image1)
+ var imageUrl = ctx2.toDataUrl("image/jpeg");
+console.log(imageUrl)
+    pdf.addHTML(content,60,50,function() {
+        pdf.output('datauri');
+    });
+      }
+    }
+}
+
+function getBase64Image(url,id) {
+console.log("sending to back");
+
+var photoData = {url:url, id:id}
+console.log(photoData);
+  var photo = $.ajax({
+    url: '/photo/convertir',
+    type: 'POST',
+    data: photoData
+  });
+
+  photo.done(function(data){
+    console.log(data)
+    document.getElementById(id).src = data;
+    });
+
+  photo.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+  });
+}
+
+function getMaterial(categoria) {
+  if (categoria === "acarreo"){
+    var material_id = $('#concepto').val();
+  } else if (categoria === "material"){
+    var material_id = $('#material_id').val();
+  }
 console.log("getting material");
-var material_id = $('#material_id').val();
   var material = $.ajax({
-    url: '/api/materiales/material/'+material_id,
+    url: '/api/materiales/'+material_id,
     type: 'GET',
     dataType: 'json'
   });
 
   material.done(function(data){
-    $('#precio').val('');
-    $('#precio-input').attr('value', ''+data.precio+'');
-    $('#zonas').removeAttr("disabled")
+    console.log(data.precio)
+      if (categoria === "acarreo"){
+            $('#precio_flete').val('');
+            $('#precio_flete').val(data.precio);
+            $('#proveedor_id').removeAttr("disabled")
+      } else if (categoria === "material"){
+            $('#precio_material').val('');
+            $('#precio_material').val(data.precio);
+            $('#zonas').removeAttr("disabled")
+      }
     });
 
   material.fail(function(jqXHR, textStatus, errorThrown){
@@ -248,6 +313,7 @@ var material_id = $('#material_id').val();
           console.log('no material');
   });
 }
+
 
 function getCamion() {
   $('#search-status').html("");
@@ -262,15 +328,16 @@ var camion_id = $('#scanner').val();
 
   camion.done(function(data){
     if(data[0]){
+      $('#scanner').attr("readonly", true);
+      $('#fletero').val(data[0].proveedor_id)
+      getMateriales('acarreo')
       $('#search-status').html("");
       $('#search-status').append("Camión encontrado!");
-      $('#scanner').attr("readonly", true);
-      $('#concepto').removeAttr("disabled");
     } else {
       $('#search-status').html("");
       $('#search-status').append("Camión ID inválido!");
+      $('#scanner').val("");
     }
-
     });
 
   camion.fail(function(jqXHR, textStatus, errorThrown){
@@ -339,40 +406,125 @@ function savePresupuesto(){
 
       });
 }
-redirectPresupuestos()
+redirectPresupuestos(obra)
 }
 
+
 function saveMaterial(){
-    var concepto = $('#concepto'+i).val();
+    var concepto = $('#concepto').val();
     var proveedor_id = $('#proveedor_id').val();
+    var obra_id = $('#obra_id').val();
     var unidad = $('#unidad').val();
     var precio = $('#precio').val();
+    if (!obra_id || !proveedor_id){
+      alert('Por favor seleccione la obra y proveedor correspondientes.')
+      return
+    }
     concepto = Number(concepto);
       var material = $.ajax({
         url: '/api/materiales/',
         type: 'POST',
         dataType: 'json',
-        data:{concepto:concepto,proveedor_id:proveedor_id,unidad:unidad,precio:precio}
+        data:{concepto:concepto,proveedor_id:proveedor_id,obra_id:obra_id,unidad:unidad,precio:precio}
       });
 
       material.done(function(data){
-        console.log(data);
+        allMateriales()
         });
 
       material.fail(function(jqXHR, textStatus, errorThrown){
         console.log(errorThrown);
 
       });
-
-redirectMateriales()
+    $('#concepto').val('');
+    $('#unidad').val('');
+    $('#precio').val('');
 }
 
-function redirectPresupuestos(){
-window.location.replace(path+'/presupuestos');
+function allMateriales() {
+  // $('#button').html('')
+  // $('#button').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
+  console.log('sending')
+  var proveedor_id = $('#proveedor_id').val();
+  var obra_id = $('#obra_id').val();
+var materiales = $.ajax({
+    url: '/api/materiales/'+proveedor_id+'/'+obra_id,
+    type: 'GET'
+  });
+
+  materiales.done(function(data){
+    console.log(data)
+    $('.tabla-materiales').html('');
+
+    var tablaMateriales = document.getElementById('todos-materiales');
+
+          for(var j = 0 ; j < data.length; j++){
+            this["row"+j] = tablaMateriales.insertRow(this["row"+j])
+            this["row"+j].className = 'tabla-materiales';
+            var cella1 = this["row"+j].insertCell(0);
+            var cella2 = this["row"+j].insertCell(1);
+            var cella3 = this["row"+j].insertCell(2);
+            var cella4 = this["row"+j].insertCell(3);
+            var cella5 = this["row"+j].insertCell(4);
+            var cella6 = this["row"+j].insertCell(5);
+            var cella7 = this["row"+j].insertCell(6);
+            cella1.innerHTML = data[j].id;
+            cella2.innerHTML = data[j].nombre_concepto;
+            cella3.innerHTML = data[j].razon_social;
+            cella4.innerHTML = data[j].unidad;
+            cella5.innerHTML = data[j].precio;
+            cella6.innerHTML = '<a href="/materiales/editar/'+data[j].id+'"><span class="glyphicon glyphicon-edit"></span></a>';
+            cella7.innerHTML = '<a onclick="deleteMaterial('+data[j].id+')"><span class="glyphicon glyphicon-remove-circle"></span></a>';
+            if(j==data.length-1) {
+              console.log('done')
+            }
+         }
+    });
+
+  materiales.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+          console.log('error');
+  });
+
 }
 
-function redirectPresupuestos(){
-window.location.replace(path+'/materiales');
+function deleteMaterial(material_id) {
+console.log("deleting");
+var material = $.ajax({
+    url: '/api/materiales/borrar/'+material_id,
+    type: 'DELETE'
+  });
+
+  material.done(function(data){
+    console.log(data)
+    if($('#proveedor_id').val() || $('#obra_id').val()){
+          allMateriales()
+    } else {
+      window.location.reload()
+    }
+    });
+
+  material.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown)
+  });
+}
+
+function redirectPresupuestos(obra){
+        var presupuesto = $.ajax({
+        url: '/api/presupuestos/agregar/'+obra,
+        type: 'PUT',
+        dataType: 'json'
+      });
+
+      presupuesto.done(function(data){
+        console.log(data);
+        window.location.reload()
+        });
+
+      presupuesto.fail(function(jqXHR, textStatus, errorThrown){
+        console.log(errorThrown);
+
+      });
 }
 
 function totalesPresupuesto(id1,id2,id3){

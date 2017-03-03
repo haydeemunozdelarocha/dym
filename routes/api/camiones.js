@@ -45,11 +45,10 @@ router.post('/', function(req,res,err){
 var numero = req.body.numero;
 var modelo= req.body.modelo;
 var placas= req.body.placas;
-var precio_flete= req.body.precio_flete;
 var unidad_camion= req.body.unidad;
 var proveedor_id= req.body.proveedor_id;
 var capacidad= req.body.capacidad;
-    db.query(nuevoCamion,[modelo,numero,placas,proveedor_id,capacidad,precio_flete,unidad_camion], function(err, camion){
+    db.query(nuevoCamion,[modelo,numero,placas,proveedor_id,capacidad,unidad_camion], function(err, camion){
     if(err) throw err;
     else {
         console.log('Listo');
@@ -94,7 +93,7 @@ router.use( function( req, res, next ) {
   //Delete a record.
 router.delete('/borrar/:idcamion', function(req,res,err){
   var camion_id = req.params.idcamion;
-  var borrarCamion = 'DELETE FROM camiones WHERE id = ?';
+  var borrarCamion = 'DELETE FROM camiones WHERE camion_id = ?';
   console.log(req.params.idcamion)
   db.query(borrarCamion,[camion_id], function(err,camion){
     if(err) throw err;

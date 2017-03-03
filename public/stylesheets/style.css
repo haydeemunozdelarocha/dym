@@ -148,6 +148,19 @@ border: none;
     color: #fff;
     background: #fff;
 }
+.signature-pad-body{
+  background-color: lighgray;
+}
+.signature-pad-footer{
+  padding-top: 6%;
+}
+.signature-pad-left{
+  float:left;
+}
+.signature-pad-right{
+  float:right;
+}
+
 @media(max-width: 991px) and (min-width:768px){
   .container{
     width: 95%;

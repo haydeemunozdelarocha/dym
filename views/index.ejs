@@ -9,6 +9,10 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
+<% if (usuario.categoria === "residente"){ %>
   <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+  <% include ./partials/adminheader.ejs %>
+<% } %>
 </body>
 </html>

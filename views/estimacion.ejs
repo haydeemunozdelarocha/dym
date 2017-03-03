@@ -4,135 +4,167 @@
   <title>DYM Ingenieros Constructores | Estimación Nueva</title>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+    <script type="text/javascript" src="libs/png_support/zlib.js"></script>
+    <script type="text/javascript" src="libs/png_support/png.js"></script>
+    <script type="text/javascript" src="jspdf.plugin.addimage.js"></script>
+    <script type="text/javascript" src="jspdf.plugin.png_support.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
-<% include ./partials/residentesheader.ejs %>
+<% if (usuario.categoria === "residente"){ %>
+  <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+  <% include ./partials/adminheader.ejs %>
+<% } %>
 <div id="content-container">
-<div class="row">
-  <div class="col-sm-6">
-<div class="input-group">
-  <label>Proveedor:</label>
-  <p><%= estimacion[0].razon_social %></p>
-</div>
-<div class="input-group">
-  <label>Obra:</label>
-  <p><%= estimacion[0].nombre_obra %></p>
-</div>
-</div>
-  <div class="col-sm-6">
-<div class="input-group">
-  <label>Periódo:</label>
-<p>Del <%=estimacion[0].periodo_inicio %> al <%= estimacion[0].periodo_final %></p>
-</div>
-<br>
-<div class="input-group">
-  <label>Número:</label>
-<p><%= estimacion[0].numero %></p>
-</div>
-</div>
-</div>
-<br>
-<div class="form-group">
-  <div class="panel panel-default">
-  <!-- Default panel contents -->
-  <div class="panel-heading">Articulos</div>
-     <table class="table" id="articulos">
-       <tr>
-         <td>
-           Concepto
-         </td>
-         <td>
-           Zona
-         </td>
-        <td>
-           Unidad
-         </td>
-         <td>
-           Cantidad Presupuestada
-         </td>
-         <td>
-           Acumulado Anterior
-         </td>
-         <td>
-           Esta Estimación
-         </td>
-         <td>
-           Acumulado Actual
-         </td>
-         <td>
-           Por Ejercer
-         </td>
-         <td>
-         Precio Unitario
-         </td>
-        <td>
-         Importe
-         </td>
-       </tr>
-       <% for (var i = 0; i < articulos.length ; i++ ) { %>
-        <tr>
-         <td>
-           <p><%=articulos[i].nombre_concepto %></p>
-         </td>
-        <td>
-        <p><%=articulos[i].nombre_zona %></p>
-         </td>
-        <td>
-        <p><%=articulos[i].unidad %></p>
-         </td>
-         <td>
-           <p><%=articulos[i].cantidad_presupuestada %></p>
-         </td>
-         <td>
-           <p><%=articulos[i].acumulado_anterior %></p>
-         </td>
-         <td>
-         <p><%=articulos[i].esta_estimacion %></p>
-         </td>
-         <td>
-            <p><%=articulos[i].acumulado_actual %></p>
-         </td>
-         <td>
-           <p><%=articulos[i].por_ejercer %></p>
-         </td>
-          <td>
-           <p>$<%=articulos[i].precio_unitario %></p>
-         </td>
-         <td>
-          <p>$<%=articulos[i].importe %></p>
-         </td>
-       </tr>
-       <% } %>
-      </table>
-     </div>
-     </div>
-<div class="row">
-  <div class="col-sm-3">
-        <div style="width:200px; height:100px; background-color: lightgrey;"></div>
-      <p><%= estimacion[0].razon_social %></p>
+<input type="hidden" id="estimacion_id" value="<%=estimacion[0].estimaciones_id%>">
+<div id="pdf-data">
+    <div class="row">
+          <div class="col-sm-6">
+            <div class="input-group">
+              <label>Proveedor:</label>
+              <p><%= estimacion[0].razon_social %></p>
+            </div>
+            <div class="input-group">
+              <label>Obra:</label>
+              <p id="nombre_obra"><%= estimacion[0].nombre_obra %></p>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="input-group">
+              <label>Periódo:</label>
+            <p>Del <%=estimacion[0].periodo_inicio %> al <%= estimacion[0].periodo_final %></p>
+            </div>
+            <br>
+            <div class="input-group">
+              <label>Número:</label>
+            <p id="numero_est"><%= estimacion[0].numero %></p>
+            </div>
+        </div>
     </div>
-    <div class="col-sm-3">
-      <div style="width:200px; height:100px; background-color: lightgrey;"></div>
-      <p><%= estimacion[0].residente %></p>
-    </div>
-    <div class="col-sm-3">
-          <div style="width:200px; height:100px; background-color: lightgrey;"></div>
-      <p>Ing. Carlos Reyes</p>
-    </div>
-  <div class="col-sm-3" style="text-align: right;">
-     <p>Subtotal: $<%= estimacion[0].subtotal %></p>
-     <br>
-     <p>Retencion: $<%= estimacion[0].retencion %></p>
-     <br>
-     <p>IVA: $<%= estimacion[0].iva %></p>
-     <br>
-     <p>Total: $<%= estimacion[0].total %></p>
-     </div>
-</div>
-
+      <br>
+          <div class="panel panel-default">
+          <!-- Default panel contents -->
+              <div class="panel-heading">
+                    Articulos
+                  </div>
+                 <table class="table" id="articulos" style="width:100%;font-size:14px;">
+                   <tr>
+                     <td>
+                       Concepto
+                     </td>
+                     <td>
+                       Zona
+                     </td>
+                    <td>
+                       Unidad
+                     </td>
+                     <td>
+                       Cantidad <br>Presupuestada
+                     </td>
+                     <td>
+                       Acumulado <br>Anterior
+                     </td>
+                     <td>
+                       Esta <br>Estimación
+                     </td>
+                     <td>
+                       Acumulado <br>Actual
+                     </td>
+                     <td>
+                       Por Ejercer
+                     </td>
+                     <td>
+                     Precio <br>Unitario
+                     </td>
+                    <td>
+                     Importe
+                     </td>
+                   </tr>
+                   <% for (var i = 0; i < articulos.length ; i++ ) { %>
+                    <tr>
+                     <td>
+                       <p><%=articulos[i].nombre_concepto %></p>
+                     </td>
+                    <td>
+                    <p><%=articulos[i].nombre_zona %></p>
+                     </td>
+                    <td>
+                    <p><%=articulos[i].unidad %></p>
+                     </td>
+                     <td>
+                       <p><%=articulos[i].cantidad_presupuestada %></p>
+                     </td>
+                     <td>
+                       <p><%=articulos[i].acumulado_anterior %></p>
+                     </td>
+                     <td>
+                     <p><%=articulos[i].esta_estimacion %></p>
+                     </td>
+                     <td>
+                        <p><%=articulos[i].acumulado_actual %></p>
+                     </td>
+                     <td>
+                       <p><%=articulos[i].por_ejercer %></p>
+                     </td>
+                      <td>
+                       <p>$<%=articulos[i].precio_unitario %></p>
+                     </td>
+                     <td>
+                      <p>$<%=articulos[i].importe %></p>
+                     </td>
+                   </tr>
+                   <% } %>
+                  </table>
+              </div>
+        <div class="row">
+              <div class="col-sm-3">
+              <% if (!estimacion[0].firma_contratista && usuario.categoria === "residente") { %>
+                    <a href="javascript:window.open('http://localhost:3000/signature/1/<%=estimacion[0].estimaciones_id %>', 'mywin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0');"><div id="firma_proveedor" style="width:200px; height:100px; background-color: lightgrey;"></div></a>
+                <% } else if(usuario.categoria === "residente"){ %>
+                    <div id = "firma_contratista" style="width:200px; height:100px;"><img id="signature1" src="<%= estimacion[0].firma_contratista %>" alt="" width="200px"></div>
+                  <% } else {%>
+                        <div id = "firma_contratista" style="width:200px;background-color: lightgray; height:100px;"></div>
+                  <% } %>
+                  <p><%= estimacion[0].razon_social %></p>
+                </div>
+                <div class="col-sm-3">
+                  <% if (!estimacion[0].firma_residente && usuario.categoria === "residente") { %>
+                  <a href="javascript:window.open('http://localhost:3000/signature/2/<%=estimacion[0].estimaciones_id %>', 'mywin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0');"><div id="firma_residente" style="width:200px; height:100px; background-color: lightgrey;"></div></a>
+                   <% } else if (usuario.categoria === "residente") { %>
+                    <div id = "firma_residente" style="width:200px; height:100px;"><img id="signature2" src="<%= estimacion[0].firma_residente %>" alt="" width="200px"></div>
+                  <%} else {%>
+                        <div id = "firma_residente" style="width:200px;background-color: lightgray; height:100px;"></div>
+                  <% } %>
+                  <p><%= estimacion[0].residente %></p>
+                </div>
+                <div class="col-sm-3">
+                  <% if (!estimacion[0].autorizacion && usuario.categoria === "costos") { %>
+                      <a href="javascript:window.open('http://localhost:3000/signature/3/<%=estimacion[0].estimaciones_id %>', 'mywin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0');"><div id = "firma_admin" style="width:200px; height:100px; background-color: lightgrey;"></div></a>
+                  <% } else if (usuario.categoria === "costos"){ %>
+                  <div id = "firma_admin" style="width:200px; height:100px;"><img id="signature3" src="<%= estimacion[0].autorizacion %>" alt="" width="200px"></div>
+                  <% } else { %>
+                  <div id = "firma_admin" style="width:200px;background-color: lightgray; height:100px;"></div>
+                  <% } %>
+                  <p>Ing. Carlos Reyes</p>
+                </div>
+                <div class="col-sm-3" style="text-align: right;">
+                   <p>Subtotal: $<%= estimacion[0].subtotal %></p>
+                   <br>
+                   <p>Retencion: $<%= estimacion[0].retencion %></p>
+                   <br>
+                   <p>IVA: $<%= estimacion[0].iva %></p>
+                   <br>
+                   <p>Total: $<%= estimacion[0].total %></p>
+                </div>
+          </div>
+          </div>
+       <button type="submit" class="btn btn-primary" style="margin-bottom:3%; display:block;float:right" onclick="printToPDF()">Imprimir</button>
 </div>
 <script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>

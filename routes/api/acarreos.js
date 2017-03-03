@@ -18,8 +18,10 @@ var obra_id = Number(req.user.obra_id);
 var numero= req.body.numero;
 var foto = req.body.photo;
 var concepto_flete = req.body.concepto_flete;
+var precioFlete = req.body.precio_flete;
 var zona_id = Number(req.body.zona_id);
 var material_id= Number(req.body.material_id);
+var precio = req.body.precio_material;
 var cantidad;
 var date= Date.now();
 var hora = moment(date).format("YYYY-MM-DD HH:mm");
@@ -34,35 +36,26 @@ console.log(usuario_id,zona_id,foto,hora,obra_id)
           if(err) throw err;
           else {
             console.log(findLast)
-            recibo = rows[0].recibo_id;
+            recibo_id = rows[0].recibo_id;
             db.query(getCamion, function(err,camion){
             if(err) throw err;
             else {
               console.log(getCamion)
                 var camion_id = Number(camion[0].camion_id);
-                var precioFlete = camion[0].precio_flete;
                 cantidad = camion[0].capacidad;
                 var total = cantidad*precioFlete;
-                var recibo_id= recibo;
                 categoria = "flete";
                   db.query(nuevoAcarreoFlete,[cantidad,camion_id,total,categoria,recibo_id,concepto_flete], function(err,acarreo){
                   if(err) throw err;
                   else {
                     console.log(nuevoAcarreoFlete)
-                    var getMaterial = 'SELECT * FROM `materiales` WHERE `id` = ' + material_id ;
-                      db.query(getMaterial, function(err,material){
+                        var total = cantidad*precio;
+                        categoria = "material";
+                        console.log(material_id,cantidad,total,categoria,recibo_id)
+                      db.query(nuevoAcarreoMaterial,[material_id,cantidad,total,categoria,recibo_id], function(err,acarreo){
                       if(err) throw err;
                       else {
-                          var precio = material[0].precio;
-                          var total = cantidad*precio;
-                          var recibo_id= recibo;
-                          categoria = "material";
-                            db.query(nuevoAcarreoMaterial,[material_id,cantidad,total,categoria,recibo_id], function(err,acarreo){
-                            if(err) throw err;
-                            else {
-                              console.log(acarreo)
-                              console.log(recibo)
-                              res.redirect('/recibo/'+recibo)
+                              res.redirect('/recibo/'+recibo_id)
                             }
                         });
                       }
@@ -73,9 +66,8 @@ console.log(usuario_id,zona_id,foto,hora,obra_id)
             });
           }
         })
-      }
-    })
-})
+      })
+
 
 //Read acarreos
 router.get('/', function(err,res){
@@ -114,13 +106,14 @@ router.post('/buscar', function(req,res,next){
   } else if (categoria === "flete"){
     categoriaProveedor = "camiones"
   }
-  var listaAcarreosBuscar = 'SELECT acarreos.*, camiones.*, recibos.*, materiales.*, conceptos.*,zonas.*,obras.nombre_obra, proveedores.razon_social FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos.material_id = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id OR acarreos.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN proveedores ON '+categoriaProveedor+'.proveedor_id = proveedores.id WHERE categoria = "'+categoria+'" AND recibos.obra_id = '+obra_id+' AND '+categoriaProveedor+'.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" AND estimacion = "N";';
+  var listaAcarreosBuscar = 'SELECT acarreos.acarreo_id, acarreos.cantidad,acarreos.total, recibos.hora,recibos.foto, conceptos.nombre_concepto,zonas.nombre_zona,materiales.precio FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos.material_id = materiales.id OR acarreos.concepto_flete = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id WHERE acarreos.categoria = "'+categoria+'" AND recibos.obra_id = '+obra_id+' AND materiales.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" AND estimacion = "N";';
+  console.log(listaAcarreosBuscar)
     db.query(listaAcarreosBuscar, function(err, acarreos){
       console.log(acarreos)
-    if (acarreos.length === 0){
+    if (!acarreos){
       console.log('no se encontraron acarreos')
           var message = "No se encontraron acarreos sin estimación en éstas fechas."
-            res.render('error',{message: message});
+            res.send({message: message});
     }
     else if (acarreos.length > 0){
             res.send({acarreos: acarreos, message:message});

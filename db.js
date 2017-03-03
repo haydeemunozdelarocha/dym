@@ -14,7 +14,7 @@ var db_config      =    mysql.createPool({
     connectTimeout:0
 });
 
-function handle_database(req,res) {
+function handle_database() {
   console.log('connecting')
 db_config.getConnection().then(function(connection) {
     conn = connection;
@@ -44,6 +44,7 @@ db_config.on('error', function(err) {
       handleDisconnect();
     } else if(err.code === 'ER_BAD_FIELD_ERROR'){
       console.log(err.code)
+      db_config.end();
       handleDisconnect();
     } else if(err.code === 'ER_USER_LIMIT_REACHED'){
       console.log(err.code)
@@ -71,8 +72,6 @@ db_config.getConnection(function(err){
     return;
   }
   console.log('Conectado');
-  console.log(req)
-  res.redirect(req.get('referer'));
 });
 }
 
