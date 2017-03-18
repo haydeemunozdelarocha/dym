@@ -6,9 +6,20 @@ var passport = require('passport');
 var rp = require('request-promise');
 var moment= require('moment');
 var fs = require('fs');
+var PdfPrinter = require('pdfmake/src/printer');
+
 
 var path = 'http://localhost:3000/';
+   var fonts = {
+        Roboto: {
+            normal: './fonts/Keyboard.ttf',
+            bold: './fonts/Keyboard.ttf',
+            italics: './fonts/Keyboard.ttf',
+            bolditalics: './fonts/Keyboard.ttf'
+        }
+    };
 
+    var printer = new PdfPrinter(fonts);
 
 //Middleware
 
@@ -175,6 +186,185 @@ router.get('/estimaciones',isLoggedIn, function(req, res, next) {
   })
 });
 
+
+router.get('/estimaciones/imprimir/:id',isLoggedIn, function(req, res, next) {
+  var usuario = req.user;
+  var estimacion_id = req.params.id;
+  var residenteURL;
+  var contratistaURL;
+  var autorizacionURL;
+  var getEstimacion = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON proveedores.id = estimaciones.proveedor_id WHERE estimaciones_id = ?';
+  var getEstimacionArticulos = 'SELECT estimacion_articulo.*,conceptos.nombre_concepto,zonas.nombre_zona FROM estimacion_articulo JOIN conceptos ON estimacion_articulo.concepto_id = conceptos.conceptos_id JOIN zonas ON estimacion_articulo.zona_id = zonas.zonas_id WHERE estimacion_id = ?';
+    db.query(getEstimacion,[estimacion_id], function(err, estimacion){
+    if(err) throw err;
+    else {
+          var firmaResidente = {
+              method: 'GET',
+              uri: estimacion[0].firma_residente,
+              encoding: null, //  if you expect binary data
+              responseType: 'buffer'
+          };
+          var firmaContratista = {
+              method: 'GET',
+              uri: estimacion[0].firma_contratista,
+              encoding: null, //  if you expect binary data
+              responseType: 'buffer'
+          };
+          if(estimacion[0].autorizacion){
+          var autorizacion = {
+              method: 'GET',
+              uri: estimacion[0].autorizacion || null,
+              encoding: null, //  if you expect binary data
+              responseType: 'buffer'
+          };
+        }
+          console.log(firmaResidente)
+          rp(firmaResidente).then(function (repos) {
+            console.log(repos);
+            residenteURL = 'data:image/png;base64,'+repos.toString('base64')
+            console.log(residenteURL)
+            return rp(firmaContratista)
+          }).then(function (repos) {
+            console.log(repos);
+            contratistaURL = 'data:image/png;base64,'+repos.toString('base64')
+            console.log(contratistaURL)
+            if (autorizacion){
+              console.log('si hay autorizacion')
+            return rp(autorizacion)
+          }
+          }).then(function (repos) {
+            console.log(repos);
+            autorizacionURL = 'data:image/png;base64,'+repos.toString('base64')
+            console.log(autorizacionURL)
+            if(!repos){
+              return
+            }
+          }).then(()=>{
+
+      console.log(estimacion[0])
+      db.query(getEstimacionArticulos,[estimacion_id], function(err, articulos){
+            if(err) throw err;
+            else {
+              var rows = [
+          ['Concepto', 'Zona', 'Unidad', 'Cantidad Presupuestada','Acumulado Anterior','Esta Estimacion','Acumulado Actual','Por Ejercer','Precio Unitario','Importe']
+        ];
+         var totales = [
+          ['','', ''],
+          ['','subtotal',estimacion[0].subtotal],
+          ['','iva',estimacion[0].iva],
+          ['','retencion',estimacion[0].retencion],
+          ['','total',estimacion[0].total]
+        ];
+
+              for(var i = 0; i < articulos.length; i++){
+                var row = [articulos[i].nombre_concepto.toString(),articulos[i].nombre_zona.toString(),articulos[i].unidad.toString(),articulos[i].cantidad_presupuestada.toString(),articulos[i].acumulado_anterior.toString(),articulos[i].esta_estimacion.toString(),articulos[i].acumulado_actual.toString(),articulos[i].por_ejercer.toString(),articulos[i].precio_unitario.toString(),articulos[i].importe.toString()];
+                rows.push(row);
+                if(articulos.length == i+1){
+                  console.log('done')
+
+                var docDefinition = {
+                  pageOrientation: 'landscape',
+                  content: [
+                    {text: 'Numero: '+estimacion[0].estimaciones_id, style: 'subheader'},
+                    {text: 'Obra: '+estimacion[0].nombre_obra, style: 'subheader'},
+                    {
+                      style: 'tableExample',
+                      table: {
+                        body: rows
+                      },
+                      layout: {
+                        fillColor: function (i, node) { return (i % 2 === 0) ?  '#CCCCCC' : null; }
+                      }
+                    },
+                    {
+                      style: 'totalesTable',
+                      table: {
+                        widths: [550, '*', '*'],
+                        body: totales
+                      },
+                       alignment: 'right',
+                      layout: 'noBorders'
+                    },
+                    {style: 'firmasTable',
+                      table: {
+                        widths: ['*', '*', '*'],
+                        body: [
+                        {
+                      image: residenteURL,
+                        width: 200
+                    },
+                    {
+                      text: 'Residente'
+                    }]
+                      },
+                       alignment: 'right',
+                      layout: 'noBorders'
+                    },
+                        {
+                      image: residenteURL,
+                        width: 200
+                    },
+                    {
+                      text: 'Residente'
+                    },
+                    {
+                      image: contratistaURL,
+                        width: 200
+                    },
+                    {
+                      text: 'Contratista'
+                    },
+                    {
+                      image: autorizacionURL,
+                        width: 200
+                    },
+                    {
+                      text: 'Ing.Reyes'
+                    }
+                  ],
+                  styles: {
+                    header: {
+                      fontSize: 18,
+                      bold: true,
+                      margin: [0, 0, 0, 10]
+                    },
+                    subheader: {
+                      fontSize: 16,
+                      bold: true,
+                      margin: [0, 10, 0, 5]
+                    },
+                    tableExample: {
+                      margin: [0, 5, 0, 15]
+                    },
+                    totalesTable: {
+                     border: false
+                    }
+                  }
+                };
+    var pdfDoc = printer.createPdfKitDocument(docDefinition);
+        console.log('creating doc')
+    var chunks = []
+    var result
+
+    pdfDoc.on('data', function (chunk) {
+      chunks.push(chunk)
+    });
+    pdfDoc.on('end', function () {
+      result = Buffer.concat(chunks)
+
+      res.contentType('application/pdf')
+      res.send(result)
+    });
+    pdfDoc.end();
+  }
+  }
+            }
+        });
+      })
+      }
+  });
+});
+
 router.get('/estimaciones/nueva', function(req, res, next) {
   var obra_id=req.user.obra_id;
   var estimacion_id;
@@ -205,7 +395,7 @@ router.get('/estimaciones/nueva', function(req, res, next) {
         }
       }).then(function (rows, err){
       proveedores = rows;
-     }).then(()=>{
+     }).then(function() {
          res.render('nuevaestimacion', { title: 'Estimaciones', obras: obras, proveedores: proveedores, estimacion_id:estimacion_id, obra_id:obra_id });
      })
 });
