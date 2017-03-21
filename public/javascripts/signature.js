@@ -568,14 +568,13 @@ savePNGButton.addEventListener("click", function (event) {
 function getImage(data) {
 console.log("getting image");
 var categoria = $('#categoria').val();
+var obra = $('#obra').val();
 var estimacion_id = $('#estimacion_id').val();
-var obra = $('#nombre_obra').innerHTML();
-var numero = $('#numero_est').innerHTML();
 var image = $.ajax({
     url: '/photo/signature',
     type: 'POST',
     dataType: 'json',
-    data: {image: data, categoria: categoria, estimacion_id:estimacion_id}
+    data: {image: data, categoria: categoria, obra:obra,estimacion_id:estimacion_id}
   });
 
   image.done(function(data){
@@ -589,10 +588,10 @@ var image = $.ajax({
   });
 }
 
-saveSVGButton.addEventListener("click", function (event) {
-    if (signaturePad.isEmpty()) {
-        alert("Please provide signature first.");
-    } else {
-        window.open(signaturePad.toDataURL('image/svg+xml'));
-    }
-});
+// saveSVGButton.addEventListener("click", function (event) {
+//     if (signaturePad.isEmpty()) {
+//         alert("Please provide signature first.");
+//     } else {
+//         window.open(signaturePad.toDataURL('image/svg+xml'));
+//     }
+// });

@@ -14,8 +14,8 @@ var fsImpl = new S3FS('dymingenieros', {
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
-function firmaCostos(numero,obra,estimacion_id) {
-  console.log(numero,obra,estimacion_id)
+function firmaCostos(obra,estimacion_id) {
+  console.log(obra,estimacion_id)
     var transporter = nodemailer.createTransport(smtpTransport({
         service: 'Gmail',
         auth: {
@@ -23,11 +23,38 @@ function firmaCostos(numero,obra,estimacion_id) {
             pass: 'Socorro000' // Your password
         }
     }));
-    var text = '<h2>Status estimación</h2><p>La estimación No.'+numero+' de '+obra+' ha sido creada y autorizada por el residente y el contratista. <a href="/estimaciones/'+estimacion_id+'">Haz click aquí para firmar >>.</a>';
+    var text = '<h2>Status estimación</h2><p>La estimación '+estimacion_id+' de '+obra+' ha sido creada y autorizada por el residente y el contratista. <a href="/estimaciones/'+estimacion_id+'">Haz click aquí para firmar >>.</a>';
     var mailOptions = {
     from: 'haydeemunozdelarocha@gmail.com', // sender address
     to: 'haydee.mr0@hotmail.com', // list of receivers
-    subject: 'Estimación No. '+numero+' de '+obra, // Subject line
+    subject: 'Estimación '+estimacion_id+' de '+obra, // Subject line
+    html: text // You can choose to send an HTML body instead
+};
+
+transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+        console.log(error);
+
+    }else{
+        console.log('Message sent: ' + info.response);
+    };
+});
+}
+
+function firmaAdmin(obra,estimacion_id) {
+  console.log(obra,estimacion_id)
+    var transporter = nodemailer.createTransport(smtpTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'haydeemunozdelarocha@gmail.com', // Your email id
+            pass: 'Socorro000' // Your password
+        }
+    }));
+    var text = '<h2>Status estimación</h2><p>La estimación '+estimacion_id+' de '+obra+' ha sido autorizada. <a href="/estimaciones/'+estimacion_id+'">Haz click aquí para ver >>.</a>';
+    var mailOptions = {
+    from: 'haydeemunozdelarocha@gmail.com', // sender address
+    to: 'haydee.mr0@hotmail.com', // list of receivers
+    subject: 'Estimación '+estimacion_id+' de '+obra, // Subject line
     html: text // You can choose to send an HTML body instead
 };
 
@@ -114,8 +141,8 @@ router.post('/signature', function(req, res, err) {
   console.log('getting photo')
   var categoria = req.body.categoria;
   var estimacion_id = req.body.estimacion_id;
-  var obra = req.body.obra;
   var numero = req.body.numero;
+  var obra = req.body.obra;
   var body = req.body.image;
   var nombre_col;
   var status;
@@ -141,11 +168,12 @@ router.post('/signature', function(req, res, err) {
           var agregarFirma = 'UPDATE estimaciones SET '+nombre_col+'= ? WHERE estimaciones_id = ?;SELECT estimaciones.firma_residente, estimaciones.firma_contratista,estimaciones.autorizacion FROM estimaciones WHERE estimaciones_id = ?';
           db.query(agregarFirma,[photo, estimacion_id,estimacion_id], function(err,firma){
             console.log(firma[1][0])
-            if (firma[1][0].firma_contratista && firma[1][0].firma_residente) {
+            if (firma[1][0].firma_contratista && firma[1][0].firma_residente && !firma[1][0].autorizacion) {
               console.log('email reyes');
-              firmaCostos(numero,obra,estimacion_id)
+              firmaCostos(obra,estimacion_id)
             } else if (firma[1][0].firma_contratista && firma[1][0].firma_residente && firma[1][0].autorizacion) {
               console.log('change status and email papa')
+              firmaAdmin(obra,estimacion_id)
             } else if (firma[1][0].firma_contratista && firma[1][0].autorizacion) {
               console.log('email residente')
             }

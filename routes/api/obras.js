@@ -20,7 +20,7 @@ var nuevaObra = 'INSERT INTO obras(nombre_obra,codigo,residente_id,ciudad,estado
       if(err) throw err;
       else {
           console.log('Nueva obra agregada exitosamente');
-          res.redirect('/obras')
+          res.redirect('/presupuestos')
       }
     });
 })

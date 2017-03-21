@@ -126,7 +126,7 @@
               <div class="col-sm-3">
               <% if (!estimacion[0].firma_contratista && usuario.categoria === "residente") { %>
                     <a href="javascript:window.open('http://localhost:3000/signature/1/<%=estimacion[0].estimaciones_id %>', 'mywin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0');"><div id="firma_proveedor" style="width:200px; height:100px; background-color: lightgrey;"></div></a>
-                <% } else if(usuario.categoria === "residente"){ %>
+                <% } else if(estimacion[0].firma_contratista){ %>
                     <div id = "firma_contratista" style="width:200px; height:100px;"><img id="signature1" src="<%= estimacion[0].firma_contratista %>" alt="" width="200px"></div>
                   <% } else {%>
                         <div id = "firma_contratista" style="width:200px;background-color: lightgray; height:100px;"></div>
@@ -136,7 +136,7 @@
                 <div class="col-sm-3">
                   <% if (!estimacion[0].firma_residente && usuario.categoria === "residente") { %>
                   <a href="javascript:window.open('http://localhost:3000/signature/2/<%=estimacion[0].estimaciones_id %>', 'mywin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0');"><div id="firma_residente" style="width:200px; height:100px; background-color: lightgrey;"></div></a>
-                   <% } else if (usuario.categoria === "residente") { %>
+                   <% } else if (estimacion[0].firma_residente) { %>
                     <div id = "firma_residente" style="width:200px; height:100px;"><img id="signature2" src="<%= estimacion[0].firma_residente %>" alt="" width="200px"></div>
                   <%} else {%>
                         <div id = "firma_residente" style="width:200px;background-color: lightgray; height:100px;"></div>
@@ -144,9 +144,9 @@
                   <p><%= estimacion[0].residente %></p>
                 </div>
                 <div class="col-sm-3">
-                  <% if (!estimacion[0].autorizacion && usuario.categoria === "costos") { %>
-                      <a href="javascript:window.open('http://localhost:3000/signature/3/<%=estimacion[0].estimaciones_id %>', 'mywin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0');"><div id = "firma_admin" style="width:200px; height:100px; background-color: lightgrey;"></div></a>
-                  <% } else if (usuario.categoria === "costos"){ %>
+                  <% if (!estimacion[0].autorizacion && usuario.categoria === "administrador") { %>
+                      <a href="javascript:window.open('http://localhost:3000/signature/3/<%=estimacion[0].estimaciones_id %>/<%=estimacion[0].nombre_obra %>', 'mywin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0');"><div id = "firma_admin" style="width:200px; height:100px; background-color: lightgrey;"></div></a>
+                  <% } else if (estimacion[0].autorizacion){ %>
                   <div id = "firma_admin" style="width:200px; height:100px;"><img id="signature3" src="<%= estimacion[0].autorizacion %>" alt="" width="200px"></div>
                   <% } else { %>
                   <div id = "firma_admin" style="width:200px;background-color: lightgray; height:100px;"></div>
@@ -164,7 +164,7 @@
                 </div>
           </div>
           </div>
-       <button type="submit" class="btn btn-primary" style="margin-bottom:3%; display:block;float:right" onclick="printToPDF()">Imprimir</button>
+       <button type="submit" class="btn btn-primary" style="margin-bottom:3%; display:block;float:right" onclick="location.href='/estimaciones/imprimir/<%=estimacion[0].estimaciones_id %>'">Imprimir</button>
 </div>
 <script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>

@@ -41,7 +41,7 @@ router.post('/', function(req,res,err) {
   var periodo_final = moment(req.body.date2).format("YYYY-MM-DD HH:mm");
   var proveedor_id = req.body.proveedor_id;
   console.log(ids)
-    var buscarAcarreos = 'SELECT acarreos.material_id,acarreos.concepto_flete,acarreos.total,acarreos.cantidad, recibos.zona_id,materiales.concepto,materiales.precio,materiales.unidad,presupuestos.presupuestos_id,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos.total) AS total_concepto, sum(acarreos.cantidad) AS total_cantidad FROM acarreos JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON acarreos.material_id = materiales.id OR acarreos.concepto_flete = materiales.id LEFT JOIN presupuestos ON presupuestos.concepto = materiales.concepto AND presupuestos.zona = recibos.zona_id WHERE acarreo_id IN ('+ids+') GROUP BY concepto_flete,material_id, zona_id;';
+    var buscarAcarreos = 'SELECT acarreos.material_id,acarreos.concepto_flete,acarreos.total,acarreos.cantidad, recibos.zona_id,materiales.concepto,materiales.precio,materiales.unidad,presupuestos.presupuestos_id,presupuestos.costo,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos.total) AS total_concepto, sum(acarreos.cantidad) AS total_cantidad FROM acarreos JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON acarreos.material_id = materiales.id OR acarreos.concepto_flete = materiales.id LEFT JOIN presupuestos ON presupuestos.concepto = materiales.concepto AND presupuestos.zona = recibos.zona_id WHERE acarreo_id IN ('+ids+') GROUP BY concepto_flete,material_id, zona_id;';
     var lastEstimacion = 'SELECT * FROM estimaciones WHERE obra ='+obra_id+' ORDER BY estimaciones_id DESC LIMIT 1;'
       db.query(lastEstimacion).then(function(rows,err){
         numero = rows[0].numero + 1;
@@ -73,6 +73,7 @@ router.post('/', function(req,res,err) {
               var por_ejercer = cantidad_presupuestada - acumulado_actual;
               var precio_unitario = totales[i].precio;
               var presupuesto_id = totales[i].presupuestos_id;
+              var costo = totales[i].costo+(Number(totales[i].total_cantidad)*totales[i].precio);
 
                   var options = {
                     method: 'POST',
@@ -89,7 +90,8 @@ router.post('/', function(req,res,err) {
                           acumulado_anterior: acumulado_anterior,
                           acumulado_actual: acumulado_actual,
                           por_ejercer: por_ejercer,
-                          presupuesto_id:presupuesto_id
+                          presupuesto_id:presupuesto_id,
+                          costo: costo
                     },
                     json: true // Automatically stringifies the body to JSON
                 };
@@ -148,14 +150,15 @@ var esta_estimacion = req.body.esta_estimacion;
  var estimacion_id = req.body.estimacion_id;
  var zona_id = req.body.zona_id;
  var unidad = req.body.unidad;
+ var costo = req.body.costo;
   var cantidad_presupuestada = req.body.cantidad_presupuestada;
   var acumulado_anterior= req.body.acumulado_anterior;
   var acumulado_actual= req.body.acumulado_actual;
   var por_ejercer= req.body.por_ejercer;
   var presupuesto_id = req.body.presupuesto_id;
-  var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revision" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
+  var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ?, costo = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revision" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
   console.log(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer)
-  db.query(nuevoArticuloEstimacion,[acumulado_actual,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer], function(err,articulo){
+  db.query(nuevoArticuloEstimacion,[acumulado_actual,costo,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer], function(err,articulo){
     if (err) throw err;
     else {
        articulo_id = articulo[2].insertId;

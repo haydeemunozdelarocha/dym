@@ -21,6 +21,18 @@ router.get('/', function(err,res){
   });
 })
 
+router.get('/costos', function(req,res,err){
+    var getPresupuesto = 'SELECT presupuestos.obra,obras.nombre_obra, sum(total) AS total_concepto, sum(costo) AS total_costo FROM presupuestos JOIN obras ON presupuestos.obra = obras.obra_id GROUP BY obra;';
+  db.query(getPresupuesto, function(err, presupuesto){
+    if(err) throw err;
+    else {
+        console.log('Buscando presupuesto');
+        res.json(presupuesto)
+    }
+  });
+
+})
+
 router.get('/buscar/:articulo', function(req, res, next ){
   console.log('filling out missing info articulo')
   var articulo_id = req.params.articulo;
@@ -89,6 +101,7 @@ router.get('/:obra', function(req, res, next ){
   });
 })
 
+
 router.post('/totales', function(req, res, next ){
   var obra_id= req.body.obra_id;
   var concepto_id= req.body.concepto_id;
@@ -116,6 +129,7 @@ router.get('/totales/:obra', function(req, res, next ){
     }
   });
 })
+
 
 router.use(bodyParser.urlencoded({extended:true}))
 router.use(methodOverride(function(req, res){

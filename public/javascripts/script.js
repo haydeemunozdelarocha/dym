@@ -2,6 +2,7 @@
 var path = "http://locahost:3000/";
 var ids = [];
 var popUpWindow;
+
 function buscarAcarreos(){
   console.log('buscando')
   var proveedor_id= $('#proveedor_id').val();
@@ -210,56 +211,6 @@ $('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24
   });
 }
 
-function printToPDF(){
-      var pdf = new jsPDF('l', 'pt', 'letter');
-    var canvas = pdf.canvas;
-
-    pdf.text(50, 40, "Header");
-
-    var width = 600;
-    //canvas.width=8.5*72;
-    // document.body.style.width=width + "px";
-    var signature1 = document.getElementById('signature1');
-    var signature2 = document.getElementById('signature2');
-    var signature3 = document.getElementById('signature3');
-    if(signature1.src){
-      getBase64Image(signature1.src,'signature1');
-    }
-    if(signature2.src){
-      getBase64Image(signature2.src,'signature2');
-    }
-    if (signature3 && signature3.src){
-        getBase64Image(signature3.src,'signature3');
-    }
-var canvasPhoto =  $('#firma_contratista');
-var ctx2 = canvas.getContext('2d');
-
-ctx2.fillStyle = '#fff';  /// set white fill style
-ctx2.fillRect(0, 0, canvas.width, canvas.height);
-    var table = document.getElementById('articulos');
-    var column = document.getElementsByTagName('td');
-    var panel = document.getElementsByClassName('panel');
-    console.log(column)
-    // panel.setAttribute('style', 'width:95%;');
-    table.setAttribute('style', 'font-size:10px;width:100%;');
-    for (var i =0;i<column.length;i++){
-      column[i].setAttribute('style', 'width:30px;');
-      if(i==column.length-1){
-            var content = document.getElementById('pdf-data');
-    content.setAttribute('style', 'top:0;padding-top:20px;margin-right:-10px;font-size:10px;height:60%; width:70%; background-color:white;');
-    var image1 = new Image();
-console.log(signature1.src)
-  image1.src = signature1.src;
- ctx2.drawImage(image1, 0, 0);
-  console.log(image1)
- var imageUrl = ctx2.toDataUrl("image/jpeg");
-console.log(imageUrl)
-    pdf.addHTML(content,60,50,function() {
-        pdf.output('datauri');
-    });
-      }
-    }
-}
 
 function getBase64Image(url,id) {
 console.log("sending to back");
@@ -282,6 +233,13 @@ console.log(photoData);
   });
 }
 
+function acarreoCategory(){
+  var category=$('#concepto').val();
+  if (category == 292) {
+    $('#zonas').removeAttr("disabled");
+    $('#material_id').val("");
+     }
+}
 function getMaterial(categoria) {
   if (categoria === "acarreo"){
     var material_id = $('#concepto').val();
@@ -399,6 +357,7 @@ function savePresupuesto(){
       presupuestos.done(function(data){
         console.log(data);
         console.log(i)
+        window.location=path+'materiales'
         });
 
       presupuestos.fail(function(jqXHR, textStatus, errorThrown){

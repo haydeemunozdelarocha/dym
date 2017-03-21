@@ -10,9 +10,13 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
+<% if (usuario.categoria === "administrador"){ %>
+  <% include ./partials/adminheader.ejs %>
+<% } else if (usuario.categoria === "residente"){ %>
 <% include ./partials/residentesheader.ejs %>
+<% } %>
   <div id="content-container">
-  <p><h2>Nuevo Presupuesto</h2></p>
+
   <div style="margin-top:10px">
     <select class="form-control" id="obra_id">
       <option value="">Obra</option>

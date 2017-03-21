@@ -39,11 +39,13 @@ function isLoggedIn(req, res, next){
 };
 
 function checkAuthToken(req, res, next) {
-    if(!req.user.accessToken) {
+    if(!req.user.accessToken && req.user.categoria === 'checador') {
       res.cookie('user', req.user,{ maxAge: 900000 });
       return res.redirect('/users/auth/nest')
-    } else {
+    } else if (req.user.categoria === 'checador') {
       next()
+    } else {
+      res.redirect('/')
     }
 }
 
@@ -61,19 +63,19 @@ router.get('/',isLoggedIn, function(req, res, next) {
 router.get('/administrador', isLoggedIn, function(req, res, next) {
   var usuario = req.user;
   var getObras = 'SELECT * FROM obras ORDER BY obra_id ASC;';
-  var getEmpleados = 'SELECT * FROM empleados WHERE obra = ?;';
-  var getPresupuesto = 'SELECT presupuestos.*,conceptos.nombre_concepto,zonas.nombre_zona FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = ? ORDER BY zona;';
+  var getEmpleados = 'SELECT empleados.*,obras.nombre_obra FROM empleados JOIN obras ON empleados.obra = obras.obra_id;';
+  var getPresupuesto = 'SELECT presupuestos.obra,obras.nombre_obra, sum(total) AS total_concepto, sum(costo) AS total_costo FROM presupuestos JOIN obras ON presupuestos.obra = obras.obra_id GROUP BY obra;';
     db.query(getObras, function(err, obras){
     if(err) throw err;
     else {
       var obra_id = obras[0].obra_id;
-        db.query(getPresupuesto,[obra_id], function(err, presupuestos){
+        db.query(getPresupuesto, function(err, presupuestos){
         if(err) throw err;
         else {
               db.query(getEmpleados,[obra_id], function(err, empleados){
               if(err) throw err;
               else {
-                res.render('costosdashboard', { title: obras[0].nombre_obra, obra: obras[0], obras:obras, presupuestos:presupuestos,empleados:empleados, usuario:usuario });
+                res.render('costosdashboard', { title: 'Costos',  presupuestos:presupuestos,empleados:empleados, usuario:usuario });
               }
             });
         }
@@ -211,9 +213,10 @@ router.get('/estimaciones/imprimir/:id',isLoggedIn, function(req, res, next) {
               responseType: 'buffer'
           };
           if(estimacion[0].autorizacion){
+            console.log(estimacion[0].autorizacion)
           var autorizacion = {
               method: 'GET',
-              uri: estimacion[0].autorizacion || null,
+              uri: estimacion[0].autorizacion,
               encoding: null, //  if you expect binary data
               responseType: 'buffer'
           };
@@ -228,15 +231,20 @@ router.get('/estimaciones/imprimir/:id',isLoggedIn, function(req, res, next) {
             console.log(repos);
             contratistaURL = 'data:image/png;base64,'+repos.toString('base64')
             console.log(contratistaURL)
-            if (autorizacion){
-              console.log('si hay autorizacion')
-            return rp(autorizacion)
-          }
+            if(estimacion[0].autorizacion){
+              return rp(autorizacion)
+            } else {
+              return
+            }
           }).then(function (repos) {
             console.log(repos);
-            autorizacionURL = 'data:image/png;base64,'+repos.toString('base64')
+            if(repos){
+              autorizacionURL = 'data:image/png;base64,'+repos.toString('base64')
+
+            }
             console.log(autorizacionURL)
             if(!repos){
+              autorizacionURL = '';
               return
             }
           }).then(()=>{
@@ -265,8 +273,10 @@ router.get('/estimaciones/imprimir/:id',isLoggedIn, function(req, res, next) {
                 var docDefinition = {
                   pageOrientation: 'landscape',
                   content: [
-                    {text: 'Numero: '+estimacion[0].estimaciones_id, style: 'subheader'},
-                    {text: 'Obra: '+estimacion[0].nombre_obra, style: 'subheader'},
+                    {image: 'data:image/png;base64,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',
+                      width:150,style:'logo'},
+                    {text: 'Numero '+estimacion[0].estimaciones_id, style: 'subheader'},
+                    {text: 'Obra '+estimacion[0].nombre_obra, style: 'subheader'},
                     {
                       style: 'tableExample',
                       table: {
@@ -287,39 +297,33 @@ router.get('/estimaciones/imprimir/:id',isLoggedIn, function(req, res, next) {
                     },
                     {style: 'firmasTable',
                       table: {
-                        widths: ['*', '*', '*'],
-                        body: [
+                        widths: [200, 200, 200],
+                        body: [[
                         {
                       image: residenteURL,
                         width: 200
-                    },
-                    {
-                      text: 'Residente'
-                    }]
-                      },
-                       alignment: 'right',
-                      layout: 'noBorders'
-                    },
-                        {
-                      image: residenteURL,
-                        width: 200
-                    },
-                    {
-                      text: 'Residente'
                     },
                     {
                       image: contratistaURL,
                         width: 200
                     },
                     {
+                      image: autorizacionURL,
+                        width: 200
+                    }],
+                    [
+                    {
+                      text: 'Residente'
+                    },
+                    {
                       text: 'Contratista'
                     },
                     {
-                      image: autorizacionURL,
-                        width: 200
-                    },
-                    {
-                      text: 'Ing.Reyes'
+                      text: 'Ing Reyes'
+                    }]]
+                      },
+                       alignment: 'left',
+                      layout: 'noBorders'
                     }
                   ],
                   styles: {
@@ -328,10 +332,14 @@ router.get('/estimaciones/imprimir/:id',isLoggedIn, function(req, res, next) {
                       bold: true,
                       margin: [0, 0, 0, 10]
                     },
+                    logo:{
+                      alignment:'left'
+                    },
                     subheader: {
                       fontSize: 16,
                       bold: true,
-                      margin: [0, 10, 0, 5]
+                      margin: [0, 10, 0, 5],
+                      alignment: 'right'
                     },
                     tableExample: {
                       margin: [0, 5, 0, 15]
@@ -436,11 +444,12 @@ router.get('/estimaciones/editar/:id', function(req, res, next) {
   });
 });
 
-router.get('/signature/:categoria/:id', isLoggedIn, function(req,res,err){
+router.get('/signature/:categoria/:id/:obra', isLoggedIn, function(req,res,err){
   var usuario = req.user;
   var categoria = req.params.categoria;
   var estimacion_id = req.params.id;
-  res.render('signature',{usuario:usuario, categoria:categoria, estimacion_id:estimacion_id})
+  var obra = req.params.obra;
+  res.render('signature',{usuario:usuario, categoria:categoria, obra:obra,estimacion_id:estimacion_id})
 })
 //OBRAS
 
@@ -506,7 +515,8 @@ router.get('/obras/editar/:idobra', function(req,res,err){
 
 
 //PRESUPUESTOS
-router.get('/presupuestos', function(err,res){
+router.get('/presupuestos', function(req,res,err){
+  var usuario = req.user;
   var infoObras = 'SELECT * FROM obras WHERE presupuesto = "N"';
     db.query(infoObras, function(err, obras){
     if(err) throw err;
@@ -523,7 +533,7 @@ router.get('/presupuestos', function(err,res){
                 db.query(getPresupuestos, function(err, presupuestos){
                 if(err) throw err;
                 else {
-                res.render('presupuestonuevo', { title: 'Presupuesto', obras: obras, conceptos: conceptos, zonas: zonas, presupuestos: presupuestos });
+                res.render('presupuestonuevo', { title: 'Presupuesto', obras: obras, conceptos: conceptos, usuario:usuario,zonas: zonas, presupuestos: presupuestos });
                     }
                 });
             }
