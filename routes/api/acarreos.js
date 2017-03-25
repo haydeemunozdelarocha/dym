@@ -6,7 +6,6 @@ var db = require('../../db.js');
 
 var nuevoAcarreoFlete = 'INSERT INTO acarreos(cantidad,camion_id,total,categoria,recibo_id,concepto_flete) VALUE(?,?,?,?,?,?)';
 var nuevoAcarreoMaterial = 'INSERT INTO acarreos(material_id,cantidad,total,categoria,recibo_id) VALUE(?,?,?,?,?)';
-var listaAcarreos = 'SELECT acarreos.*, camiones.capacidad, proveedores.razon_social, materiales.concepto, materiales.precio FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN proveedores ON proveedores.id = camiones.proveedor_id LEFT JOIN materiales ON materiales.id = acarreos.material_id';
 var nuevoRecibo = 'INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id) VALUE (?,?,?,?,?)';
 
 //agregar acarreo
@@ -17,7 +16,8 @@ var usuario_id= Number(req.user.id_usuario);
 var obra_id = Number(req.user.obra_id);
 var numero= req.body.numero;
 var foto = req.body.photo;
-var concepto_flete = req.body.concepto_flete;
+var concepto_flete = Number(req.body.concepto_flete);
+console.log(concepto_flete)
 var precioFlete = req.body.precio_flete;
 var zona_id = Number(req.body.zona_id);
 var material_id= Number(req.body.material_id);
@@ -45,6 +45,7 @@ console.log(usuario_id,zona_id,foto,hora,obra_id)
                 cantidad = camion[0].capacidad;
                 var total = cantidad*precioFlete;
                 categoria = "flete";
+                console.log(cantidad,camion_id,total,categoria,recibo_id,concepto_flete);
                   db.query(nuevoAcarreoFlete,[cantidad,camion_id,total,categoria,recibo_id,concepto_flete], function(err,acarreo){
                   if(err) throw err;
                   else {
@@ -71,6 +72,7 @@ console.log(usuario_id,zona_id,foto,hora,obra_id)
 
 //Read acarreos
 router.get('/', function(err,res){
+  var listaAcarreos = 'SELECT recibos.recibo_id,recibos.hora,recibos.foto, acarreos.estimacion,acarreos.acarreo_id,acarreos.categoria,proveedores.razon_social, conceptos.nombre_concepto,zonas.nombre_zona FROM acarreos JOIN recibos ON recibos.recibo_id = acarreos.recibo_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON acarreos.concepto_flete=conceptos.conceptos_id OR materiales.concepto = conceptos.conceptos_id ORDER BY acarreos.acarreo_id ASC';
     db.query(listaAcarreos, function(err, rows){
     if(err) throw err;
     else {
@@ -82,17 +84,19 @@ router.get('/', function(err,res){
 router.get('/obra/:obraid', function(req,res,err){
   console.log('getting acarreos por obra')
 var obra_id = req.params.obraid;
-var listaAcarreos = 'SELECT recibos.*, acarreos.*,camiones.*,materiales.*,proveedores.razon_social, conceptos.nombre_concepto FROM recibos JOIN acarreos ON recibos.recibo_id = acarreos.recibo_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id JOIN conceptos ON acarreos.concepto_flete=conceptos.conceptos_id OR materiales.concepto = conceptos.conceptos_id WHERE recibos.obra_id = ? ORDER BY acarreos.acarreo_id ASC';
-;
+var listaAcarreos = 'SELECT recibos.recibo_id,recibos.hora,recibos.foto, acarreos.estimacion,acarreos.acarreo_id,acarreos.categoria,proveedores.razon_social, conceptos.nombre_concepto,zonas.nombre_zona FROM acarreos JOIN recibos ON recibos.recibo_id = acarreos.recibo_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON acarreos.concepto_flete=conceptos.conceptos_id OR materiales.concepto = conceptos.conceptos_id WHERE recibos.obra_id = ? ORDER BY acarreos.acarreo_id ASC';
 
     db.query(listaAcarreos,[obra_id],function(err, rows){
     if(err){
       return console.log (err)
     } else {
+      console.log(rows[rows.length-2])
         return res.send(rows);
     }
   });
 })
+
+
 
 router.post('/buscar', function(req,res,next){
   var proveedor_id = req.body.proveedor_id;

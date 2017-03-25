@@ -12,9 +12,35 @@
 <body>
 <% if (usuario.categoria === "residente"){ %>
   <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+  <% include ./partials/adminheader.ejs %>
 <% } %>
   <div id="content-container">
     <p><h2>Acarreos</h2></p>
+    <input name="date1" id="date1" type="date">
+    <input name="date2" id="date2" type="date">
+    <select name="categoria" id="categoria">
+      <option value="flete">Flete</option>
+      <option value="material">Material</option>
+    </select>
+    <% if(usuario.categoria != "residente") { %>
+    <select name="obra_id" id="obra_id">
+    <% for(var i = 0; i < obras.length; i ++){ %>
+      <option value="<%=obras[i].obra_id%>"><%=obras[i].nombre_obra%></option>
+    <% } %>
+    </select>
+    <% } %>
+    <select name="zona" id="zona">
+    <% for(var i = 0; i < zonas.length; i ++){ %>
+      <option value="<%=zonas[i].zonas_id%>"><%=zonas[i].nombre_zona%></option>
+    <% } %>
+    </select>
+    <select name="concepto" id="concepto">
+    <% for(var i = 0; i < conceptos.length; i ++){ %>
+      <option value="<%=conceptos[i].conceptos_id%>"><%=conceptos[i].nombre_concepto%></option>
+    <% } %>
+    </select>
+    <button onclick="filtroAcarreos()">Buscar</button>
   <ul class="nav">
 </ul>
   <div id="table">
@@ -28,21 +54,19 @@
     <td>ID</td>
       <td>Categoria</td>
       <td>Concepto</td>
+      <td>Zona</td>
       <td>Proveedor</td>
       <td>Recibo</td>
       <td>Fecha</td>
       <td>Estimación</td>
       <td>Foto</td>
     </tr>
-    <% for(var i=0; i<acarreos.length; i++) {%>
+    <% for(var i=0;i<acarreos.length;i++){ %>
     <tr>
     <td><%= acarreos[i].acarreo_id %></td>
-      <td><%= acarreos[i].categoria %></td>
-      <% if (acarreos[i].categoria === "material") { %>
+      <td id ="<%= acarreos[i].categoria %>"><%= acarreos[i].categoria %></td>
      <td><%= acarreos[i].nombre_concepto %></td>
-     <% } else { %>
-     <td><%= acarreos[i].nombre_concepto %></td>
-     <% } %>
+     <td><%= acarreos[i].nombre_zona %></td>
       <td><%= acarreos[i].razon_social %></td>
       <td><%= acarreos[i].recibo_id %></td>
       <td><%= acarreos[i].hora %></td>
@@ -60,5 +84,7 @@
     </table>
   </div>
 </div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+
 </body>
 </html>

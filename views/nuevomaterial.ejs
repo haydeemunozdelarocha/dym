@@ -7,7 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body>
-<% include ./partials/residentesheader.ejs %>
+<% if (usuario.categoria === "residente"){ %>
+  <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+  <% include ./partials/adminheader.ejs %>
+<% } %>
 <div id="content-container">
 <form action="/api/materiales" method="POST" enctype="application/x-www-form-urlencoded">
 <div class="input-group">

@@ -1,5 +1,5 @@
 
-var path = "http://locahost:3000/";
+var path = "http://localhost:3000/";
 var ids = [];
 var popUpWindow;
 
@@ -79,6 +79,18 @@ function buscarAcarreos(){
     console.log(errorThrown);
           console.log('error');
   });
+}
+
+function filtroAcarreos(){
+  console.log('filtro')
+  var date1 = $('#date1').val();
+  var date2 = $('#date2').val();
+  var categoria = $('#categoria').val();
+  var obra_id = $('#obra_id').val();
+  var zona = $('#zona').val();
+  var concepto = $('#concepto').val();
+    console.log(date1)
+  window.location=path+'acarreos?date1='+date1+'&date2='+date2+'&categoria='+categoria+'&obra_id='+obra_id+'&zona='+zona+'&concepto='+concepto;
 }
 
 function clearResultados(){
@@ -200,7 +212,7 @@ $('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24
           $('#concepto').html('<option value="">Concepto</option>');
           $('#concepto-status').html("");
           for(var i = 0; i < data.length ; i ++){
-            $('#concepto').append('<option value="'+data[i].id+'">'+data[i].nombre_concepto+'</option>');
+            $('#concepto').append('<option value="'+data[i].concepto+'">'+data[i].nombre_concepto+'</option>');
           }
     }
     });
@@ -233,13 +245,7 @@ console.log(photoData);
   });
 }
 
-function acarreoCategory(){
-  var category=$('#concepto').val();
-  if (category == 292) {
-    $('#zonas').removeAttr("disabled");
-    $('#material_id').val("");
-     }
-}
+
 function getMaterial(categoria) {
   if (categoria === "acarreo"){
     var material_id = $('#concepto').val();

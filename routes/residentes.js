@@ -57,7 +57,6 @@ router.get('/acarreos',isLoggedIn, function(req,res,err){
     request(path+'api/acarreos/obra/'+obra_id, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       acarreos = JSON.parse(body);
-      console.log(acarreos)
         res.render('acarreos', { title: 'Acarreos', acarreos: acarreos, usuario: usuario });
     } else if (error){
       console.log(error)

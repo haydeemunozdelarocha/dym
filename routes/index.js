@@ -546,12 +546,62 @@ router.get('/presupuestos', function(req,res,err){
 
 //ACARREOS
 
-router.get('/acarreos', function(err,res){
-  var listaAcarreos = 'SELECT acarreos.*, camiones.*, proveedores.razon_social, materiales.concepto, materiales.precio, materiales.proveedor_id, conceptos.nombre_concepto, recibos.hora,recibos.foto FROM acarreos LEFT JOIN camiones ON camiones.camion_id = acarreos.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON materiales.id = acarreos.material_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON materiales.concepto=conceptos.conceptos_id OR acarreos.concepto_flete = conceptos.conceptos_id ORDER BY recibo_id, categoria DESC';
+router.get('/acarreos', function(req,res,err){
+  var usuario = req.user;
+  if(usuario.categoria === 'residente'){
+    var obra = 'WHERE recibos.obra_id = '+usuario.obra_id+' ';
+  } else if (req.query.obra_id){
+    var obra = req.query.obra_id;
+  } else {
+    var obra = '';
+  }
+  if(req.query.date1 && req.query.date2){
+  console.log(req.query.date1)
+  var date1 = req.query.date1+' 00:00';
+  var date2 = req.query.date2+' 00:00';
+  obra = obra +'AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" ';
+  }
+  if(req.query.categoria){
+  console.log(req.query.categoria)
+  obra = obra +'AND acarreos.categoria = "'+req.query.categoria+'" ';
+  }
+  if(req.query.zona){
+  console.log(req.query.zona)
+  obra = obra +'AND recibos.zona_id = '+req.query.zona+' ';
+  }
+  if(req.query.concepto && req.query.categoria === "flete" ){
+  console.log(req.query.concepto)
+  obra = obra +'AND acarreos.concepto_flete ='+req.query.concepto+' ';
+  } else if (req.query.concepto && req.query.categoria === "material"){
+    obra = obra +'AND materiales.concepto = '+req.query.concepto+' '
+  }
+
+  var listaAcarreos = 'SELECT recibos.recibo_id,recibos.hora,recibos.foto, acarreos.estimacion,acarreos.acarreo_id,acarreos.categoria,proveedores.razon_social, conceptos.nombre_concepto,zonas.nombre_zona FROM acarreos JOIN recibos ON recibos.recibo_id = acarreos.recibo_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON acarreos.concepto_flete=conceptos.conceptos_id OR materiales.concepto = conceptos.conceptos_id '+obra+'ORDER BY acarreos.acarreo_id ASC';
+  var listaObras = 'SELECT * FROM obras';
+  var listaZonas = 'SELECT * FROM zonas';
+  var listaConceptos = 'SELECT * FROM conceptos';
+
+
+      console.log(listaAcarreos)
     db.query(listaAcarreos, function(err, acarreos){
     if(err) throw err;
     else {
-        res.render('acarreos', { title: 'Acarreos', acarreos: acarreos });
+            db.query(listaObras, function(err, obras){
+            if(err) throw err;
+            else {
+                 db.query(listaZonas, function(err, zonas){
+                    if(err) throw err;
+                    else {
+                        db.query(listaConceptos, function(err, conceptos){
+                          if(err) throw err;
+                          else {
+                              res.render('acarreos', { title: 'Acarreos', usuario:usuario,acarreos: acarreos, obras:obras,zonas:zonas,conceptos:conceptos });
+                          }
+                        });
+                    }
+                  });
+            }
+            });
     }
   });
 })
