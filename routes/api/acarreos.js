@@ -102,7 +102,11 @@ router.post('/buscar', function(req,res,next){
   var categoria = req.body.categoria;
   var date1 = moment(req.body.date1).format("YYYY-MM-DD HH:mm");
   var date2 = moment(req.body.date2).format("YYYY-MM-DD HH:mm");
-  var obra_id = req.user.obra_id;
+  if(req.user.categoria === "administrador"){
+    var obra_id = req.body.obra_id;
+  } else {
+      var obra_id = req.user.obra_id;
+  }
   var categoriaProveedor;
   if (categoria === "material"){
     categoriaProveedor = "materiales";

@@ -9,11 +9,13 @@ function buscarAcarreos(){
   var categoria = $('#categoria').val();
   var date1 = $('#date1').val();
   var date2 = $('#date2').val();
+  var obra_id = $('#obra_id').val();
   var data = {
       proveedor_id:proveedor_id,
       categoria: categoria,
       date1: date1,
-      date2: date2
+      date2: date2,
+      obra_id:obra_id
   };
   var acarreos = $.ajax({
     url: '/api/acarreos/buscar',
