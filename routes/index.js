@@ -788,12 +788,13 @@ router.get('/materiales/editar/:id', function(req, res, next) {
 
 router.get('/empleados', function(req, res, next) {
   var usuario = req.user;
-    rp(path+'api/empleados').then( function (body,err) {
-  if (!err) {
-    var empleados = JSON.parse(body);
+  var listaEmpleados = 'SELECT empleados.*,obras.nombre_obra,usuarios.username FROM empleados LEFT JOIN obras ON empleados.obra = obras.obra_id LEFT JOIN usuarios ON empleados.id = usuarios.empleado_id';
+  db.query(listaEmpleados, function(err, empleados){
+    if(err) throw err;
+    else {
     res.render('empleados', { title: 'Empleados', empleados: empleados, usuario:usuario });
-  }
-})
+    }
+  });
 });
 
 router.get('/empleados/nuevo', function(req, res, next) {
