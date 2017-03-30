@@ -19,7 +19,7 @@
 <% if (usuario.categoria === "residente"){ %>
   <% include ./partials/residentesheader.ejs %>
 <% }  else if (usuario.categoria === "administrador"){%>
-  <% include ./partials/adminheader.ejs %>
+   <% include ./partials/costosheader.ejs %>
 <% } %>
 <div id="content-container">
 <input type="hidden" id="estimacion_id" value="<%=estimacion[0].estimaciones_id%>">

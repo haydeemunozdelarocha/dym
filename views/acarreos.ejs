@@ -13,37 +13,62 @@
 <% if (usuario.categoria === "residente"){ %>
   <% include ./partials/residentesheader.ejs %>
 <% }  else if (usuario.categoria === "administrador"){%>
-  <% include ./partials/adminheader.ejs %>
+   <% include ./partials/costosheader.ejs %>
 <% } %>
   <div id="content-container">
     <p><h2>Acarreos</h2></p>
+    <div id="filters-panel" class="panel panel-default">
+  <div class="panel-body">
+  <div id="acarreos-filters">
     <input name="date1" id="date1" type="date">
     <input name="date2" id="date2" type="date">
+    <input name="recibo" id="recibo" type="text" placeholder="No. Recibo">
     <select name="categoria" id="categoria">
+      <option value="">Categoría</option>
       <option value="flete">Flete</option>
       <option value="material">Material</option>
     </select>
     <% if(usuario.categoria != "residente") { %>
     <select name="obra_id" id="obra_id">
+     <option value="">Obra</option>
     <% for(var i = 0; i < obras.length; i ++){ %>
       <option value="<%=obras[i].obra_id%>"><%=obras[i].nombre_obra%></option>
     <% } %>
     </select>
     <% } %>
     <select name="zona" id="zona">
+     <option value="">Zona</option>
     <% for(var i = 0; i < zonas.length; i ++){ %>
       <option value="<%=zonas[i].zonas_id%>"><%=zonas[i].nombre_zona%></option>
     <% } %>
     </select>
     <select name="concepto" id="concepto">
+     <option value="">Concepto</option>
     <% for(var i = 0; i < conceptos.length; i ++){ %>
       <option value="<%=conceptos[i].conceptos_id%>"><%=conceptos[i].nombre_concepto%></option>
     <% } %>
     </select>
-    <button onclick="filtroAcarreos()">Buscar</button>
-  <ul class="nav">
-</ul>
-  <div id="table">
+    <select name="proveedor" id="proveedor">
+     <option value="">Proveedor</option>
+    <% for(var i = 0; i < proveedores.length; i ++){ %>
+      <option value="<%=proveedores[i].id%>"><%=proveedores[i].razon_social%></option>
+    <% } %>
+    </select>
+    <label>Estimación
+    <select name="estimacion" id="estimacion">
+      <option value="">--</option>
+      <option value="Y">Sí</option>
+      <option value="N">No</option>
+    </select>
+    </label>
+        </div>
+    <button class="btn btn-primary" id="boton-busqueda" onclick="filtroAcarreos()">Buscar</button>
+    </div>
+</div>
+    <% if(message) {%>
+  <div id="mensaje-error"><%= message %></div>
+  <% } %>
+
 <div class="panel panel-default">
   <!-- Default panel contents -->
   <div class="panel-heading">Acarreos</div>
@@ -63,7 +88,7 @@
     </tr>
     <% for(var i=0;i<acarreos.length;i++){ %>
     <tr>
-    <td><%= acarreos[i].acarreo_id %></td>
+    <td><a href="/acarreos/<%= acarreos[i].acarreo_id%>"><%= acarreos[i].acarreo_id %></a></td>
       <td id ="<%= acarreos[i].categoria %>"><%= acarreos[i].categoria %></td>
      <td><%= acarreos[i].nombre_concepto %></td>
      <td><%= acarreos[i].nombre_zona %></td>

@@ -14,12 +14,17 @@
 <% if (usuario.categoria === "residente"){ %>
   <% include ./partials/residentesheader.ejs %>
 <% }  else if (usuario.categoria === "administrador"){%>
-  <% include ./partials/adminheader.ejs %>
+   <% include ./partials/costosheader.ejs %>
 <% } %>
   <div id="content-container">
   <div class="content-header">  <p><h2><%= title %></h2></p></div>
 <div class="row">
   <div class="col-sm-4">
+  <div class="panel panel-default">
+    <div class="panel-heading">Presupuesto Total</div>
+        <canvas id="totalesChart"></canvas>
+        <div id="totales" style="padding:0px 10px;text-align: right;"></div>
+    </div>
   <div class="panel panel-default">
     <div class="panel-heading">Información</div>
   <div class="panel-body">
@@ -56,7 +61,7 @@
 </div>
   <div class="col-sm-8">
     <div class="panel panel-default">
-      <div class="panel-heading">Presupuestado vs Actual</div>
+      <div class="panel-heading">Presupuestado vs Actual (Por Concepto)</div>
       <div class="panel-body">
       <canvas id="myChart"></canvas>
 </div>
@@ -64,26 +69,32 @@
   <div class="panel panel-default">
       <div class="panel-heading">Presupuesto (Por Zona)</div>
       <div class="panel-body">
-      <table class="table table-striped" style="font-size: 14px">
+      <table class="table table-striped" style="font-size: 12px">
     <tr>
       <td>Concepto</td>
       <td>Zona</td>
-      <td>Total</td>
-      <td>Cantidad</td>
-      <td>Acumulado</td>
+      <td>Cantidad Pres.</td>
+      <td>Cant Acum.</td>
+      <td>Total Pres.</td>
+      <td>Costo Acum.</td>
+      <td>Diferencia($)</td>
      </tr>
     <% for(var i=0; i<presupuestos.length; i++) {%>
     <tr>
       <td><%= presupuestos[i].nombre_concepto %></td>
      <td><%= presupuestos[i].nombre_zona %></td>
      <%if (presupuestos[i].acumulado > presupuestos[i].cantidad){ %>
-      <td style="color: red">$<%= presupuestos[i].total %></td>
       <td style="color: red"><%= presupuestos[i].cantidad %> <%= presupuestos[i].unidad %></td>
       <td style="color: red"><%= presupuestos[i].acumulado %> <%= presupuestos[i].unidad %></td>
+      <td style="color: red">$<%= presupuestos[i].total %></td>
+      <td style="color: red">$<%= (presupuestos[i].acumulado * presupuestos[i].precio_unitario) %></td>
+      <td style="color: red"><%= (presupuestos[i].total - (presupuestos[i].acumulado * presupuestos[i].precio_unitario)) %></td>
      <% } else { %>
-      <td>$<%= presupuestos[i].total %></td>
       <td><%= presupuestos[i].cantidad %> <%= presupuestos[i].unidad %></td>
       <td><%= presupuestos[i].acumulado %> <%= presupuestos[i].unidad %></td>
+      <td>$<%= presupuestos[i].total %></td>
+      <td>$<%= (presupuestos[i].acumulado * presupuestos[i].precio_unitario) %></td>
+      <td><%= (presupuestos[i].total - (presupuestos[i].acumulado * presupuestos[i].precio_unitario)) %></td>
      </tr>
      <% } %>
     <% } %>
@@ -108,6 +119,7 @@ var presupuestos = $.ajax({
   });
 
   presupuestos.done(function(data){
+    console.log(data)
     for(var i = 0; i < data.length ; i ++){
       x.push(data[i].nombre_concepto);
       presupuestado.push(data[i].total_cantidad)
@@ -133,6 +145,69 @@ var presupuestos = $.ajax({
   });
 
   presupuestos.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+          console.log('error');
+  });
+
+}
+
+getTotales()
+
+function getTotales() {
+  var x = [];
+var info = [];
+
+ console.log('getting totales')
+var totales = $.ajax({
+    url: '/api/presupuestos/totales/general/'+<%=obra.obra_id%>,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  totales.done(function(data){
+    console.log(data[0])
+      x = [];
+      info.push(100)
+      info.push((data[0].total_acumulado*100)/data[0].total_presupuesto);
+      var diferencia = data[0].total_presupuesto - data[0].total_acumulado;
+      data[0].total_presupuesto = data[0].total_presupuesto.toLocaleString('en-US', {minimumFractionDigits: 2});
+      data[0].total_acumulado = data[0].total_acumulado.toLocaleString('en-US', {minimumFractionDigits: 2});
+      $('#totales').append('<br><p>Total Presupuestado: $'+data[0].total_presupuesto);
+      $('#totales').append('<p>Total Actual: $'+data[0].total_acumulado);
+      if(diferencia < 0){
+        diferencia = diferencia.toLocaleString('en-US', {minimumFractionDigits: 2});
+        $('#totales').append('<p style="color:red;">Diferencia: $'+diferencia);
+      } else {
+        diferencia = diferencia.toLocaleString('en-US', {minimumFractionDigits: 2});
+        $('#totales').append('<p>Diferencia($): '+diferencia);
+      }
+    var ctx = document.getElementById('totalesChart').getContext('2d');
+    var data = {
+    labels: [
+        "Presupuestado",
+        "Actual"
+    ],
+    datasets: [
+        {
+            data: info,
+            backgroundColor: [
+                "rgba(10, 83, 201,0.7)",
+                "rgba(10, 83, 201,0.4)"
+            ],
+            hoverBackgroundColor: [
+                "rgba(10, 83, 201,0.4)",
+                "rgba(10, 83, 201,0.7)"
+            ]
+        }]
+      };
+        var myChart = new Chart(ctx,{
+        type: 'pie',
+        data: data
+        });
+    });
+
+
+  totales.fail(function(jqXHR, textStatus, errorThrown){
     console.log(errorThrown);
           console.log('error');
   });

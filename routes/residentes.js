@@ -49,21 +49,6 @@ router.get('/obra', isLoggedIn, function(req, res, next) {
   });
 });
 
-router.get('/acarreos',isLoggedIn, function(req,res,err){
-    console.log('getting acarreos');
-  var usuario = req.user;
-  var obra_id = req.user.obra_id;
-  console.log(path+'api/acarreos/obra/'+obra_id)
-    request(path+'api/acarreos/obra/'+obra_id, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      acarreos = JSON.parse(body);
-        res.render('acarreos', { title: 'Acarreos', acarreos: acarreos, usuario: usuario });
-    } else if (error){
-      console.log(error)
-    }
-  })
-})
-
 router.get('/empleados', isLoggedIn, function(req, res, next) {
   var usuario = req.user;
   var obra_id = req.user.obra_id;

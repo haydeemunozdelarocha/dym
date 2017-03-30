@@ -73,7 +73,6 @@ router.post('/', function(req,res,err) {
               var por_ejercer = cantidad_presupuestada - acumulado_actual;
               var precio_unitario = totales[i].precio;
               var presupuesto_id = totales[i].presupuestos_id;
-              var costo = totales[i].costo+(Number(totales[i].total_cantidad)*totales[i].precio);
 
                   var options = {
                     method: 'POST',
@@ -90,8 +89,7 @@ router.post('/', function(req,res,err) {
                           acumulado_anterior: acumulado_anterior,
                           acumulado_actual: acumulado_actual,
                           por_ejercer: por_ejercer,
-                          presupuesto_id:presupuesto_id,
-                          costo: costo
+                          presupuesto_id:presupuesto_id
                     },
                     json: true // Automatically stringifies the body to JSON
                 };
@@ -150,15 +148,14 @@ var esta_estimacion = req.body.esta_estimacion;
  var estimacion_id = req.body.estimacion_id;
  var zona_id = req.body.zona_id;
  var unidad = req.body.unidad;
- var costo = req.body.costo;
   var cantidad_presupuestada = req.body.cantidad_presupuestada;
   var acumulado_anterior= req.body.acumulado_anterior;
   var acumulado_actual= req.body.acumulado_actual;
   var por_ejercer= req.body.por_ejercer;
   var presupuesto_id = req.body.presupuesto_id;
-  var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ?, costo = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revision" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
+  var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revision" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
   console.log(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer)
-  db.query(nuevoArticuloEstimacion,[acumulado_actual,costo,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer], function(err,articulo){
+  db.query(nuevoArticuloEstimacion,[acumulado_actual,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer], function(err,articulo){
     if (err) throw err;
     else {
        articulo_id = articulo[2].insertId;

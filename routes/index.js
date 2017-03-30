@@ -176,17 +176,62 @@ router.get('/buscar',isLoggedIn, function(req, res, next) {
 router.get('/estimaciones',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
   console.log('sending request')
-  var estimaciones;
-    rp(path+'api/estimaciones/').then(function(response,error) {
-            console.log(error)
-      response = JSON.parse(response)
-    if (!error) {
-      estimaciones = response
-      console.log(estimaciones)
-          res.render('estimaciones', { title: 'Estimaciones', estimaciones: estimaciones, usuario: usuario });
-    }
-  })
-});
+      var query = '';
+      if(req.user.categoria === "residente"){
+        query = ' WHERE estimaciones.obra = '+req.user.obra_id+' AND ';
+      } else if(req.params.obra_id){
+        query = ' WHERE estimaciones.obra = '+req.query.obra_id+' AND ';
+      } else if(req.user.categoria !== "residente"){
+        if (Object.keys(req.query).length == 0){
+        query = "";
+        }else {
+           query = "WHERE ";
+        }
+      }
+      if(req.query.proveedor){
+        query = query + ' estimaciones.proveedor_id ='+req.query.proveedor+' AND ';
+      }
+      if(req.query.date1 && req.query.date2){
+          var date1 = req.query.date1+' 00:00';
+          var date2 = req.query.date2+' 00:00';
+            query = query +' estimaciones.fecha BETWEEN "'+date1+'" AND "'+date2+'" AND ';
+      }
+      if(req.query.numero){
+        query = query + ' estimaciones.numero ='+req.query.numero+' AND ';
+      }
+      if(req.query.pagada){
+        query = query + ' estimaciones.pagado ="'+req.query.pagada+'" AND ';
+      }
+      var getProveedores = 'SELECT * FROM proveedores';
+      var getObras = 'SELECT * FROM obras';
+      var getEstimaciones = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON estimaciones.proveedor_id = proveedores.id '+query+';';
+      if(getEstimaciones[getEstimaciones.length - 5] === 'A' && getEstimaciones[getEstimaciones.length - 2] === ' '){
+        console.log(getEstimaciones.length)
+        console.log(getEstimaciones.length - 5)
+        getEstimaciones = getEstimaciones.slice(0,getEstimaciones.length - 5);
+      }
+      console.log(getEstimaciones)
+          db.query(getProveedores, function(err, proveedores){
+            if(err) throw err;
+            else {
+                db.query(getObras, function(err, obras){
+                if(err) throw err;
+                else {
+                      db.query(getEstimaciones, function(err, estimaciones){
+                        if(err) throw err;
+                        else {
+                          if(estimaciones.length == 0){
+                            var message = "No se encontraron estimaciones con ésta información."
+                          }
+                              res.render('estimaciones', { title: 'Estimaciones', estimaciones: estimaciones, usuario: usuario, obras:obras, proveedores: proveedores, message: message });
+                            }
+                          })
+                    }
+                  })
+        }
+      })
+})
+
 
 
 router.get('/estimaciones/imprimir/:id',isLoggedIn, function(req, res, next) {
@@ -569,23 +614,37 @@ router.get('/acarreos', function(req,res,err){
   console.log(req.query.zona)
   obra = obra +'AND recibos.zona_id = '+req.query.zona+' ';
   }
-  if(req.query.concepto && req.query.categoria === "flete" ){
+  if(req.query.proveedor && req.query.categoria === "flete"){
+  console.log(req.query.proveedor)
+  obra = obra +'AND camiones.proveedor_id = '+req.query.proveedor+' ';
+  }
+  if(req.query.proveedor && req.query.categoria === "material"){
+  console.log(req.query.proveedor)
+  obra = obra +'AND materiales.proveedor_id = '+req.query.proveedor+' ';
+  } else if (req.query.proveedor && !req.query.categoria){
+    obra = obra +'AND materiales.proveedor_id = '+req.query.proveedor+' OR camiones.proveedor_id ='+req.query.proveedor+' ';
+  }
+  if(req.query.concepto && req.query.categoria === "flete"){
   console.log(req.query.concepto)
   obra = obra +'AND acarreos.concepto_flete ='+req.query.concepto+' ';
   } else if (req.query.concepto && req.query.categoria === "material"){
     obra = obra +'AND materiales.concepto = '+req.query.concepto+' '
   }
 
-  var listaAcarreos = 'SELECT recibos.recibo_id,recibos.hora,recibos.foto, acarreos.estimacion,acarreos.acarreo_id,acarreos.categoria,proveedores.razon_social, conceptos.nombre_concepto,zonas.nombre_zona FROM acarreos JOIN recibos ON recibos.recibo_id = acarreos.recibo_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON acarreos.concepto_flete=conceptos.conceptos_id OR materiales.concepto = conceptos.conceptos_id '+obra+'ORDER BY acarreos.acarreo_id ASC';
+  var listaAcarreos = 'SELECT recibos.recibo_id,recibos.hora,recibos.foto, acarreos.estimacion,acarreos.acarreo_id,acarreos.categoria,proveedores.razon_social, conceptos.nombre_concepto,zonas.nombre_zona FROM acarreos JOIN recibos ON recibos.recibo_id = acarreos.recibo_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON acarreos.concepto_flete=conceptos.conceptos_id OR materiales.concepto = conceptos.conceptos_id '+obra+'ORDER BY recibos.hora DESC, acarreos.acarreo_id ASC';
   var listaObras = 'SELECT * FROM obras';
   var listaZonas = 'SELECT * FROM zonas';
   var listaConceptos = 'SELECT * FROM conceptos';
+  var listaProveedores = 'SELECT * FROM proveedores';
 
 
       console.log(listaAcarreos)
     db.query(listaAcarreos, function(err, acarreos){
     if(err) throw err;
     else {
+      if(acarreos.length == 0){
+        var message = "No se encontraron acarreos con esa información."
+      }
             db.query(listaObras, function(err, obras){
             if(err) throw err;
             else {
@@ -595,7 +654,12 @@ router.get('/acarreos', function(req,res,err){
                         db.query(listaConceptos, function(err, conceptos){
                           if(err) throw err;
                           else {
-                              res.render('acarreos', { title: 'Acarreos', usuario:usuario,acarreos: acarreos, obras:obras,zonas:zonas,conceptos:conceptos });
+                              db.query(listaProveedores, function(err, proveedores){
+                                  if(err) throw err;
+                                  else {
+                                      res.render('acarreos', { title: 'Acarreos', usuario:usuario,acarreos: acarreos, obras:obras,zonas:zonas,conceptos:conceptos,proveedores:proveedores,message:message });
+                                  }
+                                });
                           }
                         });
                     }
@@ -606,23 +670,47 @@ router.get('/acarreos', function(req,res,err){
   });
 })
 
+router.get('/acarreos/:id', function(req,res,err){
+  var usuario = req.user;
+  if(usuario.categoria === 'residente'){
+    var obra = 'WHERE recibos.obra_id = '+usuario.obra_id+' ';
+  } else if (req.query.obra_id){
+    var obra = req.query.obra_id;
+  } else {
+    var obra = '';
+  }
+var id = req.params.id;
+obra = obra +'AND acarreos.acarreo_id ='+ id;
+
+  var listaAcarreos = 'SELECT recibos.recibo_id,recibos.hora,recibos.foto, acarreos.estimacion,acarreos.acarreo_id,acarreos.categoria,proveedores.razon_social, conceptos.nombre_concepto,zonas.nombre_zona FROM acarreos JOIN recibos ON recibos.recibo_id = acarreos.recibo_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON acarreos.concepto_flete=conceptos.conceptos_id OR materiales.concepto = conceptos.conceptos_id '+obra;
+
+    db.query(listaAcarreos, function(err, acarreos){
+    if(err) throw err;
+    else {
+        res.render('acarreo', { title: 'Acarreo', usuario:usuario,acarreos: acarreos[0] });
+    }
+  });
+})
+
 //PROVEEDORES
 router.get('/proveedores', function(req, res, next) {
   var readTable = 'SELECT * FROM proveedores';
+  var usuario = req.user;
     db.query(readTable, function(err, proveedores){
     if(err) throw err;
     else {
-      res.render('proveedores', { title: 'Proveedores', proveedores: proveedores });
+      res.render('proveedores', { title: 'Proveedores', proveedores: proveedores,usuario:usuario });
     }
   });
 });
 
-router.get('/proveedores/nuevo', function(err,res){
+router.get('/proveedores/nuevo', function(req,res,err){
   var infoProveedores = 'SELECT * FROM proveedores';
+    var usuario = req.user;
     db.query(infoProveedores, function(err, info){
     if(err) throw err;
     else {
-        res.render('proveedornuevo', { title: 'Obras', info: info });
+        res.render('proveedornuevo', { title: 'Obras', info: info, usuario:usuario });
     }
   });
 })
@@ -710,10 +798,11 @@ router.get('/empleados', function(req, res, next) {
 
 router.get('/empleados/nuevo', function(req, res, next) {
   var readTable = 'SELECT * FROM obras';
+  var usuario = req.user;
     db.query(readTable, function(err, obras){
     if(err) throw err;
     else {
-      res.render('nuevoempleado', { title: 'Empleados', obras: obras });
+      res.render('nuevoempleado', { title: 'Empleados', obras: obras,usuario:usuario });
     }
   });
 });
@@ -772,11 +861,12 @@ router.get('/camiones/editar/:id', function(req, res, next) {
 });
 
 router.get('/camiones/nuevo', function(req, res, next) {
+    var usuario = req.user;
     var getProveedores = "SELECT * FROM `proveedores`";
     db.query(getProveedores, function(err, proveedores){
     if(err) throw err;
     else {
-      res.render('nuevocamion', { title: 'Nuevo Camión', proveedores: proveedores });
+      res.render('nuevocamion', { title: 'Nuevo Camión', proveedores: proveedores, usuario:usuario });
     }
   });
 });

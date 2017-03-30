@@ -160,15 +160,36 @@ border: none;
 .signature-pad-right{
   float:right;
 }
-
+#filters-panel{
+  display:flex;
+}
+#acarreos-filters{
+  flex-grow: initial;
+  flex-wrap: wrap;
+}
+#acarreos-filters input{
+  margin-right: 5px;
+  margin-bottom: 10px;
+}
+#acarreos-filters select{
+  margin-right: 5px;
+  margin-bottom: 10px;
+}
+#boton-busqueda{
+  float:right;
+}
 @media(max-width: 991px) and (min-width:768px){
   .container{
     width: 95%;
   }
 }
 @media(max-width: 770px){
-.navbar{
-  min-height:75px;
+.navbar .nav{
+  height:auto;
+}
+.navbar-collapse{
+  height:auto;
+   min-height:250px;
 }
 .navbar-header{
   min-height:75px;
@@ -198,15 +219,24 @@ border: none;
   border-bottom: none;
 }
 .navbar .nav li{
-  min-height:54px;
+  height:auto;
+    min-height:40px;
+}
+.navbar .nav li:hover{
+  height:auto;
+  min-height:40px;
 }
 .nav>li>a:focus, .nav>li>a:hover,.nav .open>a, .nav .open>a:focus, .nav .open>a:hover, .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover{
   border-bottom: none;
   background: none;
-  min-height:54px;
+  height:auto;
+  min-height:40px;
+  display:block;
 }
 .pull-right{
   float:left!important;
+  position:relative!important;
+  padding-bottom: 40px;
 }
 .dropdown-menu>li>a{
   color: #FFF;

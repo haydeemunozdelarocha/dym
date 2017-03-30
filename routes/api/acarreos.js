@@ -97,7 +97,6 @@ var listaAcarreos = 'SELECT recibos.recibo_id,recibos.hora,recibos.foto, acarreo
 })
 
 
-
 router.post('/buscar', function(req,res,next){
   var proveedor_id = req.body.proveedor_id;
   var categoria = req.body.categoria;
@@ -137,6 +136,26 @@ router.get('/:id', function(req, res, next ){
   });
 })
 
+router.get('/semana', function(req, res, next ){
+  if(req.user.categoria === "residente"){
+    var obra_id = res.user.obra_id;
+    var obra_query = 'recibos.obra_id ='+obra_id+' ';
+  }
+  var startOfWeek = moment().startOf('week').toDate();
+  var endOfWeek   = moment().endOf('week').toDate();
+  var getAcarreo = 'SELECT acarreos.acarreo_id, acarreos.cantidad,acarreos.total, recibos.hora,recibos.foto, conceptos.nombre_concepto,zonas.nombre_zona,materiales.precio FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos.material_id = materiales.id OR acarreos.concepto_flete = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id WHERE '+obra_query+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" AND estimacion = "N";';
+  db.query(getAcarreo, function(err, acarreo){
+    if(err) throw err;
+    else {
+      if(acarreo.length > 0){
+        console.log('Buscando acarreo por id');
+        res.send(acarreo)
+      } else {
+        res.send('No hay acarreos sin estimación de esta semana.')
+      }
+    }
+  });
+})
 
   //Delete a record.
 router.delete('/:id', function(req, err,res){

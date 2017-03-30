@@ -89,8 +89,62 @@ function filtroAcarreos(){
   var obra_id = $('#obra_id').val();
   var zona = $('#zona').val();
   var concepto = $('#concepto').val();
-    console.log(date1)
-  window.location=path+'acarreos?date1='+date1+'&date2='+date2+'&categoria='+categoria+'&obra_id='+obra_id+'&zona='+zona+'&concepto='+concepto;
+  var recibo = $('#recibo').val();
+  var proveedor = $('#proveedor').val();
+  var estimacion = $('#estimacion').val();
+  var query = '';
+  if(date1 && date2){
+    query = query+'date1='+date1+'&date2='+date2+'&';
+  }
+  if(categoria){
+    query= query + 'categoria='+categoria+'&';
+  }
+  if(obra_id){
+    query = query +'obra_id='+obra_id+'&';
+  }
+  if(zona){
+    query = query +'zona='+zona+'&';
+  }
+  if(concepto){
+    query = query +'concepto='+concepto+'&';
+  }
+  if(estimacion){
+    query = query + 'estimacion='+estimacion+'&';
+  }
+  console.log(proveedor)
+  if(proveedor){
+    query = query + 'proveedor='+proveedor+'&';
+  }
+  console.log(query)
+  window.location=path+'acarreos?'+query;
+}
+
+function filtroEstimaciones(){
+  console.log('filtro')
+  var date1 = $('#date1').val();
+  var date2 = $('#date2').val();
+  var obra_id = $('#obra_id').val();
+  var proveedor = $('#proveedor').val();
+  var numero = $('#numero').val();
+   var pagada = $('#pagada').val();
+  var query = '';
+  if(date1 && date2){
+    query = query +'date1='+date1+'&date2='+date2+'&';
+  }
+  if(obra_id){
+    query = query +'obra_id='+obra_id+'&';
+  }
+  if(proveedor){
+    query = query + 'proveedor='+proveedor+'&';
+  }
+  if(numero){
+    query = query + 'numero='+numero+'&';
+  }
+  if(pagada){
+    query = query + 'pagada='+pagada+'&';
+  }
+  console.log(query)
+  window.location=path+'estimaciones?'+query;
 }
 
 function clearResultados(){

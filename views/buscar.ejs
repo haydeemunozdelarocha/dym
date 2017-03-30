@@ -12,6 +12,8 @@
 <body>
 <% if (usuario.categoria === "residente"){ %>
   <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+   <% include ./partials/costosheader.ejs %>
 <% } %>
 <div id="content-container">
 <% if (usuario.categoria === "administrador"){ %>

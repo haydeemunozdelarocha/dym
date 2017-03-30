@@ -9,39 +9,34 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/"><img src="/images/dym-logo-white.png" alt="" align="center" ></a>
+                    <a class="navbar-brand" href="/obra/<%=usuario.obra_id%>"><img src="/images/dym-logo-white.png" alt="" align="center" ></a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse" style="border:none; -webkit-box-shadow:none; box-shadow:none">
                     <ul class="nav navbar-nav">
-                        <li class="active"><a href="/" class="">Home</a></li>
+                        <li class="active"><a href="/obra/<%=usuario.obra_id%>" class="">Home</a></li>
                         <li class=" dropdown">
                             <a href="#" class="dropdown-toggle " data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Obra <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="/residentes/obra">Detalles</a></li>
-                                <li><a href="/residentes/acarreos">Acarreos</a></li>
+                                <li><a href="/obra/<%=usuario.obra_id%>">Detalles</a></li>
+                                <li><a href="/acarreos">Acarreos</a></li>
                             </ul>
                         </li>
 
                         <li class=" dropdown"><a href="#" class="dropdown-toggle " data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Empleados<span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="/residentes/empleados">Consulta</a></li>
-                                <li><a href="#">Asistencia</a></li>
                                 <li><a href="#">Solicitudes</a></li>
                             </ul>
                         </li>
                         <li class=" down"><a href="#" class="dropdown-toggle active" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Estimaciones<span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="/residentes/estimaciones">Consulta</a></li>
+                                <li><a href="/estimaciones">Consulta</a></li>
                                 <li><a href="/buscar">Nueva</a></li>
                             </ul>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav pull-right">
-                        <li class=" dropdown"><a href="#" class="dropdown-toggle active" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> Mi Cuenta<span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Cambiar contraseña</a></li>
-                                <li><a href="#">Editar perfil</a></li>
-                                <li class=""><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Salir</a></li>
+                    <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Salir</a></li>
                             </ul>
                         </li>
                     </ul>

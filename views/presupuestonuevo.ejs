@@ -10,10 +10,10 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
-<% if (usuario.categoria === "administrador"){ %>
-  <% include ./partials/adminheader.ejs %>
-<% } else if (usuario.categoria === "residente"){ %>
-<% include ./partials/residentesheader.ejs %>
+<% if (usuario.categoria === "residente"){ %>
+  <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+   <% include ./partials/costosheader.ejs %>
 <% } %>
   <div id="content-container">
 
