@@ -25,6 +25,9 @@ function buscarAcarreos(){
   });
 
   acarreos.done(function(data){
+    if(data.acarreos.length < 1){
+      $('.message').append(data.message)
+    }
     var titles;
     var container = document.getElementById('table')
     var table = document.createElement('table');
