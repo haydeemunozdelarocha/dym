@@ -20,23 +20,25 @@
 <div class="row">
   <div class="col-sm-4">
   <div class="panel panel-default">
-    <div class="panel-heading">Empleados</div>
+    <div class="panel-heading">Estimaciones (Por autorizar)</div>
   <div class="panel-body">
  <table class="table table-striped" style="font-size: 14px">
     <tr>
-      <td></td>
-      <td>Nombre</td>
+      <td>Número</td>
       <td>Obra</td>
+      <td>Total</td>
      </tr>
-    <% for(var i=0; i<empleados.length; i++) {%>
+     <% if (estimaciones.length < 1) { %>
+     <td>No hay estimaciones por autorizar.</td>
+     <td></td>
+     <td></td>
+     <% } %>
+    <% for(var i=0; i<estimaciones.length; i++) {%>
     <tr>
-    <% if(empleados[i].activo === 'Y'){ %>
-      <td><span class="glyphicon glyphicon-user" style="color:rgba(10, 83, 201,1)"></span></td>
-    <% } else { %>
-      <td><span class="glyphicon glyphicon-user" style="color:lightgray"></span></td>
-    <% } %>
-      <td><%= empleados[i].nombre %></td>
-     <td><%= empleados[i].nombre_obra %></td>
+      <td><a href="/estimaciones/<%= estimaciones[i].estimaciones_id %>"><%= estimaciones[i].numero %></a></td>
+      <td><%= estimaciones[i].nombre_obra %></td>
+      <td><%= estimaciones[i].total %></td>
+      <td><a href="/estimaciones/<%= estimaciones[i].estimaciones_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
      </tr>
     <% } %>
     </table>
@@ -62,14 +64,18 @@
      </tr>
     <% for(var i=0; i<presupuestos.length; i++) {%>
     <tr>
-      <td><%= presupuestos[i].nombre_obra %></td>
+      <td><a href="/obra/<%= presupuestos[i].obra %>" title=""><%= presupuestos[i].nombre_obra %></a></td>
      <%if (presupuestos[i].total_costo > presupuestos[i].total_concepto){ %>
       <td style="color: red">$<%= presupuestos[i].total_concepto %></td>
       <td style="color: red">$<%= presupuestos[i].total_costo %></td>
       <td style="color: red"><%= presupuestos[i].total_concepto - presupuestos[i].total_costo %></td>
      <% } else { %>
       <td>$<%= presupuestos[i].total_concepto %></td>
+      <% if(presupuestos[i].total_costo > 0) { %>
       <td>$<%= presupuestos[i].total_costo %></td>
+      <% } else { %>
+      <td>--</td>
+      <% } %>
       <td><%= presupuestos[i].total_concepto - presupuestos[i].total_costo %></td>
      </tr>
      <% } %>

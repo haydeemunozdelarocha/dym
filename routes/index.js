@@ -63,7 +63,7 @@ router.get('/',isLoggedIn, function(req, res, next) {
 router.get('/administrador', isLoggedIn, function(req, res, next) {
   var usuario = req.user;
   var getObras = 'SELECT * FROM obras ORDER BY obra_id ASC;';
-  var getEmpleados = 'SELECT empleados.*,obras.nombre_obra FROM empleados JOIN obras ON empleados.obra = obras.obra_id;';
+  var getEstimaciones = 'SELECT estimaciones.*,obras.nombre_obra FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id WHERE status = "por autorizar";';
   var getPresupuesto = 'SELECT presupuestos.obra,obras.nombre_obra, sum(total) AS total_concepto, sum(costo) AS total_costo FROM presupuestos JOIN obras ON presupuestos.obra = obras.obra_id GROUP BY obra;';
     db.query(getObras, function(err, obras){
     if(err) throw err;
@@ -72,10 +72,10 @@ router.get('/administrador', isLoggedIn, function(req, res, next) {
         db.query(getPresupuesto, function(err, presupuestos){
         if(err) throw err;
         else {
-              db.query(getEmpleados,[obra_id], function(err, empleados){
+              db.query(getEstimaciones, function(err, estimaciones){
               if(err) throw err;
               else {
-                res.render('costosdashboard', { title: 'Costos',  presupuestos:presupuestos,empleados:empleados, usuario:usuario });
+                res.render('costosdashboard', { title: 'Costos',  presupuestos:presupuestos,estimaciones:estimaciones, usuario:usuario });
               }
             });
         }
@@ -479,13 +479,25 @@ router.get('/estimaciones/:id', isLoggedIn, function(req,res,err){
 })
 
 router.get('/estimaciones/editar/:id', function(req, res, next) {
-  var id = req.params.id;
-  var getEstimacion = "SELECT * FROM `estimacion` WHERE `id` = " + id;
-    db.query(getEstimacion, function(err, estimacion){
+  var estimacion_id = req.params.id;
+  var usuario = req.user;
+  console.log(estimacion_id)
+  var getEstimacion = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON proveedores.id = estimaciones.proveedor_id WHERE estimaciones_id = ?';
+  var getEstimacionArticulos = 'SELECT estimacion_articulo.*,conceptos.nombre_concepto,zonas.nombre_zona FROM estimacion_articulo JOIN conceptos ON estimacion_articulo.concepto_id = conceptos.conceptos_id JOIN zonas ON estimacion_articulo.zona_id = zonas.zonas_id WHERE estimacion_id = ?';
+    db.query(getEstimacion,[estimacion_id], function(err, estimacion){
     if(err) throw err;
     else {
-      res.render('editarestimacion', { title: 'Editar Estimación', estimacion: estimacion });
-    }
+            console.log(getEstimacion)
+      console.log(estimacion)
+      db.query(getEstimacionArticulos,[estimacion_id], function(err, articulos){
+            if(err) throw err;
+            else {
+              console.log(getEstimacionArticulos)
+              console.log(articulos)
+                res.render('estimacion',{estimacion:estimacion, articulos:articulos, usuario:usuario});
+            }
+        });
+      }
   });
 });
 
@@ -500,7 +512,7 @@ router.get('/signature/:categoria/:id/:obra', isLoggedIn, function(req,res,err){
 
 router.get('/obras',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
-  var listaObras = 'SELECT obras.*, empleados.nombre, empleados.id, usuarios.categoria  FROM obras LEFT JOIN empleados ON empleados.obra = obras.obra_id LEFT JOIN usuarios ON usuarios.empleado_id = empleados.id WHERE usuarios.categoria = "residente"';
+  var listaObras = 'SELECT obras.*, empleados.nombre, empleados.id, usuarios.categoria FROM obras LEFT JOIN empleados ON empleados.id = obras.residente_id LEFT JOIN usuarios ON usuarios.empleado_id = empleados.id WHERE usuarios.categoria = "residente"';
     db.query(listaObras, function(err, obras){
     if(err) throw err;
     else {
@@ -717,11 +729,12 @@ router.get('/proveedores/nuevo', function(req,res,err){
 
 router.get('/proveedores/editar/:id', function(req,res,err){
   var id =req.params.id;
+  var usuario = req.user;
   var getProveedor = "SELECT * FROM `proveedores` WHERE `id` = "+ id;
     db.query(getProveedor, function(err, proveedor){
     if(err) throw err;
     else {
-        res.render('editarproveedor', { title: 'Editar Proveedor', proveedor: proveedor });
+        res.render('editarproveedor', { title: 'Editar Proveedor', proveedor: proveedor, usuario:usuario });
     }
   });
 })
@@ -759,6 +772,7 @@ router.get('/materiales', function(req, res, next) {
 
 router.get('/materiales/nuevo', function(req, res, next) {
   var readTable = 'SELECT * FROM proveedores';
+  var usuario = req.user;
     db.query(readTable, function(err, proveedores){
     if(err) throw err;
     else {
@@ -766,7 +780,7 @@ router.get('/materiales/nuevo', function(req, res, next) {
         db.query(readConceptos, function(err, conceptos){
           if(err) throw err;
           else {
-            res.render('nuevomaterial', { title: 'Proveedores', proveedores: proveedores, conceptos: conceptos });
+            res.render('nuevomaterial', { title: 'Proveedores', proveedores: proveedores, usuario:usuario,conceptos: conceptos });
           }
         });
     }
@@ -775,11 +789,12 @@ router.get('/materiales/nuevo', function(req, res, next) {
 
 router.get('/materiales/editar/:id', function(req, res, next) {
   var id = req.params.id;
+    var usuario = req.user;
   var getMaterial = "SELECT * FROM `materiales` WHERE `id` = " + id;
     db.query(getMaterial, function(err, material){
     if(err) throw err;
     else {
-      res.render('editarmaterial', { title: 'Editar Material', material: material });
+      res.render('editarmaterial', { title: 'Editar Material', material: material,usuario:usuario });
     }
   });
 });
@@ -841,22 +856,24 @@ router.get('/registrar/:idempleado', function(req, res, next) {
 
 //CAMIONES
 router.get('/camiones', function(req, res, next) {
+    var usuario = req.user;
   var readTable = 'SELECT camiones.*, proveedores.razon_social FROM camiones JOIN proveedores ON proveedores.id = camiones.proveedor_id';
     db.query(readTable, function(err, camiones){
     if(err) throw err;
     else {
-      res.render('camiones', { title: 'Camiones', camiones: camiones });
+      res.render('camiones', { title: 'Camiones', camiones: camiones,usuario:usuario });
     }
   });
 });
 
 router.get('/camiones/editar/:id', function(req, res, next) {
   var id = req.params.id;
+    var usuario = req.user;
   var getCamion = "SELECT * FROM `camiones` WHERE `camion_id` = " + id;
     db.query(getCamion, function(err, camion){
     if(err) throw err;
     else {
-      res.render('editarcamion', { title: 'Editar Camión', camion: camion });
+      res.render('editarcamion', { title: 'Editar Camión', camion: camion,usuario:usuario });
     }
   });
 });

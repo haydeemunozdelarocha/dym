@@ -25,7 +25,7 @@ function buscarAcarreos(){
   });
 
   acarreos.done(function(data){
-    if(data.acarreos.length < 1){
+    if(!data.acarreos){
       $('.message').append(data.message)
     }
     var titles;

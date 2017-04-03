@@ -170,12 +170,15 @@ router.post('/signature', function(req, res, err) {
             console.log(firma[1][0])
             if (firma[1][0].firma_contratista && firma[1][0].firma_residente && !firma[1][0].autorizacion) {
               console.log('email reyes');
+              updateStatus("por autorizar",estimacion_id)
               firmaCostos(obra,estimacion_id)
             } else if (firma[1][0].firma_contratista && firma[1][0].firma_residente && firma[1][0].autorizacion) {
               console.log('change status and email papa')
+              updateStatus("autorizada",estimacion_id)
               firmaAdmin(obra,estimacion_id)
             } else if (firma[1][0].firma_contratista && firma[1][0].autorizacion) {
-              console.log('email residente')
+              console.log('email residente');
+              updateStatus("residente autorizacion",estimacion_id)
             }
             res.json({photo:photo})
           })
@@ -183,7 +186,12 @@ router.post('/signature', function(req, res, err) {
 
   })
 
-
+function updateStatus(status,estimacion_id){
+  var cambiarStatus = 'UPDATE estimaciones SET status= ? WHERE estimaciones_id = ?';
+      db.query(cambiarStatus,[status,estimacion_id], function(err,estimacion){
+        return estimacion_id;
+      })
+}
 
 
 

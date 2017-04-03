@@ -25,6 +25,18 @@ router.get('/', function(req,res,err){
   });
 })
 
+router.get('/autorizacion/costos', function(req,res,err){
+  console.log('getting request')
+  var listaEstimaciones = 'SELECT * FROM estimaciones WHERE status = "por autorizar"';
+    db.query(listaEstimaciones, function(err, rows){
+    if(err) throw err;
+    else {
+      console.log(rows)
+        res.json(rows);
+    }
+  });
+})
+
 router.post('/', function(req,res,err) {
   console.log('creando Estimacion')
   var ids = req.body.acarreos;
