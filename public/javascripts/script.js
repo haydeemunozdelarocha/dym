@@ -388,7 +388,9 @@ function cerrarRecibo(){
 }
 
 function allowPhoto(){
-  $('#photo-button').removeAttr("disabled")
+  $('#photo-button').removeAttr("disabled");
+          allowSubmit()
+
 }
 
 function allowSubmit(){
