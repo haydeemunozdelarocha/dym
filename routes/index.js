@@ -59,6 +59,8 @@ router.get('/',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
   if(req.user.categoria === "checador"){
     res.redirect('/captura')
+  } else if (req.user.categoria === "residente"){
+    res.redirect('/obra/'+req.user.obra_id)
   }
 });
 
