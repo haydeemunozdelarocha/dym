@@ -343,6 +343,7 @@ function getCamion() {
   $('#search-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
 console.log("getting camion");
 var camion_id = $('#scanner').val();
+console.log(camion_id)
   var camion = $.ajax({
     url: '/api/camiones/buscar/'+camion_id,
     type: 'GET',
@@ -399,6 +400,7 @@ function allowSubmit(){
   $('#concepto').removeAttr("disabled")
   $('#zonas').removeAttr("disabled")
   $('#material_id').removeAttr("disabled")
+  $('#scanner').removeAttr("disabled")
 }
 
 
