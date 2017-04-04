@@ -57,7 +57,9 @@ function base64_encode(file) {
 /* MAIN VIEWS */
 router.get('/',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
-  res.render('index', { title: 'DYM INGENIEROS CONSTRUCTORES', usuario:usuario });
+  if(req.user.categoria === "checador"){
+    res.redirect('/captura')
+  }
 });
 
 router.get('/administrador', isLoggedIn, function(req, res, next) {
