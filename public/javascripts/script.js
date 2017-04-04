@@ -343,6 +343,8 @@ function getCamion() {
   $('#search-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
 console.log("getting camion");
 var camion_id = $('#scanner').val();
+if(camion_id.length >= 10){
+
 console.log(camion_id)
   var camion = $.ajax({
     url: '/api/camiones/buscar/'+camion_id,
@@ -351,7 +353,8 @@ console.log(camion_id)
   });
 
   camion.done(function(data){
-    if(data[0]){
+    if(data[0].camion_id){
+      console.log(data[0].camion_id)
       $('#scanner').attr("readonly", true);
       $('#fletero').val(data[0].proveedor_id)
       getMateriales('acarreo')
@@ -369,6 +372,7 @@ console.log(camion_id)
       $('#search-status').html("");
       $('#search-status').append("Camión ID inválido!");
   });
+}
 }
 
 function getProveedores(){
@@ -561,4 +565,11 @@ function totalesPresupuesto(id1,id2,id3){
   var precio = Number($("#"+id2+"").val());
   var total = cantidad * precio;
   $("#"+id3+"").val(total);
+}
+
+document.getElementById("capturaForm").onkeypress = function(e) {
+  var key = e.charCode || e.keyCode || 0;
+  if (key == 13) {
+    e.preventDefault();
+  }
 }
