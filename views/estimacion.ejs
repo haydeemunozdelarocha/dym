@@ -164,7 +164,11 @@
                 </div>
           </div>
           </div>
+       <% if(estimacion[0].status === "autorizada") { %>
        <button type="submit" class="btn btn-primary" style="margin-bottom:3%; display:block;float:right" onclick="location.href='/estimaciones/imprimir/<%=estimacion[0].estimaciones_id %>'">Imprimir</button>
+       <% } else { %>
+        <button type="submit" class="btn btn-primary" style="margin-bottom:3%; display:block;float:right" disabled>Imprimir</button>
+        <% } %>
 </div>
 <script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>

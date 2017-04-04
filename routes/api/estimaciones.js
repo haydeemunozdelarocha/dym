@@ -53,18 +53,31 @@ router.post('/', function(req,res,err) {
   var periodo_final = moment(req.body.date2).format("YYYY-MM-DD HH:mm");
   var proveedor_id = req.body.proveedor_id;
   console.log(ids)
-    var buscarAcarreos = 'SELECT acarreos.material_id,acarreos.concepto_flete,acarreos.total,acarreos.cantidad, recibos.zona_id,materiales.concepto,materiales.precio,materiales.unidad,presupuestos.presupuestos_id,presupuestos.costo,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos.total) AS total_concepto, sum(acarreos.cantidad) AS total_cantidad FROM acarreos JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN materiales ON acarreos.material_id = materiales.id OR acarreos.concepto_flete = materiales.id LEFT JOIN presupuestos ON presupuestos.concepto = materiales.concepto AND presupuestos.zona = recibos.zona_id WHERE acarreo_id IN ('+ids+') GROUP BY concepto_flete,material_id, zona_id;';
+    var buscarAcarreos = 'SELECT acarreos.material_id,acarreos.concepto_flete,acarreos.total,acarreos.cantidad, recibos.zona_id,materiales.concepto,materiales.precio,materiales.unidad,presupuestos.presupuestos_id,presupuestos.costo,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos.total) AS total_concepto, sum(acarreos.cantidad) AS total_cantidad FROM acarreos JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id LEFT JOIN materiales ON acarreos.material_id = materiales.id OR acarreos.concepto_flete = materiales.concepto AND recibos.obra_id = materiales.obra_id AND materiales.proveedor_id = camiones.proveedor_id LEFT JOIN presupuestos ON presupuestos.concepto = materiales.concepto AND presupuestos.zona = recibos.zona_id WHERE acarreo_id IN ('+ids+') GROUP BY concepto_flete,material_id, zona_id;';
+    console.log(buscarAcarreos)
     var lastEstimacion = 'SELECT * FROM estimaciones WHERE obra ='+obra_id+' ORDER BY estimaciones_id DESC LIMIT 1;'
       db.query(lastEstimacion).then(function(rows,err){
-        numero = rows[0].numero + 1;
+        if (!rows[0]){
+          console.log("no numero")
+          console.log(rows)
+          numero = 1;
+        }else {
+          console.log('setting numero')
+          console.log(rows)
+          numero = rows[0].numero + 1;
+        }
         var nuevaEstimacion = 'UPDATE acarreos SET estimacion = "Y" WHERE acarreo_id IN ('+ids+');INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,proveedor_id,categoria,status,numero) VALUE('+obra_id+',"'+fecha+'","'+periodo_inicio+'","'+periodo_final+'",'+proveedor_id+',"'+categoria+'","'+status+'",'+numero+');';
             console.log(nuevaEstimacion)
         return db.query(nuevaEstimacion)
       }).then(function(rows,err){
         console.log(rows[1])
         estimacion_id = rows[1].insertId;
+        var editarAcarreosEst = 'UPDATE acarreos SET estimacion_id ='+estimacion_id+' WHERE acarreo_id IN('+ids+');'
+        return db.query(editarAcarreosEst)
+      }).then(function(rows,err){
         return db.query(buscarAcarreos)
       }).then( function(rows,err){
+        console.log(rows)
         if(err) throw err;
         else {
           if(rows.length < 1){
@@ -73,8 +86,13 @@ router.post('/', function(req,res,err) {
             totales = JSON.stringify(rows);
             totales = JSON.parse(totales);
             console.log('setting totales')
+            console.log(totales)
             for(var i = 0; i < totales.length ; i++){
-              var concepto_id = Number(totales[i].concepto);
+              if(categoria === "flete"){
+                var concepto_id = Number(totales[i].concepto_flete);
+              } else {
+                 var concepto_id = Number(totales[i].concepto);
+              }
               var zona_id = totales[i].zona_id;
               var esta_estimacion = Number(totales[i].total_cantidad);
               var importe = totales[i].total;
@@ -123,6 +141,7 @@ router.post('/', function(req,res,err) {
                               iva = (subtotal-retencion)*.16
                               total = subtotal - retencion + iva;
                             } else {
+                              retencion = 0;
                               iva = subtotal * .16;
                               total = subtotal + iva;
                             }
@@ -153,6 +172,7 @@ router.get('/obra/:obraid', function(req,res,err){
 
 router.post('/articulos', function(req,res,err){
   console.log('articulos')
+  console.log(req.body)
  var concepto_id= req.body.concepto_id;
 var esta_estimacion = req.body.esta_estimacion;
  var precio_unitario= req.body.precio_unitario;
@@ -165,7 +185,7 @@ var esta_estimacion = req.body.esta_estimacion;
   var acumulado_actual= req.body.acumulado_actual;
   var por_ejercer= req.body.por_ejercer;
   var presupuesto_id = req.body.presupuesto_id;
-  var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revision" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
+  var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revisar" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
   console.log(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer)
   db.query(nuevoArticuloEstimacion,[acumulado_actual,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer], function(err,articulo){
     if (err) throw err;

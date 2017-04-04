@@ -113,7 +113,7 @@ router.post('/buscar', function(req,res,next){
   } else if (categoria === "flete"){
     categoriaProveedor = "camiones"
   }
-  var listaAcarreosBuscar = 'SELECT acarreos.acarreo_id, acarreos.cantidad,acarreos.total, recibos.hora,recibos.foto, conceptos.nombre_concepto,zonas.nombre_zona,materiales.precio FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos.material_id = materiales.id OR acarreos.concepto_flete = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id WHERE acarreos.categoria = "'+categoria+'" AND recibos.obra_id = '+obra_id+' AND materiales.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" AND estimacion = "N";';
+  var listaAcarreosBuscar = 'SELECT acarreos.acarreo_id, acarreos.cantidad,acarreos.total, recibos.hora,recibos.foto, conceptos.nombre_concepto,zonas.nombre_zona,materiales.precio FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos.material_id = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id OR conceptos.conceptos_id = acarreos.concepto_flete LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id WHERE acarreos.categoria = "'+categoria+'" AND recibos.obra_id = '+obra_id+' AND '+categoriaProveedor+'.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" AND estimacion = "N";';
   console.log(listaAcarreosBuscar)
     db.query(listaAcarreosBuscar, function(err, acarreos){
       console.log(acarreos)
@@ -173,5 +173,16 @@ router.delete('/:id', function(req, err,res){
   });
 })
 
+router.get('/totales/:obra', function(req, res, next ){
+  var obra= req.params.obra;
+  var getAcarreoTotales = 'SELECT conceptos.nombre_concepto, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id JOIN conceptos ON concepto_flete = conceptos.conceptos_id OR conceptos.conceptos_id = materiales.concepto WHERE recibos.obra_id = ? GROUP BY concepto_flete, material_id;'
+  db.query(getAcarreoTotales,[obra], function(err, totales){
+    if(err) throw err;
+    else {
+        console.log('Buscando presupuesto');
+        res.json(totales)
+    }
+  });
+})
 
 module.exports = router;

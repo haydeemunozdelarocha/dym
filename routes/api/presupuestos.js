@@ -121,6 +121,7 @@ router.get('/totales/:obra', function(req, res, next ){
   var obra= req.params.obra;
   var concepto= req.params.concepto;
   var getPresupuesto = 'SELECT presupuestos.obra,presupuestos.unidad, conceptos.nombre_concepto, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad,sum(acumulado) AS total_acumulado FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id WHERE obra = ? GROUP BY nombre_concepto;';
+  var getAcarreoTotales = 'SELECT conceptos.nombre_concepto, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id JOIN conceptos ON concepto_flete = conceptos.conceptos_id OR conceptos.conceptos_id = materiales.concepto WHERE recibos.obra_id = ? GROUP BY concepto_flete, material_id;'
   db.query(getPresupuesto,[obra], function(err, presupuesto){
     if(err) throw err;
     else {

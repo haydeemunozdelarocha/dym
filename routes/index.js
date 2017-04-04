@@ -244,26 +244,33 @@ router.get('/estimaciones/imprimir/:id',isLoggedIn, function(req, res, next) {
   var residenteURL;
   var contratistaURL;
   var autorizacionURL;
+  var firmaResidente;
+  var firmaContratista;
+  var autorizacion;
   var getEstimacion = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON proveedores.id = estimaciones.proveedor_id WHERE estimaciones_id = ?';
   var getEstimacionArticulos = 'SELECT estimacion_articulo.*,conceptos.nombre_concepto,zonas.nombre_zona FROM estimacion_articulo JOIN conceptos ON estimacion_articulo.concepto_id = conceptos.conceptos_id JOIN zonas ON estimacion_articulo.zona_id = zonas.zonas_id WHERE estimacion_id = ?';
     db.query(getEstimacion,[estimacion_id], function(err, estimacion){
     if(err) throw err;
     else {
-          var firmaResidente = {
+        if(estimacion[0].firma_residente){
+          firmaResidente = {
               method: 'GET',
               uri: estimacion[0].firma_residente,
               encoding: null, //  if you expect binary data
               responseType: 'buffer'
           };
-          var firmaContratista = {
+        }
+           if(estimacion[0].firma_contratista){
+          firmaContratista = {
               method: 'GET',
               uri: estimacion[0].firma_contratista,
               encoding: null, //  if you expect binary data
               responseType: 'buffer'
           };
+        }
           if(estimacion[0].autorizacion){
             console.log(estimacion[0].autorizacion)
-          var autorizacion = {
+          autorizacion = {
               method: 'GET',
               uri: estimacion[0].autorizacion,
               encoding: null, //  if you expect binary data
@@ -610,6 +617,7 @@ router.get('/presupuestos', function(req,res,err){
 router.get('/acarreos', function(req,res,err){
   var usuario = req.user;
   if(usuario.categoria === 'residente'){
+    console.log()
     var obra = 'WHERE recibos.obra_id = '+usuario.obra_id+' ';
   } else if (req.query.obra_id){
     var obra = req.query.obra_id;
