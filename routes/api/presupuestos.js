@@ -22,7 +22,7 @@ router.get('/', function(err,res){
 })
 
 router.get('/costos', function(req,res,err){
-    var getPresupuesto = 'SELECT presupuestos.obra,obras.nombre_obra, sum(total) AS total_concepto, sum(costo) AS total_costo FROM presupuestos JOIN obras ON presupuestos.obra = obras.obra_id GROUP BY obra;';
+    var getPresupuesto = 'SELECT presupuestos.obra,obras.nombre_obra, sum(cantidad) AS total_concepto, sum(acumulado) AS total_costo FROM presupuestos JOIN obras ON presupuestos.obra = obras.obra_id GROUP BY obra;';
   db.query(getPresupuesto, function(err, presupuesto){
     if(err) throw err;
     else {
@@ -133,7 +133,7 @@ router.get('/totales/:obra', function(req, res, next ){
 
 router.get('/totales/general/:obra', function(req, res, next ){
   var obra= req.params.obra;
-  var getPresupuesto = 'SELECT SUM(total) AS total_presupuesto, SUM(acumulado) AS total_acumulado FROM presupuestos WHERE obra = ?;';
+  var getPresupuesto = 'SELECT SUM(cantidad) AS total_presupuesto, SUM(acumulado) AS total_acumulado FROM presupuestos WHERE obra = ?;';
   db.query(getPresupuesto,[obra], function(err, presupuesto){
     if(err) throw err;
     else {

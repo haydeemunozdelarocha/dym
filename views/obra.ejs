@@ -170,18 +170,19 @@ var totales = $.ajax({
       info.push(100)
       info.push((data[0].total_acumulado*100)/data[0].total_presupuesto);
       var diferencia = data[0].total_presupuesto - data[0].total_acumulado;
-      data[0].total_presupuesto = data[0].total_presupuesto.toLocaleString('en-US', {minimumFractionDigits: 2});
-      data[0].total_acumulado = data[0].total_acumulado.toLocaleString('en-US', {minimumFractionDigits: 2});
-      $('#totales').append('<br><p>Total Presupuestado: $'+data[0].total_presupuesto);
-      $('#totales').append('<p>Total Actual: $'+data[0].total_acumulado);
+      // data[0].total_presupuesto = data[0].total_presupuesto.toLocaleString('en-US', {minimumFractionDigits: 2});
+      // data[0].total_acumulado = data[0].total_acumulado.toLocaleString('en-US', {minimumFractionDigits: 2});
+      $('#totales').append('<br><p>Total Presupuestado: '+data[0].total_presupuesto);
+      $('#totales').append('<p>Total Actual: '+data[0].total_acumulado);
       if(diferencia < 0){
-        diferencia = diferencia.toLocaleString('en-US', {minimumFractionDigits: 2});
-        $('#totales').append('<p style="color:red;">Diferencia: $'+diferencia);
+        // diferencia = diferencia.toLocaleString('en-US', {minimumFractionDigits: 2});
+        $('#totales').append('<p style="color:red;">Diferencia: '+diferencia);
       } else {
-        diferencia = diferencia.toLocaleString('en-US', {minimumFractionDigits: 2});
-        $('#totales').append('<p>Diferencia($): '+diferencia);
+        // diferencia = diferencia.toLocaleString('en-US', {minimumFractionDigits: 2});
+        $('#totales').append('<p>Diferencia: '+diferencia);
       }
     var ctx = document.getElementById('totalesChart').getContext('2d');
+    console.log(info)
     var data = {
     labels: [
         "Presupuestado",

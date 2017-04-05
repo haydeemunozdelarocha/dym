@@ -234,54 +234,60 @@ var autorizacion = $.ajax({
 
 }
 
-function getMateriales(categoria) {
-if (categoria === "material"){
-console.log("getting materiales");
-var proveedor_id = $('#proveedor_id').val();
-$('#material-status').html("");
-$('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
-} else if (categoria === "acarreo"){
-  var proveedor_id = $('#fletero').val();
-  $('#concepto-status').html("");
-  $('#concepto-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
+function calcularFlete(){
+var categoria = $('#categoria').val();
+  if (categoria === "Acarreo Interno") {
+    acarreoInterno();
+  } else if (categoria === "Acarreo Externo"){
+
+  } else {
+
+  }
 }
-  var materiales = $.ajax({
-    url: '/api/materiales/proveedor/'+proveedor_id+'/'+categoria,
-    type: 'GET',
-    dataType: 'json'
+
+function acarreoInterno(){
+  var proveedor_id = $('#fletero').val();
+  var capacidad = $('#capacidad').val();
+  var interno = $.ajax({
+    url: '/api/fletes/interno/',
+    type: 'POST',
+    dataType: 'json',
+    data:{
+      proveedor_id:proveedor_id
+    }
   });
 
-  materiales.done(function(data){
-    console.log(data)
-    if(data.length < 1){
-      alert("No se han registrado los precios de este proveedor.")
-    } else if (categoria === "material"){
-          $('#material_id').removeAttr("disabled")
-          $('#material_id').html('');
-          $('#material_id').html('<option value="">Material</option>');
-          $('#material-status').html("");
-          for(var i = 0; i < data.length ; i ++){
-            $('#material_id').append('<option value="'+data[i].id+'">'+data[i].nombre_concepto+'</option>');
-          }
-    }
-    else if (categoria === "acarreo"){
-      console.log('acarreo')
-          $('#concepto').removeAttr("disabled")
-          $('#concepto').html('');
-          $('#concepto').html('<option value="">Concepto</option>');
-          $('#concepto-status').html("");
-          for(var i = 0; i < data.length ; i ++){
-            $('#concepto').append('<option value="'+data[i].concepto+'">'+data[i].nombre_concepto+'</option>');
-          }
-    }
+  interno.done(function(data){
+    $('#precio_flete').val(data[0].precio1*capacidad);
+    console.log(data[0].precio1*capacidad)
     });
 
-  materiales.fail(function(jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-    console.log('no materiales');
+  interno.fail(function(jqXHR, textStatus, errorThrown){
+ console.log("error")
   });
 }
 
+function acarreoInterno(){
+  var proveedor_id = $('#fletero').val();
+  var capacidad = $('#capacidad').val();
+  var interno = $.ajax({
+    url: '/api/fletes/interno/',
+    type: 'POST',
+    dataType: 'json',
+    data:{
+      proveedor_id:proveedor_id
+    }
+  });
+
+  interno.done(function(data){
+    $('#precio_flete').val(data[0].precio1*capacidad);
+     $('#zonas').removeAttr("disabled")
+    });
+
+  interno.fail(function(jqXHR, textStatus, errorThrown){
+ console.log("error")
+  });
+}
 
 function getBase64Image(url,id) {
 console.log("sending to back");
@@ -357,8 +363,9 @@ console.log(camion_id)
       console.log(data[0].camion_id)
       $('#scanner').attr("readonly", true);
       $('#fletero').val(data[0].proveedor_id)
-      getMateriales('acarreo')
+      $('#capacidad').val(data[0].capacidad)
       $('#search-status').html("");
+      $('#categoria').removeAttr("disabled");
       $('#search-status').append("Camión encontrado!");
     } else {
       $('#search-status').html("");

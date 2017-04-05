@@ -53,7 +53,7 @@ router.post('/', function(req,res,err) {
   var periodo_final = moment(req.body.date2).format("YYYY-MM-DD HH:mm");
   var proveedor_id = req.body.proveedor_id;
   console.log(ids)
-    var buscarAcarreos = 'SELECT acarreos.material_id,acarreos.concepto_flete,acarreos.total,acarreos.cantidad, recibos.zona_id,materiales.concepto,materiales.precio,materiales.unidad,presupuestos.presupuestos_id,presupuestos.costo,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos.total) AS total_concepto, sum(acarreos.cantidad) AS total_cantidad FROM acarreos JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id LEFT JOIN materiales ON acarreos.material_id = materiales.id OR acarreos.concepto_flete = materiales.concepto AND recibos.obra_id = materiales.obra_id AND materiales.proveedor_id = camiones.proveedor_id LEFT JOIN presupuestos ON presupuestos.concepto = materiales.concepto AND presupuestos.zona = recibos.zona_id WHERE acarreo_id IN ('+ids+') GROUP BY concepto_flete,material_id, zona_id;';
+    var buscarAcarreos = 'SELECT acarreos.material_id,acarreos.concepto_flete,acarreos.total,acarreos.cantidad, recibos.zona_id,materiales.concepto,materiales.precio,materiales.unidad,presupuestos.presupuestos_id,presupuestos.costo,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos.total) AS total_concepto, sum(acarreos.cantidad) AS total_cantidad FROM acarreos JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id LEFT JOIN materiales ON acarreos.material_id = materiales.id OR acarreos.concepto_flete = materiales.concepto AND recibos.obra_id = materiales.obra_id AND materiales.proveedor_id = camiones.proveedor_id LEFT JOIN presupuestos ON presupuestos.concepto = materiales.concepto AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id WHERE acarreo_id IN ('+ids+') GROUP BY concepto_flete,material_id, zona_id;';
     console.log(buscarAcarreos)
     var lastEstimacion = 'SELECT * FROM estimaciones WHERE obra ='+obra_id+' ORDER BY estimaciones_id DESC LIMIT 1;'
       db.query(lastEstimacion).then(function(rows,err){
@@ -182,14 +182,15 @@ var esta_estimacion = req.body.esta_estimacion;
  var unidad = req.body.unidad;
   var cantidad_presupuestada = req.body.cantidad_presupuestada;
   var acumulado_anterior= req.body.acumulado_anterior;
-  var acumulado_actual= req.body.acumulado_actual;
+  var acumulado_actual= Number(req.body.acumulado_actual);
   var por_ejercer= req.body.por_ejercer;
   var presupuesto_id = req.body.presupuesto_id;
   var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revisar" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
-  console.log(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer)
+  console.log(acumulado_actual,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer)
   db.query(nuevoArticuloEstimacion,[acumulado_actual,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer], function(err,articulo){
     if (err) throw err;
     else {
+        console.log(nuevoArticuloEstimacion)
        articulo_id = articulo[2].insertId;
        console.log(articulo_id)
       res.json({articulo:articulo_id})

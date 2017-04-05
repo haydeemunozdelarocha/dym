@@ -59,7 +59,7 @@
     <tr>
       <td>Obra</td>
       <td>Presupuestado</td>
-      <td>Costo Total</td>
+      <td>Acumulado</td>
       <td>Por Ejercer</td>
      </tr>
     <% for(var i=0; i<presupuestos.length; i++) {%>
@@ -70,11 +70,11 @@
       <td style="color: red">$<%= presupuestos[i].total_costo %></td>
       <td style="color: red"><%= presupuestos[i].total_concepto - presupuestos[i].total_costo %></td>
      <% } else { %>
-      <td>$<%= presupuestos[i].total_concepto %></td>
-      <% if(presupuestos[i].total_costo > 0) { %>
-      <td>$<%= presupuestos[i].total_costo %></td>
-      <% } else { %>
+      <td><%= presupuestos[i].total_concepto %></td>
+      <% if (!presupuestos[i].total_costo) { %>
       <td>--</td>
+      <% } else { %>
+      <td><%= presupuestos[i].total_costo %></td>
       <% } %>
       <td><%= presupuestos[i].total_concepto - presupuestos[i].total_costo %></td>
      </tr>
