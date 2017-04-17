@@ -6,7 +6,6 @@ var db = require('../../db.js');
 
 var nuevoMaterial = 'INSERT INTO materiales(concepto, unidad, precio,proveedor_id,categoria,obra_id) VALUE(?,?,?,?,?,?)';
 var listaMateriales = 'SELECT materiales.*, conceptos.* FROM materiales JOIN conceptos ON conceptos.conceptos_id = materiales.concepto';
-var editarMaterial = 'UPDATE `materiales` SET `nombre` = ?, `unidad` = ?, proveedor_id = ?, `precio` = ? WHERE `id`= ?';
 
 
 //agregar material
@@ -41,7 +40,7 @@ router.get('/', function(err,res){
   });
 })
 
-router.get('/proveedor/:proveedorid/:categoria', function(req,res,err){
+router.get('/categoria/:proveedorid/:categoria', function(req,res,err){
   var id = Number(req.params.proveedorid);
   var categoria = req.params.categoria;
   var obra_id = req.user.obra_id;
@@ -55,12 +54,27 @@ router.get('/proveedor/:proveedorid/:categoria', function(req,res,err){
   });
 })
 
+// router.get('/:proveedorid/:categoria', function(req,res,err){
+//   var id = Number(req.params.proveedorid);
+//   var categoria = req.params.categoria;
+//   var obra_id = req.user.obra_id;
+//   var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto FROM materiales INNER JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ? AND materiales.categoria = ?';
+//   console.log(categoria)
+//     db.query(listaMaterialesProveedor,[id,obra_id,categoria], function(err, rows){
+//     if(err) throw err;
+//     else {
+//         res.send(rows);
+//     }
+//   });
+// })
+
 router.get('/:proveedorid/:obraid', function(req,res,err){
   var id = Number(req.params.proveedorid);
   var obra_id = req.params.obraid;
-  var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto, proveedores.razon_social FROM materiales JOIN conceptos ON materiales.concepto = conceptos.conceptos_id JOIN proveedores ON materiales.proveedor_id = proveedores.id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ?';
+  var listaMaterialesProveedor = 'SELECT materiales.id,materiales.unidad,materiales.precio,proveedores.razon_social,conceptos.nombre_concepto FROM materiales JOIN conceptos ON materiales.concepto = conceptos.conceptos_id JOIN proveedores ON materiales.proveedor_id = proveedores.id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ?';
 
     db.query(listaMaterialesProveedor,[id, obra_id], function(err, rows){
+      console.log(listaMaterialesProveedor)
     if(err) throw err;
     else {
         res.send(rows);
@@ -68,7 +82,7 @@ router.get('/:proveedorid/:obraid', function(req,res,err){
   });
 })
 
-router.get('/:id', function(req, res, err){
+router.get('/material/:id', function(req, res, err){
   var id= Number(req.params.id);
   console.log(id)
   var getMaterial = 'SELECT * FROM `materiales` WHERE `id` = ?';
@@ -96,11 +110,9 @@ router.use(methodOverride(function(req, res){
 router.put('/:idmaterial', function(req,res,err){
   var id=req.params.idmaterial;
   id= Number(id);
-  var nombre = req.body.nombre;
-  var unidad = req.body.unidad;
-  var proveedor_id = req.body.proveedor_id;
   var precio = req.body.precio;
-    db.query(editarMaterial,[nombre,unidad,proveedor_id,precio,id], function(err, material){
+  var editarMaterial = 'UPDATE `materiales` SET `precio` = ? WHERE `id`= ?';
+    db.query(editarMaterial,[precio,id], function(err, material){
         console.log(editarMaterial);
     if(err) throw err;
     else {

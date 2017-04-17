@@ -13,56 +13,57 @@
 <div id="content-container">
 <form action="/api/acarreos" method="POST" id="capturaForm" enctype="application/x-www-form-urlencoded">
 
-   <div class="form-group" id="camion_id">
+   <div class="form-group" id="camioninfo">
       <label for="camion_id">Camión ID</label>
       <input type="text" class="form-control" id="scanner" name="numero" oninput="getCamion()" required autofocus autocomplete="off">
       <div id="search-status"></div>
-    </div>
 
       <input type="hidden" class="form-control" id="fletero" name="fletero">
-
+      <input type="hidden" class="form-control" id="camion_id" name="camion_id">
       <input type="hidden" class="form-control" id="capacidad" name="capacidad">
-
+    </div>
     <div class="form-group">
     <div>
       <label for="categoria">Categoría Acarreo:</label>
         <select class="form-control" id="categoria" name="categoria" onchange="calcularFlete()" required disabled>
             <option value="">Categoría</option>
-            <option value="Acarreo Interno">Acarreo Interno</option>
-            <option value="Acarreo Externo">Acarreo Externo</option>
-            <option value="Acarreo Material">Acarreo Material</option>
+            <option value="82">Acarreo Interno</option>
+            <option value="92">Acarreo Externo</option>
+            <option value="100">Acarreo Material</option>
     </select>
     </div>
+      <input type="hidden" class="form-control" id="concepto_flete" name="concepto_flete">
 
-    <div id="material-status"></div>
-    </div>
-
-      <input type="hidden" class="form-control" id="precio_flete" name="precio_flete" >
-
-
-  <div class="form-group" id="materialinfo" hidden>
-    <div id="proveedor">
-      <label for="proveedor">Proveedor Material:</label>
-          <select class="form-control" name="proveedor_id" id="proveedor_id" onchange="getMateriales('material')" required disabled>
-            <option value="">Proveedor</option>
-      <% for(var i=0; i<proveedores.length; i++) {%>
-            <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
+    <div id="bancoinfo" hidden>
+      <label for="bancoinfo">Banco:</label>
+          <select class="form-control" name="banco_id" id="banco" onchange="getBanco()" required disabled>
+            <option value="">Banco</option>
+      <% for(var i=0; i<bancos.length; i++) {%>
+            <option value="<%= bancos[i].banco_id %>"><%= bancos[i].nombre_banco %></option>
     <% } %>
     </select>
     </div>
+    <div id="material-status"></div>
+    <input type="hidden" class="form-control" id="distancia" name="distancia" >
+    <input type="hidden" class="form-control" id="proveedor_id" name="proveedor_id" >
+    </div>
+
+      <input type="hidden" class="form-control" id="flete_id" name="flete_id" >
+      <input type="hidden" class="form-control" id="precio_flete" name="precio_flete" >
 
 
-
-    <div id="material">
+    <div id="material-info" hidden>
       <label for="material">Material</label>
-        <select class="form-control" name="material_id" id="material_id" onchange="getMaterial('material')" required disabled>
+        <select class="form-control" name="material_id" id="material_id" onchange="getMaterial()" disabled>
         <option value="">Material</option>
         </select>
-        <div id="material-status"></div>
     </div>
 
     </div>
       <input type="hidden" class="form-control" id="precio_material" name="precio_material" >
+      <input type="hidden" class="form-control" id="concepto_material" name="concepto_material" >
+
+    </div>
     </div>
     <div class="form-group" name="zona" id="zona">
       <label for="zona">Zona</label>
@@ -89,7 +90,7 @@
     </div>
 </form>
 </div>
-<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+<script src="/javascripts/captura.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>
 </html>
 

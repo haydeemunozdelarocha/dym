@@ -82,7 +82,12 @@
   </select>
 </div>
 
+<div id="zonas-checkbox">
+<% for(var i = 0; i <zonas.length;i++) { %>
+  <input type="checkbox" name="zonas" value="<%= zonas[i].zonas_id %>"><%= zonas[i].nombre_zona %>
+<% } %>
 
+</div>
 <br>
 <div class="input-group">
 <button type="submit" class="btn btn-primary">Submit</button>

@@ -1,0 +1,89 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DYM Ingenieros Constructores | Materiales</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+<% if (usuario.categoria === "residente"){ %>
+  <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+   <% include ./partials/costosheader.ejs %>
+<% } %>
+  <div id="content-container">
+  <ul class="nav">
+</ul>
+    <div id="proveedor-container">
+        <select class="form-control" name="proveedor_id" id="proveedor_id">
+          <option value="">Proveedor</option>
+          <% for(var i=0; i<proveedores.length; i++) {%>
+            <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
+          <% } %>
+        </select>
+    </div>
+    <br>
+    <select class="form-control" name="obra_id" id="obra_id">
+            <option value="">Obra</option>
+      <% for(var i=0; i<obras.length; i++) {%>
+            <option value="<%= obras[i].obra_id %>"><%= obras[i].nombre_obra %></option>
+    <% } %>
+    </select>
+    <br>
+    <button type="submit" class="btn btn-primary" style="margin-bottom: 10px;" onclick="allFletes()">Buscar</button>
+<br>
+  <div id="table">
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Fletes</div>
+
+  <!-- Table -->
+    <table class="table">
+      <tr>
+    <td>
+      <select class="form-control" name="unidad" id="unidad">
+        <option value="">Unidad</option>
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3">m3</option>
+        <option value="ton">ton</option>
+      </select>
+    </td>
+    <td><input type="text" class="form-control" placeholder="Precio 1km" name="precio1" id="precio1"></td>
+        <td><input type="text" class="form-control" placeholder="Precio sub" name="precio2" id="precio2"></td>
+    <td><span onclick="saveFlete()" class="glyphicon glyphicon-plus-sign save-material"></span></td>
+     </tr>
+     </table>
+     <table class="table"id="todos-fletes">
+    <tr>
+      <td>ID</td>
+      <td>Proveedor</td>
+      <td>Unidad</td>
+      <td>Precio 1km</td>
+      <td>Precio sub</td>
+      <td></td>
+      <td></td>
+
+    </tr>
+<% for (var i =0; i <info.length;i++) { %>
+    <tr class="tabla-fletes">
+      <td><%= info[i].fletes_id %></td>
+      <td><%= info[i].razon_social %></td>
+     <td><%= info[i].unidad %></td>
+      <td><%= info[i].precio1 %></td>
+      <td><%= info[i].precio2 %></td>
+      <td><a href="/fletes/editar/<%= info[i].fletes_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+      <td><a onclick="deleteFlete(<%= info[i].fletes_id %>)"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+     </tr>
+<% } %>
+    </table>
+
+  </div>
+</div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+
+</body>
+</html>

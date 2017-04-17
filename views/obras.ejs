@@ -32,6 +32,7 @@
       <td>Residente</td>
       <td>Ciudad</td>
       <td>Estado</td>
+      <td>Presupuesto</td>
     </tr>
     <% for(var i=0; i<obras.length; i++) {%>
     <tr>
@@ -41,6 +42,7 @@
       <td><%= obras[i].nombre %></td>
       <td><%= obras[i].ciudad %></td>
       <td><%= obras[i].estado %></td>
+      <td><%= obras[i].presupuesto %></td>
       <td><a href="/obras/editar/<%= obras[i].obra_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
       <td><a data-method="delete" href="/api/obras/borrar/<%= obras[i].obra_id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
        <% } %>

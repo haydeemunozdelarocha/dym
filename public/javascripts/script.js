@@ -1,7 +1,7 @@
 
 var path = "http://localhost:3000/";
 var ids = [];
-var popUpWindow;
+
 
 function buscarAcarreos(){
   console.log('buscando')
@@ -120,6 +120,9 @@ function filtroAcarreos(){
   if(proveedor){
     query = query + 'proveedor='+proveedor+'&';
   }
+  if(recibo){
+    query = query + 'recibo_id='+recibo+'&';
+  }
   console.log(query)
   window.location=path+'acarreos?'+query;
 }
@@ -234,60 +237,6 @@ var autorizacion = $.ajax({
 
 }
 
-function calcularFlete(){
-var categoria = $('#categoria').val();
-  if (categoria === "Acarreo Interno") {
-    acarreoInterno();
-  } else if (categoria === "Acarreo Externo"){
-
-  } else {
-
-  }
-}
-
-function acarreoInterno(){
-  var proveedor_id = $('#fletero').val();
-  var capacidad = $('#capacidad').val();
-  var interno = $.ajax({
-    url: '/api/fletes/interno/',
-    type: 'POST',
-    dataType: 'json',
-    data:{
-      proveedor_id:proveedor_id
-    }
-  });
-
-  interno.done(function(data){
-    $('#precio_flete').val(data[0].precio1*capacidad);
-    console.log(data[0].precio1*capacidad)
-    });
-
-  interno.fail(function(jqXHR, textStatus, errorThrown){
- console.log("error")
-  });
-}
-
-function acarreoInterno(){
-  var proveedor_id = $('#fletero').val();
-  var capacidad = $('#capacidad').val();
-  var interno = $.ajax({
-    url: '/api/fletes/interno/',
-    type: 'POST',
-    dataType: 'json',
-    data:{
-      proveedor_id:proveedor_id
-    }
-  });
-
-  interno.done(function(data){
-    $('#precio_flete').val(data[0].precio1*capacidad);
-     $('#zonas').removeAttr("disabled")
-    });
-
-  interno.fail(function(jqXHR, textStatus, errorThrown){
- console.log("error")
-  });
-}
 
 function getBase64Image(url,id) {
 console.log("sending to back");
@@ -311,111 +260,9 @@ console.log(photoData);
 }
 
 
-function getMaterial(categoria) {
-  if (categoria === "acarreo"){
-    var material_id = $('#concepto').val();
-  } else if (categoria === "material"){
-    var material_id = $('#material_id').val();
-  }
-console.log("getting material");
-  var material = $.ajax({
-    url: '/api/materiales/'+material_id,
-    type: 'GET',
-    dataType: 'json'
-  });
-
-  material.done(function(data){
-    console.log(data.precio)
-      if (categoria === "acarreo"){
-            $('#precio_flete').val('');
-            $('#precio_flete').val(data.precio);
-            $('#proveedor_id').removeAttr("disabled")
-      } else if (categoria === "material"){
-            $('#precio_material').val('');
-            $('#precio_material').val(data.precio);
-            $('#zonas').removeAttr("disabled")
-      }
-    });
-
-  material.fail(function(jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-          console.log('no material');
-  });
-}
 
 
-function getCamion() {
-  $('#search-status').html("");
-  $('#search-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
-console.log("getting camion");
-var camion_id = $('#scanner').val();
-if(camion_id.length >= 10){
-
-console.log(camion_id)
-  var camion = $.ajax({
-    url: '/api/camiones/buscar/'+camion_id,
-    type: 'GET',
-    dataType: 'json'
-  });
-
-  camion.done(function(data){
-    if(data[0].camion_id){
-      console.log(data[0].camion_id)
-      $('#scanner').attr("readonly", true);
-      $('#fletero').val(data[0].proveedor_id)
-      $('#capacidad').val(data[0].capacidad)
-      $('#search-status').html("");
-      $('#categoria').removeAttr("disabled");
-      $('#search-status').append("Camión encontrado!");
-    } else {
-      $('#search-status').html("");
-      $('#search-status').append("Camión ID inválido!");
-      $('#scanner').val("");
-    }
-    });
-
-  camion.fail(function(jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-      $('#search-status').html("");
-      $('#search-status').append("Camión ID inválido!");
-  });
-}
-}
-
-function getProveedores(){
-  $('#proveedor_id').removeAttr("disabled");
-}
-
-function getPhoto() {
-document.getElementById("loading").innerHTML = "Loading..";
-var xhr = new XMLHttpRequest();
-console.log('starting get')
-xhr.open('GET', "/camera", true);
-xhr.send();
-console.log('done')
-}
-
-function cerrarRecibo(){
-  window.location.replace("/captura");
-}
-
-function allowPhoto(){
-  $('#photo-button').removeAttr("disabled");
-          allowSubmit()
-
-}
-
-function allowSubmit(){
-  $('#photo-button').attr("disabled", true);
-  $('#submit-button').removeAttr("disabled")
-  $('#concepto').removeAttr("disabled")
-  $('#zonas').removeAttr("disabled")
-  $('#material_id').removeAttr("disabled")
-  $('#scanner').removeAttr("disabled")
-}
-
-
-function savePresupuesto(){
+function savePresupuesto(zonas){
   $('#submit').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
   var obra = $('#obra_id').val();
   obra = Number(obra);
@@ -450,6 +297,7 @@ redirectPresupuestos(obra)
 
 
 function saveMaterial(){
+  console.log('saving')
     var concepto = $('#concepto').val();
     var proveedor_id = $('#proveedor_id').val();
     var obra_id = $('#obra_id').val();
@@ -468,7 +316,7 @@ function saveMaterial(){
       });
 
       material.done(function(data){
-        allMateriales()
+        allMateriales();
         });
 
       material.fail(function(jqXHR, textStatus, errorThrown){
@@ -566,17 +414,110 @@ function redirectPresupuestos(obra){
       });
 }
 
-function totalesPresupuesto(id1,id2,id3){
-  $("#"+id3+"").val('');
-  var cantidad = Number($("#"+id1+"").val());
-  var precio = Number($("#"+id2+"").val());
+function totalesPresupuesto(row){
+  console.log(row)
+  $("#total"+row+"").val('');
+  var cantidad = Number($("#cantidad"+row+"").val());
+  var precio = Number($("#precio"+row+"").val());
   var total = cantidad * precio;
-  $("#"+id3+"").val(total);
+  $("#total"+row+"").val(total);
 }
 
-document.getElementById("capturaForm").onkeypress = function(e) {
-  var key = e.charCode || e.keyCode || 0;
-  if (key == 13) {
-    e.preventDefault();
-  }
+function saveFlete(){
+  console.log('saving')
+    var proveedor_id = $('#proveedor_id').val();
+    var obra_id = $('#obra_id').val();
+    var unidad = $('#unidad').val();
+    var precio1 = $('#precio1').val();
+    var precio2 = $('#precio2').val();
+    if (!obra_id || !proveedor_id){
+      alert('Por favor seleccione la obra y proveedor correspondientes.')
+      return
+    }
+      var fletes = $.ajax({
+        url: '/api/fletes/',
+        type: 'POST',
+        dataType: 'json',
+        data:{proveedor_id:proveedor_id,obra_id:obra_id,unidad:unidad,precio1:precio1,precio2:precio2}
+      });
+
+      fletes.done(function(data){
+        allFletes();
+        });
+
+      fletes.fail(function(jqXHR, textStatus, errorThrown){
+        console.log(errorThrown);
+
+      });
+    $('#unidad').val('');
+    $('#precio1').val('');
+    $('#precio2').val('');
+}
+
+function allFletes() {
+  // $('#button').html('')
+  // $('#button').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
+  console.log('sending')
+  var proveedor_id = $('#proveedor_id').val();
+  var obra_id = $('#obra_id').val();
+  var fletes = $.ajax({
+      url: '/api/fletes/'+proveedor_id+'/'+obra_id,
+      type: 'GET'
+    });
+
+  fletes.done(function(data){
+    console.log(data)
+    $('.tabla-fletes').html('');
+
+    var tablaFletes = document.getElementById('todos-fletes');
+
+          for(var j = 0 ; j < data.length; j++){
+            this["row"+j] = tablaFletes.insertRow(this["row"+j])
+            this["row"+j].className = 'tabla-fletes';
+            var cella1 = this["row"+j].insertCell(0);
+            var cella2 = this["row"+j].insertCell(1);
+            var cella3 = this["row"+j].insertCell(2);
+            var cella4 = this["row"+j].insertCell(3);
+            var cella5 = this["row"+j].insertCell(4);
+            var cella6 = this["row"+j].insertCell(5);
+            var cella7 = this["row"+j].insertCell(6);
+            cella1.innerHTML = data[j].fletes_id;
+            cella2.innerHTML = data[j].razon_social;
+            cella3.innerHTML = data[j].unidad;
+            cella4.innerHTML = data[j].precio1;
+            cella5.innerHTML = data[j].precio2;
+            cella6.innerHTML = '<a href="/fletes/editar/'+data[j].fletes_id+'"><span class="glyphicon glyphicon-edit"></span></a>';
+            cella7.innerHTML = '<a onclick="deleteFletes('+data[j].fletes_id+')"><span class="glyphicon glyphicon-remove-circle"></span></a>';
+            if(j==data.length-1) {
+              console.log('done')
+            }
+         }
+    });
+
+  fletes.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+          console.log('error');
+  });
+
+}
+
+function deleteFlete(flete_id) {
+console.log("deleting");
+var fletes = $.ajax({
+    url: '/api/fletes/borrar/'+flete_id,
+    type: 'DELETE'
+  });
+
+  fletes.done(function(data){
+    console.log(data)
+    if($('#proveedor_id').val() || $('#obra_id').val()){
+          allFletes()
+    } else {
+      window.location.reload()
+    }
+    });
+
+  fletes.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown)
+  });
 }

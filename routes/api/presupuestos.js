@@ -121,7 +121,6 @@ router.get('/totales/:obra', function(req, res, next ){
   var obra= req.params.obra;
   var concepto= req.params.concepto;
   var getPresupuesto = 'SELECT presupuestos.obra,presupuestos.unidad, conceptos.nombre_concepto, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad,sum(acumulado) AS total_acumulado FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id WHERE obra = ? GROUP BY nombre_concepto;';
-  var getAcarreoTotales = 'SELECT conceptos.nombre_concepto, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id JOIN conceptos ON concepto_flete = conceptos.conceptos_id OR conceptos.conceptos_id = materiales.concepto WHERE recibos.obra_id = ? GROUP BY concepto_flete, material_id;'
   db.query(getPresupuesto,[obra], function(err, presupuesto){
     if(err) throw err;
     else {
@@ -154,20 +153,36 @@ router.use(methodOverride(function(req, res){
   }
 }))
 
-router.post('/', function(req,res,err){
-var obra = req.body.obra;
-var concepto= req.body.concepto;
-var zona= req.body.zona;
-var cantidad= req.body.cantidad;
-var unidad= req.body.unidad;
-var precio_unitario= req.body.precio_unitario;
-var total= cantidad*precio_unitario;
-console.log(obra,concepto,cantidad,unidad,zona,precio_unitario,total)
-    db.query(nuevoPresupuesto,[obra,concepto,cantidad,unidad,zona,precio_unitario,total], function(err, presupuesto){
+router.post('/:id', function(req,res,err){
+var obra_id = req.params.id;
+var values = '';
+var row;
+  if(Object.keys(req.body).length == 1){
+      row = req.body[Object.keys(req.body)[0]];
+        row[2] = '"'+row[2]+'"';
+      values = values+'('+obra_id+','+row+')';
+  } else {
+    for(var i = 0;i < Object.keys(req.body).length-1 ; i++){
+        row = req.body[Object.keys(req.body)[i]];
+        row[2] = '"'+row[2]+'"';
+        values = values+'('+obra_id+','+row+'),';
+        if(i == Object.keys(req.body).length-2){
+          console.log('done');
+            row = req.body[Object.keys(req.body)[i+1]];
+            row[2] = '"'+row[2]+'"';
+            values = values+'('+obra_id+','+row+')';
+          }
+  }
+}
+console.log(values)
+
+var nuevoPresupuesto ='INSERT INTO presupuestos(obra,concepto,cantidad,unidad,precio_unitario,total,zona) VALUES '+values+';'
+    db.query(nuevoPresupuesto, function(err, presupuesto){
+      console.log(nuevoPresupuesto)
     if(err) throw err;
     else {
         console.log('Listo');
-        res.send(presupuesto)
+        res.redirect('/obra/'+obra_id)
     }
   });
 })

@@ -4,70 +4,54 @@ var mysql = require('mysql');
 var moment= require('moment');
 var db = require('../../db.js');
 
-var nuevoAcarreoFlete = 'INSERT INTO acarreos(cantidad,camion_id,total,categoria,recibo_id,concepto_flete) VALUE(?,?,?,?,?,?)';
-var nuevoAcarreoMaterial = 'INSERT INTO acarreos(material_id,cantidad,total,categoria,recibo_id) VALUE(?,?,?,?,?)';
-var nuevoRecibo = 'INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id) VALUE (?,?,?,?,?)';
-
 //agregar acarreo
 router.post('/', function(req,res, next){
 console.log(req.body)
 var recibo;
-var usuario_id= Number(req.user.id_usuario);
-var obra_id = Number(req.user.obra_id);
-var numero= req.body.numero;
+var usuario_id = req.user.id_usuario;
+var obra_id = req.user.obra_id;
+var camion_id= Number(req.body.camion_id);
 var foto = req.body.photo;
-var concepto_flete = Number(req.body.concepto_flete);
-console.log(concepto_flete)
-var precioFlete = req.body.precio_flete;
+if(!foto){
+  foto = null;
+}
+var total_flete = req.body.precio_flete;
 var zona_id = Number(req.body.zona_id);
-var material_id= Number(req.body.material_id);
-var precio = req.body.precio_material;
-var cantidad;
+var cantidad=req.body.capacidad;
 var date= Date.now();
+var flete_id = req.body.flete_id;
+var banco_id = req.body.banco_id;
 var hora = moment(date).format("YYYY-MM-DD HH:mm");
-var getCamion = 'SELECT * FROM `camiones` WHERE `numero` = ' + numero ;
-console.log(usuario_id,zona_id,foto,hora,obra_id)
-  db.query(nuevoRecibo,[usuario_id,zona_id,foto,hora,obra_id], function(err,recibo){
-      if(err) throw err;
-      else {
+  if(req.body.material_id){
+    var material_id= Number(req.body.material_id);
+    var total_material = req.body.precio_material;
+    var concepto_material = req.body.concepto_material;
+  }
+var concepto_flete = Number(req.body.concepto_flete);
+      var nuevoRecibo = "INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id,camion_id) VALUE (?,?,?,?,?,?);";
+      db.query(nuevoRecibo,[usuario_id,zona_id,foto,hora,obra_id,camion_id], function(err, rows){
         console.log(nuevoRecibo)
-        var findLast = 'SELECT * FROM recibos ORDER BY recibo_id DESC LIMIT 1';
-          db.query(findLast, function(err, rows){
-          if(err) throw err;
-          else {
-            console.log(findLast)
-            recibo_id = rows[0].recibo_id;
-            db.query(getCamion, function(err,camion){
-            if(err) throw err;
-            else {
-              console.log(getCamion)
-                var camion_id = Number(camion[0].camion_id);
-                cantidad = camion[0].capacidad;
-                var total = cantidad*precioFlete;
-                categoria = "flete";
-                console.log(cantidad,camion_id,total,categoria,recibo_id,concepto_flete);
-                  db.query(nuevoAcarreoFlete,[cantidad,camion_id,total,categoria,recibo_id,concepto_flete], function(err,acarreo){
-                  if(err) throw err;
-                  else {
-                    console.log(nuevoAcarreoFlete)
-                        var total = cantidad*precio;
-                        categoria = "material";
-                        console.log(material_id,cantidad,total,categoria,recibo_id)
-                      db.query(nuevoAcarreoMaterial,[material_id,cantidad,total,categoria,recibo_id], function(err,acarreo){
-                      if(err) throw err;
-                      else {
-                              res.redirect('/recibo/'+recibo_id)
-                            }
-                        });
-                      }
-                    });
-                  }
-                });
+        if(err) throw err;
+        else {
+            recibo=rows.insertId;
+              if(concepto_flete == 100){
+                  concepto_flete = 92;
+                  var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id) VALUE (?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id) VALUE (?,?,?,?,?);'
+                  var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,material_id,cantidad,total_material,concepto_material,recibo];
+              } else {
+                  var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id) VALUE (?,?,?,?,?,?);'
+                  var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id];
               }
-            });
-          }
-        })
-      })
+              console.log(values);
+              db.query(nuevoAcarreo,values,function(err, rows){
+                if(err) throw err;
+                else {
+                    res.redirect('/recibo/'+recibo)
+                }
+              });
+        }
+      });
+})
 
 
 //Read acarreos

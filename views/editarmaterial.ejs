@@ -26,22 +26,18 @@
     <table class="table">
     <tr>
       <td>Nombre</td>
+      <td>Obra</td>
       <td>Proveedor</td>
       <td>Unidad</td>
       <td>Precio</td>
     </tr>
     <tr>
-      <td><input type="text" class="form-control" value="<%=material[0].nombre %>" name="nombre" id="nombre"></td>
-      <td><input type="text" class="form-control" value="<%=material[0].proveedor_id %>" name="proveedor_id" id="proveedor_id">
+      <td><input type="text" class="form-control" value="<%=material[0].nombre_concepto %>" name="nombre" id="nombre" readonly></td>
+      <td><input type="text" class="form-control" value="<%=material[0].nombre_obra %>" name="nombre" id="nombre" readonly></td>
+      <td><input type="text" class="form-control" value="<%=material[0].razon_social %>" name="proveedor_id" id="proveedor_id" readonly>
     </td>
     <td>
-      <select class="form-control" name="unidad" id="unidad">
-        <option value="">Unidad</option>
-        <option value="m">m</option>
-        <option value="m2">m2</option>
-        <option value="m3">m3</option>
-        <option value="ton">ton</option>
-      </select>
+      <input type="text" class="form-control" name="unidad" id="unidad" value="<%=material[0].unidad %>" readonly>
     </td>
     <td><input type="text" class="form-control" value="<%=material[0].precio %>" name="precio" id="precio"></td>
      </tr>
