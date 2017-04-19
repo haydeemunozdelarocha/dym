@@ -420,7 +420,7 @@ function totalesPresupuesto(row){
   var cantidad = Number($("#cantidad"+row+"").val());
   var precio = Number($("#precio"+row+"").val());
   var total = cantidad * precio;
-  $("#total"+row+"").val(total);
+  $("#total"+row+"").val(total.toFixed(2));
 }
 
 function saveFlete(){
@@ -480,14 +480,12 @@ function allFletes() {
             var cella4 = this["row"+j].insertCell(3);
             var cella5 = this["row"+j].insertCell(4);
             var cella6 = this["row"+j].insertCell(5);
-            var cella7 = this["row"+j].insertCell(6);
             cella1.innerHTML = data[j].fletes_id;
             cella2.innerHTML = data[j].razon_social;
             cella3.innerHTML = data[j].unidad;
-            cella4.innerHTML = data[j].precio1;
-            cella5.innerHTML = data[j].precio2;
-            cella6.innerHTML = '<a href="/fletes/editar/'+data[j].fletes_id+'"><span class="glyphicon glyphicon-edit"></span></a>';
-            cella7.innerHTML = '<a onclick="deleteFletes('+data[j].fletes_id+')"><span class="glyphicon glyphicon-remove-circle"></span></a>';
+            cella4.innerHTML = data[j].precio;
+            cella5.innerHTML = '<a href="/fletes/editar/'+data[j].fletes_id+'"><span class="glyphicon glyphicon-edit"></span></a>';
+            cella6.innerHTML = '<a onclick="deleteFletes('+data[j].fletes_id+')"><span class="glyphicon glyphicon-remove-circle"></span></a>';
             if(j==data.length-1) {
               console.log('done')
             }
@@ -518,6 +516,44 @@ var fletes = $.ajax({
     });
 
   fletes.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown)
+  });
+}
+
+function zonaNueva(){
+var zona = $('#zonaNueva').val();
+
+var zonas = $.ajax({
+    url: '/api/zonas/',
+    type: 'POST',
+    data:{
+      nombre_zona: zona
+    }
+  });
+
+  zonas.done(function(data){
+    console.log(data)
+      allZonas()
+    });
+
+  zonas.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown)
+  });
+}
+
+function allZonas(){
+  var zonas = $.ajax({
+    url: '/api/zonas/',
+    type: 'GET'
+  });
+
+  zonas.done(function(data){
+    var zona = data[data.length-1];
+    $('#zonas-checkbox').prepend('<div class="zonas"><input type="checkbox" name="zonas" value="'+zona.zonas_id+'">'+zona.nombre_zona+'</div>');
+    $('#zonaNueva').val('');
+    });
+
+  zonas.fail(function(jqXHR, textStatus, errorThrown){
     console.log(errorThrown)
   });
 }

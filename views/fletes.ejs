@@ -52,8 +52,7 @@
         <option value="ton">ton</option>
       </select>
     </td>
-    <td><input type="text" class="form-control" placeholder="Precio 1km" name="precio1" id="precio1"></td>
-        <td><input type="text" class="form-control" placeholder="Precio sub" name="precio2" id="precio2"></td>
+    <td><input type="text" class="form-control" placeholder="Precio" name="precio" id="precio"></td>
     <td><span onclick="saveFlete()" class="glyphicon glyphicon-plus-sign save-material"></span></td>
      </tr>
      </table>
@@ -62,8 +61,7 @@
       <td>ID</td>
       <td>Proveedor</td>
       <td>Unidad</td>
-      <td>Precio 1km</td>
-      <td>Precio sub</td>
+      <td>Precio Unitario</td>
       <td></td>
       <td></td>
 
@@ -73,8 +71,7 @@
       <td><%= info[i].fletes_id %></td>
       <td><%= info[i].razon_social %></td>
      <td><%= info[i].unidad %></td>
-      <td><%= info[i].precio1 %></td>
-      <td><%= info[i].precio2 %></td>
+      <td><%= info[i].precio %></td>
       <td><a href="/fletes/editar/<%= info[i].fletes_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
       <td><a onclick="deleteFlete(<%= info[i].fletes_id %>)"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
      </tr>

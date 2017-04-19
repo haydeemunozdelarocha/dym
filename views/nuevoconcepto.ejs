@@ -1,0 +1,63 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DYM Ingenieros Constructores | <%= title %></title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+<% if (usuario.categoria === "residente"){ %>
+  <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+   <% include ./partials/costosheader.ejs %>
+<% } %>
+<div id="content-container">
+
+<div class="input-group">
+  <label>Nombre Concepto:</label>
+  <input type="text" class="form-control" placeholder="Nombre Concepto" name="nombre_concepto" id="nombre_concepto">
+</div>
+
+<br>
+  <button type="submit" onclick="conceptoNuevo()" class="btn btn-primary">Guardar</button>
+</form>
+</div>
+<script>
+function conceptoNuevo(){
+  var nombre_concepto = $('#nombre_concepto').val();
+
+var concepto = $.ajax({
+    url: '/api/conceptos/',
+    type: 'POST',
+    dataType: 'json',
+    data:{
+      nombre_concepto:nombre_concepto
+    }
+  });
+
+  concepto.done(function(data){
+    console.log(data.insertId)
+    window.onunload = refreshParent(data.insertId,nombre_concepto);
+    });
+
+  concepto.fail(function(jqXHR, textStatus, errorThrown){
+ console.log("error")
+  });
+}
+
+function refreshParent(id,nombre){
+ var select = window.opener.document.getElementById('concepto'+<%= row %>);
+var option = document.createElement("option");
+option.setAttribute("value", id);
+option.innerHTML = nombre;
+select.prepend(option);
+window.close();
+}
+</script>
+</body>
+</html>

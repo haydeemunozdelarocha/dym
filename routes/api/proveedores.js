@@ -4,7 +4,7 @@ var db = require('../../db.js');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 
-var nuevoProveedor = 'INSERT INTO proveedores(razon_social,direccion,telefono,ciudad,estado,rfc) VALUE(?,?,?,?,?,?)';
+var nuevoProveedor = 'INSERT INTO proveedores(razon_social,direccion,telefono,ciudad,estado,rfc,retencion) VALUE(?,?,?,?,?,?,?)';
 var listaProveedores = 'SELECT * FROM proveedores';
 var editarProveedor = 'UPDATE proveedores SET razon_social = ?,rfc = ?, direccion = ?, telefono = ?, ciudad = ?, estado = ? WHERE id=?';
 var getProveedor = "SELECT * FROM `proveedores` WHERE `id` = ?";
@@ -17,7 +17,12 @@ var telefono= req.body.telefono;
 var ciudad= req.body.ciudad;
 var estado= req.body.estado;
 var rfc= req.body.rfc;
-  db.query(nuevoProveedor,[razon_social, direccion, telefono,ciudad,estado,rfc], function(err,proveedor){
+if(req.body.retencion){
+  var retencion = req.body.retencion;
+} else {
+  var retencion = 'Y';
+}
+  db.query(nuevoProveedor,[razon_social, direccion, telefono,ciudad,estado,rfc,retencion], function(err,proveedor){
       if(err) throw err;
       else {
           console.log('Nuevo proveedor agregado exitosamente');

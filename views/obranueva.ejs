@@ -16,7 +16,7 @@
 <% } %>
 <div id="content-container">
 
-  <form action="/api/obras" method="post">
+<form action="/api/obras" id="obra-nueva" method="post">
 
 <div class="input-group">
   <label>Nombre:</label>
@@ -29,7 +29,7 @@
 </div>
 
 <div class="input-group">
-  <label>Residente:</label>
+  <label>Residente:  </label>
   <select class="form-control" name="residente_id" id="residente_id">
       <option value="">Asignar residente</option>
     <% for(var i=0; i<info.length; i++) {%>
@@ -44,7 +44,7 @@
 </div>
 
 <div class="input-group">
-  <label>Estado:</label>
+  <label>Estado: </label>
   <select class="form-control" name="estado" id="estado">
       <option value="">Seleccionar Estado</option>
       <option value="Aguascalientes">Aguascalientes</option>
@@ -82,11 +82,17 @@
   </select>
 </div>
 
+<label>Zonas:</label>
+
 <div id="zonas-checkbox">
 <% for(var i = 0; i <zonas.length;i++) { %>
+<div class="zonas">
   <input type="checkbox" name="zonas" value="<%= zonas[i].zonas_id %>"><%= zonas[i].nombre_zona %>
+</div>
 <% } %>
-
+<div class="zonas zona-nueva">
+Otra: <input type="text" name="" id="zonaNueva" value=""><span onclick="zonaNueva()" class="glyphicon glyphicon-plus-sign save-material"></span>
+</div>
 </div>
 <br>
 <div class="input-group">
@@ -94,5 +100,6 @@
 </div>
 </form>
 </div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>
 </html>

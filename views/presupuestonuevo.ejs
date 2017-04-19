@@ -64,8 +64,8 @@ console.log(rows)
   var cantidad = 'cantidad'+rows;
   var precio = 'precio'+rows;
   var total = 'total'+rows;
-  cella1.innerHTML = '<td><select name="row'+rows+'" id="concepto'+rows+'" class="form-control"><option value="">Material</option><% for(var j = 0; j<conceptos.length;j++) { %><option value="<%= conceptos[j].conceptos_id %>"><%= conceptos[j].nombre_concepto %></option><% } %></select></td>';
-  cella2.innerHTML = '<td><input id="cantidad'+rows+'" name="row'+rows+'" type="number" min="0" class="form-control" placeholder="0"></td>';
+  cella1.innerHTML = '<td><select name="row'+rows+'" onchange="checarOtro('+rows+')" id="concepto'+rows+'" class="form-control"><option value="">Material</option><% for(var j = 0; j<conceptos.length;j++) { %><option value="<%= conceptos[j].conceptos_id %>"><%= conceptos[j].nombre_concepto %></option><% } %><option value="otro">Otro</option></select></td>';
+  cella2.innerHTML = '<td><input id="cantidad'+rows+'" name="row'+rows+'" type="number" step="any" min="0" class="form-control" placeholder="0"></td>';
   cella3.innerHTML = '<td><select name="row'+rows+'" id="unidad'+rows+'" class="form-control"><option value="">Unidad</option><option value="m">m</option><option value="m2">m2</option><option value="m3" selected>m3</option><option value="ton">ton</option></select></td>';
   cella4.innerHTML = "<td><input id='precio"+rows+"' name='row"+rows+"' type='text' class='form-control' placeholder='$0.00' oninput='totalesPresupuesto("+rows+")'></td>";
   cella5.innerHTML = '<td><input id="total'+rows+'" name="row'+rows+'" type="text" class="form-control" placeholder="$0.00" readonly></td>';
@@ -74,10 +74,16 @@ console.log(rows)
 
 }
 
+function checarOtro(row){
+  if($('#concepto'+row).val() === "otro"){
+    window.open('http://localhost:3000/concepto/nuevo?row='+row, 'mywin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0;');
+  }
+}
 function removeRow(row){
 var deletedRow = document.getElementById("row"+row);
 deletedRow.parentNode.removeChild(deletedRow);
 }
+
 </script>
 </body>
 </html>

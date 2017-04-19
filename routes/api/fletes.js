@@ -10,11 +10,10 @@ router.post('/', function(req,res,err){
   console.log(req.body)
   var obra_id = req.body.obra_id;
   var proveedor_id = req.body.proveedor_id;
-  var precio1 = req.body.precio1;
-  var precio2 = req.body.precio2;
+  var precio = req.body.precio;
   var unidad = req.body.unidad;
-  var postFlete = 'INSERT INTO fletes(obra_id,proveedor_id,precio1,precio2,unidad) VALUE(?,?,?,?,?)';
-    db.query(postFlete,[obra_id,proveedor_id,precio1,precio2,unidad], function(err, rows){
+  var postFlete = 'INSERT INTO fletes(obra_id,proveedor_id,precio,unidad) VALUE(?,?,?,?)';
+    db.query(postFlete,[obra_id,proveedor_id,precio,unidad], function(err, rows){
     if(err) throw err;
     else {
         res.json(rows);

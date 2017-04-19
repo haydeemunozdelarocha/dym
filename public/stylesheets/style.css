@@ -96,6 +96,21 @@ background: #0a53c9;
 border: none;
 
 }
+#zonas-checkbox{
+  margin-top: 10px;
+  display:flex;
+    flex-direction: column;
+
+}
+.zonas input{
+  margin-right: 5px;
+}
+.zona-nueva{
+  margin-top: 10px;
+}
+#obra-nueva label{
+margin-top: 10px;
+}
 .dropdown-menu>li>a, .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover{
   color:#0a0354;
 }

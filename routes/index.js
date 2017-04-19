@@ -844,6 +844,13 @@ router.get('/materiales/editar/:id', function(req, res, next) {
   });
 });
 
+//CONCEPTOS
+router.get('/concepto/nuevo', function(req, res, err) {
+  var usuario=req.user;
+  var row = req.query.row;
+      res.render('nuevoconcepto', { title: 'Conceptos', usuario:usuario, row:row});
+});
+
 //FLETES
 
 router.get('/fletes', function(req, res, next) {
