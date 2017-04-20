@@ -428,8 +428,9 @@ function saveFlete(){
     var proveedor_id = $('#proveedor_id').val();
     var obra_id = $('#obra_id').val();
     var unidad = $('#unidad').val();
-    var precio1 = $('#precio1').val();
-    var precio2 = $('#precio2').val();
+    var precio = $('#precio').val();
+    var banco = $('#banco_id').val();
+    console.log(precio)
     if (!obra_id || !proveedor_id){
       alert('Por favor seleccione la obra y proveedor correspondientes.')
       return
@@ -438,7 +439,7 @@ function saveFlete(){
         url: '/api/fletes/',
         type: 'POST',
         dataType: 'json',
-        data:{proveedor_id:proveedor_id,obra_id:obra_id,unidad:unidad,precio1:precio1,precio2:precio2}
+        data:{proveedor_id:proveedor_id,obra_id:obra_id,unidad:unidad,precio:precio,banco:banco}
       });
 
       fletes.done(function(data){
@@ -480,12 +481,14 @@ function allFletes() {
             var cella4 = this["row"+j].insertCell(3);
             var cella5 = this["row"+j].insertCell(4);
             var cella6 = this["row"+j].insertCell(5);
+            var cella7 = this["row"+j].insertCell(6);
             cella1.innerHTML = data[j].fletes_id;
-            cella2.innerHTML = data[j].razon_social;
-            cella3.innerHTML = data[j].unidad;
-            cella4.innerHTML = data[j].precio;
-            cella5.innerHTML = '<a href="/fletes/editar/'+data[j].fletes_id+'"><span class="glyphicon glyphicon-edit"></span></a>';
-            cella6.innerHTML = '<a onclick="deleteFletes('+data[j].fletes_id+')"><span class="glyphicon glyphicon-remove-circle"></span></a>';
+            cella2.innerHTML = data[j].nombre_proveedor;
+            cella3.innerHTML = data[j].nombre_banco;
+            cella4.innerHTML = data[j].unidad;
+            cella5.innerHTML = data[j].precio;
+            cella6.innerHTML = '<a href="/fletes/editar/'+data[j].fletes_id+'"><span class="glyphicon glyphicon-edit"></span></a>';
+            cella7.innerHTML = '<a onclick="deleteFlete('+data[j].fletes_id+')"><span class="glyphicon glyphicon-remove-circle"></span></a>';
             if(j==data.length-1) {
               console.log('done')
             }

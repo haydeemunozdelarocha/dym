@@ -855,7 +855,7 @@ router.get('/concepto/nuevo', function(req, res, err) {
 
 router.get('/fletes', function(req, res, next) {
   var usuario = req.user;
-  var readTable = 'SELECT fletes.*,proveedores.razon_social FROM fletes JOIN proveedores ON proveedores.id = fletes.proveedor_id;SELECT * FROM proveedores;SELECT * FROM obras;';
+  var readTable = 'SELECT a.*, bp.razon_social AS nombre_banco, a.proveedor_id, bc.razon_social AS nombre_proveedor FROM fletes AS a LEFT JOIN proveedores AS bp ON bp.id = a.banco LEFT JOIN proveedores AS bc ON bc.id = a.proveedor_id;SELECT * FROM proveedores;SELECT * FROM obras;';
 
     db.query(readTable, function(err, info){
         if(err) throw err;

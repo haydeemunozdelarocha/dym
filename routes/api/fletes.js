@@ -10,10 +10,12 @@ router.post('/', function(req,res,err){
   console.log(req.body)
   var obra_id = req.body.obra_id;
   var proveedor_id = req.body.proveedor_id;
-  var precio = req.body.precio;
+  var precio = Number(req.body.precio);
+  console.log(precio)
+  var banco = req.body.banco;
   var unidad = req.body.unidad;
-  var postFlete = 'INSERT INTO fletes(obra_id,proveedor_id,precio,unidad) VALUE(?,?,?,?)';
-    db.query(postFlete,[obra_id,proveedor_id,precio,unidad], function(err, rows){
+  var postFlete = 'INSERT INTO fletes(obra_id,proveedor_id,precio,unidad,banco) VALUE(?,?,?,?,?)';
+    db.query(postFlete,[obra_id,proveedor_id,precio,unidad,banco], function(err, rows){
     if(err) throw err;
     else {
         res.json(rows);
@@ -37,7 +39,7 @@ router.get('/:proveedorid/:obraid', function(req,res,err){
   console.log('getting')
   var id = Number(req.params.proveedorid);
   var obra_id = req.params.obraid;
-  var listaFletesProveedor = 'SELECT fletes.*,proveedores.razon_social FROM fletes JOIN proveedores ON fletes.proveedor_id = proveedores.id WHERE fletes.proveedor_id = ? AND fletes.obra_id = ?';
+  var listaFletesProveedor = 'SELECT a.*, bp.razon_social AS nombre_banco, a.proveedor_id, bc.razon_social AS nombre_proveedor FROM fletes AS a LEFT JOIN proveedores AS bp ON bp.id = a.banco LEFT JOIN proveedores AS bc ON bc.id = a.proveedor_id WHERE a.proveedor_id = ? AND a.obra_id = ?';
 
     db.query(listaFletesProveedor,[id, obra_id], function(err, rows){
       console.log(listaFletesProveedor)
