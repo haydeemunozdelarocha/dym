@@ -22,22 +22,26 @@ var date= Date.now();
 var flete_id = req.body.flete_id;
 var banco_id = req.body.banco_id;
 var hora = moment(date).format("YYYY-MM-DD HH:mm");
-  if(req.body.material_id){
+var concepto_flete = Number(req.body.concepto_flete);
+
+  if(concepto_flete == 100){
     var material_id= Number(req.body.material_id);
-    var total_material = req.body.precio_material;
+    var total_material = (Number(req.body.precio_material)*cantidad);
+    var concepto_material = req.body.concepto_material;
+  } else if(concepto_flete == 92){
+    var material_id= concepto_flete;
+    var total_material = (Number(req.body.precio_material)*cantidad);
     var concepto_material = req.body.concepto_material;
   }
-var concepto_flete = Number(req.body.concepto_flete);
       var nuevoRecibo = "INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id,camion_id) VALUE (?,?,?,?,?,?);";
       db.query(nuevoRecibo,[usuario_id,zona_id,foto,hora,obra_id,camion_id], function(err, rows){
         console.log(nuevoRecibo)
         if(err) throw err;
         else {
             recibo=rows.insertId;
-              if(concepto_flete == 100){
-                  concepto_flete = 92;
-                  var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id) VALUE (?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id) VALUE (?,?,?,?,?);'
-                  var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,material_id,cantidad,total_material,concepto_material,recibo];
+              if(concepto_flete == 100 || concepto_flete == 92){
+                  var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id) VALUE (?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id) VALUE (?,?,?,?,?,?);'
+                  var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,material_id,cantidad,total_material,concepto_material,recibo,banco_id];
               } else {
                   var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id) VALUE (?,?,?,?,?,?);'
                   var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id];
@@ -55,30 +59,6 @@ var concepto_flete = Number(req.body.concepto_flete);
 
 
 //Read acarreos
-router.get('/', function(err,res){
-  var listaAcarreos = 'SELECT recibos.recibo_id,recibos.hora,recibos.foto, acarreos.estimacion,acarreos.acarreo_id,acarreos.categoria,proveedores.razon_social, conceptos.nombre_concepto,zonas.nombre_zona FROM acarreos JOIN recibos ON recibos.recibo_id = acarreos.recibo_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON acarreos.concepto_flete=conceptos.conceptos_id OR materiales.concepto = conceptos.conceptos_id ORDER BY acarreos.acarreo_id ASC';
-    db.query(listaAcarreos, function(err, rows){
-    if(err) throw err;
-    else {
-        res.send(rows);
-    }
-  });
-})
-
-router.get('/obra/:obraid', function(req,res,err){
-  console.log('getting acarreos por obra')
-var obra_id = req.params.obraid;
-var listaAcarreos = 'SELECT recibos.recibo_id,recibos.hora,recibos.foto, acarreos.estimacion,acarreos.acarreo_id,acarreos.categoria,proveedores.razon_social, conceptos.nombre_concepto,zonas.nombre_zona FROM acarreos JOIN recibos ON recibos.recibo_id = acarreos.recibo_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN proveedores ON camiones.proveedor_id = proveedores.id OR materiales.proveedor_id = proveedores.id LEFT JOIN conceptos ON acarreos.concepto_flete=conceptos.conceptos_id OR materiales.concepto = conceptos.conceptos_id WHERE recibos.obra_id = ? ORDER BY acarreos.acarreo_id ASC';
-
-    db.query(listaAcarreos,[obra_id],function(err, rows){
-    if(err){
-      return console.log (err)
-    } else {
-      console.log(rows[rows.length-2])
-        return res.send(rows);
-    }
-  });
-})
 
 
 router.post('/buscar', function(req,res,next){
@@ -112,9 +92,31 @@ router.post('/buscar', function(req,res,next){
   });
 })
 
-router.get('/:id', function(req, res, next ){
+router.get('/flete/:id', function(req, res, next ){
   var id= req.params.id;
-  var getAcarreo = "SELECT * FROM `acarreos` WHERE `acarreo_id` = "+id;
+  var getAcarreo = "SELECT * FROM `acarreos_flete` WHERE `acarreo_id` = "+id;
+  db.query(getAcarreo, function(err, acarreo){
+    if(err) throw err;
+    else {
+        console.log('Buscando acarreo por id');
+        res.send(acarreo)
+    }
+  });
+})
+
+router.get('/flete', function(req, res, next ){
+  var getAcarreo = "SELECT * FROM `acarreos_flete`";
+  db.query(getAcarreo, function(err, acarreo){
+    if(err) throw err;
+    else {
+        console.log('Buscando acarreo por id');
+        res.send(acarreo)
+    }
+  });
+})
+
+router.get('/material', function(req, res, next ){
+  var getAcarreo = "SELECT * FROM `acarreos_material`";
   db.query(getAcarreo, function(err, acarreo){
     if(err) throw err;
     else {
@@ -146,13 +148,24 @@ router.get('/semana', function(req, res, next ){
 })
 
   //Delete a record.
-router.delete('/:id', function(req, err,res){
+router.delete('/flete/:id', function(req,res,err){
   var id=req.params.id;
-  var borrarAcarreo = 'DELETE FROM acarreos WHERE acarreo_id='+id;
-  db.query(borrarAcarreo, function(err, res){
+  var borrarAcarreo = 'DELETE FROM acarreos_flete WHERE acarreo_id='+id;
+  db.query(borrarAcarreo, function(err, response){
     if(err) throw err;
     else {
-        res.redirect('/residentes/estimaciones');
+        res.send('done');
+    }
+  });
+})
+
+router.delete('/material/:id', function(req,res,err){
+  var id=req.params.id;
+  var borrarAcarreo = 'DELETE FROM acarreos_material WHERE acarreos_mat_id='+id;
+  db.query(borrarAcarreo, function(err, response){
+    if(err) throw err;
+    else {
+        res.send('done');
     }
   });
 })

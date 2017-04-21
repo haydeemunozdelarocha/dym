@@ -65,6 +65,7 @@ function calcularAcarreoEM() {
         $('#precio_material').val(data[0].precio);
         $('#concepto_flete').val(data[0].concepto);
         $('#concepto_material').val(data[0].concepto);
+        $('#material_id').val(data[0].material_id);
         totalFlete();
 
       } else if (concepto_flete === "100"){

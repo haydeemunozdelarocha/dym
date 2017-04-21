@@ -5,12 +5,13 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var db = require('../../db.js');
 
-var listaCamiones = 'SELECT proveedores.nombre, camiones.* FROM camiones INNER JOIN proveedores ON camiones.proveedor_id=proveedores.id';
 var getCamion = "SELECT * FROM `camiones` WHERE `numero` = ?";
 var editarCamion = 'UPDATE camiones SET modelo = ?, placas = ?, capacidad= ?, numero= ? WHERE camion_id= ?';
 
 //Read table.
 router.get('/', function(err,res){
+  var listaCamiones = 'SELECT proveedores.razon_social, camiones.* FROM camiones INNER JOIN proveedores ON camiones.proveedor_id=proveedores.id';
+
     db.query(listaCamiones, function(err, rows){
     if(err) throw err;
     else {
