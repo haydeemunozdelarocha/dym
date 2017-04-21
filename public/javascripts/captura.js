@@ -1,36 +1,113 @@
 var path = "http://localhost:3000/";
 
-function calcularFlete(){
-  console.log('calculando precio flete')
-var concepto_flete = $('#categoria').val();
+function calcularFlete() {
+  console.log('calculando');
+  var concepto_flete = $('#categoria').val();
+  if(concepto_flete === "92" || concepto_flete === "100"){
+    $('#bancoinfo').removeAttr("hidden");
+    $('#banco').removeAttr("disabled");
+    $('#concepto_flete').val('82');
+  } else {
+    calcularAcarreoInt();
+  }
+}
+
+function calcularAcarreoInt() {
   var proveedor_id = $('#fletero').val();
   var capacidad = $('#capacidad').val();
-  if (concepto_flete === "100" && !$('#banco').val()) {
-    console.log('acarreo material, no banco');
-    $('#bancoinfo').removeAttr('hidden');
-    $('#banco').removeAttr('disabled');
-    return
-  } else {
-    console.log('sending to api')
   var precio = $.ajax({
+    url: '/api/materiales/acarreoint/'+proveedor_id,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  precio.done(function(data){
+    if(data.length !== 0){
+      console.log(data)
+        $('#precio_flete').val(data[0].precio*capacidad);
+        $('#zonas').removeAttr("disabled");
+    } else {
+      console.log('no data')
+      alert('No se ha registrado el precio de Acarreo Interno para el proveedor de este camión.')
+    }
+});
+
+    precio.fail(function(jqXHR, textStatus, errorThrown){
+ console.log("error")
+  });
+}
+
+function calcularAcarreoEM() {
+  var capacidad = $('#capacidad').val();
+  var proveedor_id;
+  var concepto_flete = $('#categoria').val();
+  var apiURL;
+  if(concepto_flete === "92"){
+    proveedor_id = $('#banco').val();
+    $('#concepto_flete').val('92');
+    $('#proveedor_id').val(proveedor_id);
+    apiURL = '/api/materiales/acarreoext/'+proveedor_id;
+  } else if(concepto_flete === "100"){
+    proveedor_id = $('#proveedor_id').val();
+    apiURL = '/api/materiales/acarreomat/'+proveedor_id
+  }
+  var precio = $.ajax({
+    url: apiURL,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  precio.done(function(data){
+    console.log(data)
+    if(data.length !== 0){
+    $('#flete_id').val(data[0].fletes_id);
+      if (concepto_flete === "92"){
+        $('#precio_material').val(data[0].precio);
+        $('#concepto_flete').val(data[0].concepto);
+        $('#concepto_material').val(data[0].concepto);
+        totalFlete();
+
+      } else if (concepto_flete === "100"){
+         var distancia = $('#distancia').val();
+        $('#bancoinfo').removeAttr("hidden");
+         $('#precio_flete').val((data[0].precio1*capacidad*1)+(data[0].precio1*capacidad*(distancia-1)));
+         $('#banco').removeAttr("disabled");
+      }
+    } else {
+      console.log('no data')
+      alert('No se ha registrado el precio de Acarreo Interno para el proveedor de este camión.')
+    }
+});
+
+    precio.fail(function(jqXHR, textStatus, errorThrown){
+ console.log("error")
+  });
+}
+
+function totalFlete(){
+    var concepto_flete = $('#categoria').val();
+    var proveedor_id = $('#fletero').val();
+    var banco_id = $('#banco').val();
+  var capacidad = $('#capacidad').val();
+
+
+    var precio = $.ajax({
     url: '/api/fletes/precio/',
     type: 'POST',
     dataType: 'json',
     data:{
-      proveedor_id:proveedor_id
+      proveedor_id:proveedor_id,
+      banco_id:banco_id
     }
   });
 
   precio.done(function(data){
+    console.log(data)
     $('#flete_id').val(data[0].fletes_id);
-      if (concepto_flete === "82") {
-        $('#banco').attr("disabled");
-        $('#precio_flete').val(data[0].precio1*capacidad);
+      if (concepto_flete === "92"){
+        $('#precio_flete').val(data[0].precio*capacidad);
+        console.log(data[0].precio*capacidad)
         $('#zonas').removeAttr("disabled");
-      } else if (concepto_flete === "92"){
-        $('#precio_flete').val(data[0].precio1*capacidad);
-        $('#bancoinfo').removeAttr("hidden");
-        $('#banco').removeAttr("disabled");
 
       } else if (concepto_flete === "100"){
          var distancia = $('#distancia').val();
@@ -44,8 +121,6 @@ var concepto_flete = $('#categoria').val();
  console.log("error")
   });
 }
-}
-
 function getBanco(){
  $('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
   var banco = $('#banco').val();

@@ -36,15 +36,15 @@
 
     <div id="bancoinfo" hidden>
       <label for="bancoinfo">Banco:</label>
-          <select class="form-control" name="banco_id" id="banco" onchange="getBanco()" required disabled>
+          <select class="form-control" name="banco_id" id="banco" onchange="calcularAcarreoEM()" required disabled>
             <option value="">Banco</option>
-      <% for(var i=0; i<bancos.length; i++) {%>
-            <option value="<%= bancos[i].banco_id %>"><%= bancos[i].nombre_banco %></option>
+      <% for(var i=0; i<proveedores.length; i++) {%>
+            <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
     <% } %>
     </select>
     </div>
+
     <div id="material-status"></div>
-    <input type="hidden" class="form-control" id="distancia" name="distancia" >
     <input type="hidden" class="form-control" id="proveedor_id" name="proveedor_id" >
     </div>
 

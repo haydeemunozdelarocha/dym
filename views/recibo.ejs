@@ -23,18 +23,14 @@
   <h3><strong>Camión ID:</strong> <%= flete[0].camion_id %></h3>
   <h3><strong>Placas:</strong> <%= flete[0].placas %></h3>
   <h3><strong>Modelo:</strong> <%= flete[0].modelo %></h3>
-  <h3><strong>Fletero:</strong> <%= flete[0].razon_social %></h3>
-  <% if(material.length==0) { %>
-  <h3><strong>Concepto Flete:</strong> <%= flete[0].nombre_concepto %></h3>
-  <% } %>
+  <h3><strong>Fletero:</strong> <%= flete[0].nombre_fletero %></h3>
+
   <% if(flete[0].nombre_banco) { %>
   <br>
   <h3><strong>Banco:</strong> <%= flete[0].nombre_banco %></h3>
   <% } %>
   <h3><strong>Cantidad:</strong> <%= flete[0].cantidad %> <%= flete[0].unidad_camion %></h3>
-  <% if(material.length>0) { %>
-  <h3><strong>Material:</strong> <%= material[0].nombre_concepto %></h3>
-  <% } %>
+  <h3><strong>Material:</strong> <%= flete[0].nombre_concepto %></h3>
 </div>
 <br>
 </div>

@@ -40,19 +40,42 @@ router.get('/', function(err,res){
   });
 })
 
-router.get('/categoria/:proveedorid/:categoria', function(req,res,err){
+router.get('/acarreoint/:proveedorid', function(req,res,err){
   var id = Number(req.params.proveedorid);
-  var categoria = req.params.categoria;
   var obra_id = req.user.obra_id;
-  var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto FROM materiales INNER JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ? AND materiales.categoria = ?';
-  console.log(categoria)
-    db.query(listaMaterialesProveedor,[id,obra_id,categoria], function(err, rows){
+  var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto FROM materiales INNER JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ? AND conceptos_id = 82';
+    db.query(listaMaterialesProveedor,[id,obra_id], function(err, rows){
     if(err) throw err;
     else {
         res.send(rows);
     }
   });
 })
+
+router.get('/acarreoext/:proveedorid', function(req,res,err){
+  var id = Number(req.params.proveedorid);
+  var obra_id = req.user.obra_id;
+  var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto FROM materiales INNER JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ? AND conceptos_id = 92';
+    db.query(listaMaterialesProveedor,[id,obra_id], function(err, rows){
+    if(err) throw err;
+    else {
+        res.send(rows);
+    }
+  });
+})
+
+router.get('/acarreomat/:proveedorid', function(req,res,err){
+  var id = Number(req.params.proveedorid);
+  var obra_id = req.user.obra_id;
+  var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto FROM materiales INNER JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ? AND conceptos_id != 92 AND conceptos_id != 82';
+    db.query(listaMaterialesProveedor,[id,obra_id], function(err, rows){
+    if(err) throw err;
+    else {
+        res.send(rows);
+    }
+  });
+})
+
 
 // router.get('/:proveedorid/:categoria', function(req,res,err){
 //   var id = Number(req.params.proveedorid);
