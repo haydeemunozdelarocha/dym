@@ -70,16 +70,23 @@ router.post('/', function(req,res,err) {
           console.log('setting numero')
           console.log(rows)
           numero = rows[0].numero + 1;
+          console.log(numero)
         }
         var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,proveedor_id,categoria,status,numero) VALUE('+obra_id+',"'+fecha+'","'+periodo_inicio+'","'+periodo_final+'",'+proveedor_id+',"'+categoria+'","'+status+'",'+numero+');';
             console.log(nuevaEstimacion)
         return db.query(nuevaEstimacion)
       }).then(function(rows,err){
-        console.log(rows[1])
-        estimacion_id = rows[1].insertId;
-        var editarAcarreosEst = 'UPDATE acarreos SET estimacion_id ='+estimacion_id+' WHERE acarreo_id IN('+ids+');UPDATE acarreos SET estimacion = "Y" WHERE acarreo_id IN ('+ids+');'
-        return db.query(editarAcarreosEst)
+            estimacion_id = rows.insertId;
+            console.log(estimacion_id)
+            if (categoria === "flete"){
+              editarAcarreosEst = 'UPDATE acarreos_flete SET estimacion_id ='+estimacion_id+' WHERE acarreo_id IN('+ids+');UPDATE acarreos_flete SET estimacion = "Y" WHERE acarreo_id IN ('+ids+');'
+
+            } else {
+              editarAcarreosEst = 'UPDATE acarreos_material SET estimacion_id ='+estimacion_id+' WHERE acarreos_mat_id IN('+ids+');UPDATE acarreos_material SET estimacion = "Y" WHERE acarreo_id IN ('+ids+');'
+            }
+            return db.query(editarAcarreosEst)
       }).then(function(rows,err){
+        console.log(editarAcarreosEst)
         return db.query(buscarAcarreos)
       }).then( function(rows,err){
         console.log(rows)
@@ -100,7 +107,7 @@ router.post('/', function(req,res,err) {
               }
               var zona_id = totales[i].zona_id;
               var esta_estimacion = Number(totales[i].total_cantidad);
-              var importe = totales[i].total;
+              var importe = totales[i].total_concepto;
               var unidad = totales[i].unidad;
               var cantidad_presupuestada = Number(totales[i].presupuestado);
               var acumulado_anterior = Number(totales[i].acumulado);
@@ -108,6 +115,8 @@ router.post('/', function(req,res,err) {
               var por_ejercer = cantidad_presupuestada - acumulado_actual;
               var precio_unitario = totales[i].precio;
               var presupuesto_id = totales[i].presupuestos_id;
+              var costo_acumulado = totales[i].costo + importe;
+              console.log(costo_acumulado)
 
                   var options = {
                     method: 'POST',
@@ -124,7 +133,8 @@ router.post('/', function(req,res,err) {
                           acumulado_anterior: acumulado_anterior,
                           acumulado_actual: acumulado_actual,
                           por_ejercer: por_ejercer,
-                          presupuesto_id:presupuesto_id
+                          presupuesto_id:presupuesto_id,
+                          costo_acumulado:costo_acumulado
                     },
                     json: true // Automatically stringifies the body to JSON
                 };
@@ -142,14 +152,18 @@ router.post('/', function(req,res,err) {
                             var total;
                             if (categoria === "flete"){
                               console.log(categoria);
-                              retencion = subtotal * .4;
-                              iva = (subtotal-retencion)*.16
+                              retencion = subtotal * .04;
+                              retencion = retencion.toFixed(2);
+                              iva = subtotal*.16
                               total = subtotal - retencion + iva;
                             } else {
                               retencion = 0;
                               iva = subtotal * .16;
                               total = subtotal + iva;
+
                             }
+                               iva = iva.toFixed(2);
+                               total = total.toFixed(2);
                             var updateTotals = 'UPDATE estimaciones SET subtotal ='+subtotal+',iva = '+iva+', retencion = '+retencion+', total = '+total+' WHERE estimaciones_id = '+estimacion_id+';';
                             return db.query(updateTotals)
                           }).then(function(rows,err){
@@ -188,11 +202,12 @@ var esta_estimacion = req.body.esta_estimacion;
   var cantidad_presupuestada = req.body.cantidad_presupuestada;
   var acumulado_anterior= req.body.acumulado_anterior;
   var acumulado_actual= Number(req.body.acumulado_actual);
+  var costo_acumulado = req.body.costo_acumulado;
   var por_ejercer= req.body.por_ejercer;
   var presupuesto_id = req.body.presupuesto_id;
-  var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revisar" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
-  console.log(acumulado_actual,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer)
-  db.query(nuevoArticuloEstimacion,[acumulado_actual,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer], function(err,articulo){
+  var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ?, costo = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revisar" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
+  console.log(acumulado_actual,costo_acumulado,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer)
+  db.query(nuevoArticuloEstimacion,[acumulado_actual,costo_acumulado,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer], function(err,articulo){
     if (err) throw err;
     else {
         console.log(nuevoArticuloEstimacion)
