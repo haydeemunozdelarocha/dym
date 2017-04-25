@@ -25,6 +25,7 @@ function buscarAcarreos(){
   });
 
   acarreos.done(function(data){
+    console.log(data)
     if(!data.acarreos){
       $('.message').append(data.message)
     }
@@ -53,7 +54,12 @@ function buscarAcarreos(){
         if (i == titles.length-1){
           data = data.acarreos;
           for(var j = 0 ; j < data.length; j++){
-            ids.push(data[j].acarreo_id);
+            if(categoria === "flete"){
+              console.log(data[j].acarreo_id)
+               ids.push(data[j].acarreo_id);
+            } else {
+              ids.push(data[j].acarreos_mat_id);
+            }
             this["row"+j] = table.insertRow(this["row"+j])
             var cell1 = this["row"+j].insertCell(0);
             var cell2 = this["row"+j].insertCell(1);
@@ -63,17 +69,19 @@ function buscarAcarreos(){
             var cell6 = this["row"+j].insertCell(5);
             var cell7 = this["row"+j].insertCell(6);
              var cell8 = this["row"+j].insertCell(7);
-            cell1.innerHTML = data[j].acarreo_id;
             cell2.innerHTML = data[j].hora;
             if (categoria === 'flete'){
+              cell1.innerHTML = data[j].acarreo_id;
               cell6.innerHTML = data[j].precio;
+              cell7.innerHTML = data[j].total_flete;
             } else {
+              cell1.innerHTML = data[j].acarreos_mat_id;
               cell6.innerHTML = data[j].precio;
+              cell7.innerHTML = data[j].total_material;
             }
             cell3.innerHTML = data[j].nombre_concepto;
             cell4.innerHTML = data[j].nombre_zona;
-            cell5.innerHTML = data[j].cantidad;
-            cell7.innerHTML = data[j].total;
+            cell5.innerHTML = data[j].cantidad + ' ' + data[j].unidad;
             cell8.innerHTML = '<a href="'+data[j].foto+'" onclick="window.open(this.href, "mywin","left=20,top=20,width=600,height=340,toolbar=1,resizable=0"); return false;"><span class="glyphicon glyphicon-camera"></span></a>'
          }
         }

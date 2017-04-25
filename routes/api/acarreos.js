@@ -73,11 +73,10 @@ router.post('/buscar', function(req,res,next){
   }
   var categoriaProveedor;
   if (categoria === "material"){
-    categoriaProveedor = "materiales";
+    listaAcarreosBuscar = 'SELECT acarreos_material.acarreos_mat_id, acarreos_material.cantidad,acarreos_material.total_material, recibos.hora,recibos.foto, conceptos.nombre_concepto,zonas.nombre_zona,materiales.precio,materiales.unidad FROM acarreos_material LEFT JOIN recibos ON acarreos_material.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos_material.material_id = materiales.id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id WHERE recibos.obra_id = '+obra_id+' AND acarreos_material.banco_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" AND estimacion = "N";';
   } else if (categoria === "flete"){
-    categoriaProveedor = "camiones"
+    listaAcarreosBuscar = 'SELECT acarreos_flete.acarreo_id, fletes.unidad,acarreos_flete.cantidad,acarreos_flete.total_flete,fletes.precio,proveedores.razon_social,fletes.proveedor_id, recibos.hora,recibos.foto, conceptos.nombre_concepto,zonas.nombre_zona FROM acarreos_flete LEFT JOIN recibos ON acarreos_flete.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id LEFT JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN proveedores ON proveedores.id = fletes.proveedor_id WHERE recibos.obra_id = '+obra_id+' AND fletes.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" AND estimacion = "N";';
   }
-  var listaAcarreosBuscar = 'SELECT acarreos.acarreo_id, acarreos.cantidad,acarreos.total, recibos.hora,recibos.foto, conceptos.nombre_concepto,zonas.nombre_zona,materiales.precio FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos.material_id = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id OR conceptos.conceptos_id = acarreos.concepto_flete LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id WHERE acarreos.categoria = "'+categoria+'" AND recibos.obra_id = '+obra_id+' AND '+categoriaProveedor+'.proveedor_id = '+proveedor_id+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" AND estimacion = "N";';
   console.log(listaAcarreosBuscar)
     db.query(listaAcarreosBuscar, function(err, acarreos){
       console.log(acarreos)
@@ -96,6 +95,19 @@ router.get('/flete/:id', function(req, res, next ){
   var id= req.params.id;
   var getAcarreo = "SELECT * FROM `acarreos_flete` WHERE `acarreo_id` = "+id;
   db.query(getAcarreo, function(err, acarreo){
+    if(err) throw err;
+    else {
+        console.log('Buscando acarreo por id');
+        res.send(acarreo)
+    }
+  });
+})
+
+router.get('/recibos', function(req, res, next ){
+  var getAcarreo = "SELECT * FROM `recibos` WHERE camion_id = 122";
+  var acarre ='SELECT recibos.camion_id, acarreos_flete.* FROM recibos JOIN acarreos_flete ORDER BY recibos.camion_id'
+  var deleteAcarreo ="DELETE FROM acarreos_flete WHERE recibo_id = null"
+  db.query(acarre, function(err, acarreo){
     if(err) throw err;
     else {
         console.log('Buscando acarreo por id');
@@ -150,7 +162,18 @@ router.get('/semana', function(req, res, next ){
   //Delete a record.
 router.delete('/flete/:id', function(req,res,err){
   var id=req.params.id;
-  var borrarAcarreo = 'DELETE FROM acarreos_flete WHERE acarreo_id='+id;
+  var borrarAcarreo = 'DELETE FROM acarreos_flete WHERE recibo_id='+id;
+  db.query(borrarAcarreo, function(err, response){
+    if(err) throw err;
+    else {
+        res.send('done');
+    }
+  });
+})
+
+router.delete('/recibo/:id', function(req,res,err){
+  var id=req.params.id;
+  var borrarAcarreo = 'DELETE FROM recibos WHERE recibo_id='+id;
   db.query(borrarAcarreo, function(err, response){
     if(err) throw err;
     else {
@@ -161,7 +184,7 @@ router.delete('/flete/:id', function(req,res,err){
 
 router.delete('/material/:id', function(req,res,err){
   var id=req.params.id;
-  var borrarAcarreo = 'DELETE FROM acarreos_material WHERE acarreos_mat_id='+id;
+  var borrarAcarreo = 'DELETE FROM acarreos_material WHERE recibo_id='+id;
   db.query(borrarAcarreo, function(err, response){
     if(err) throw err;
     else {

@@ -9,7 +9,6 @@ var moment= require('moment');
 var nuevoEmpleado = 'INSERT INTO empleados(nombre,obra,puesto,fecha_nacimiento,fecha_contratacion,sueldo) VALUE(?,?,?,?,?,?)';
 var listaEmpleados = 'SELECT empleados.*,obras.nombre_obra,usuarios.username FROM empleados LEFT JOIN obras ON empleados.obra = obras.obra_id LEFT JOIN usuarios ON empleados.id = usuarios.empleado_id';
 var getEmpleado = "SELECT *, DATE_FORMAT(fecha_contratacion,'%Y-%m-%d') AS contratacion, DATE_FORMAT(fecha_nacimiento,'%Y-%m-%d') AS nacimiento FROM `empleados` WHERE `id` = ?";
-var editarEmpleado = 'UPDATE empleados SET nombre = ?, obra = ?, puesto= ?, fecha_nacimiento= ?, fecha_contratacion = ?, sueldo = ? WHERE id= ?';
 
 //Read table.
 router.get('/', function(err,res){
@@ -90,7 +89,9 @@ var fecha_contratacion= moment(req.body.fecha_contratacion).format("YYYY-MM-DD")
 console.log(fecha_nacimiento)
 console.log(fecha_contratacion)
 var sueldo= req.body.sueldo;
-    db.query(editarEmpleado,[nombre,obra,puesto,fecha_nacimiento,fecha_contratacion,sueldo,id], function(err, empleado){
+var editarEmpleado = 'UPDATE empleados SET nombre = ?, obra = ?, puesto= ?, fecha_nacimiento= ?, fecha_contratacion = ?, sueldo = ? WHERE id= ?;UPDATE usuarios SET obra_id = ? WHERE empleado_id= ?';
+
+    db.query(editarEmpleado,[nombre,obra,puesto,fecha_nacimiento,fecha_contratacion,sueldo,id,obra,id], function(err, empleado){
     if(err) throw err;
     else {
         console.log('Listo');

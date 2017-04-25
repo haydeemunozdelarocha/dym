@@ -89,8 +89,9 @@ function totalFlete(){
     var concepto_flete = $('#categoria').val();
     var proveedor_id = $('#fletero').val();
     var banco_id = $('#banco').val();
-  var capacidad = $('#capacidad').val();
-
+    var capacidad = $('#capacidad').val();
+    console.log(proveedor_id)
+    console.log(banco_id)
 
     var precio = $.ajax({
     url: '/api/fletes/precio/',
@@ -198,11 +199,13 @@ console.log(camion_id)
   });
 
   camion.done(function(data){
+    console.log(data)
     if(data[0].camion_id){
       $('#camion_id').val(data[0].camion_id);
-      console.log($('#camion_id').val())
       $('#scanner').attr("readonly", true);
-      $('#fletero').val(data[0].proveedor_id)
+      $('#fletero').val(data[0].proveedor_id);
+      console.log($('#fletero').val())
+
       $('#capacidad').val(data[0].capacidad)
       $('#search-status').html("");
       $('#categoria').removeAttr("disabled");
