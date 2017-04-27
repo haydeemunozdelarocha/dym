@@ -10,6 +10,9 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 <body>
+<div id="button-container" style="display:block;height:10%;width:100%">
+  <button class="btn btn-info" style="margin-bottom: 20px;float:right;" onclick="location.replace('/resumen')">Imprimir Recibo</button>
+</div>
 <div id="content-container">
 <form action="/api/acarreos" method="POST" id="capturaForm" enctype="application/x-www-form-urlencoded">
 

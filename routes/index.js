@@ -112,6 +112,10 @@ router.get('/captura', [isLoggedIn,checkAuthToken], function(req, res){
   });
 })
 
+router.get('/resumen', [isLoggedIn,checkAuthToken], function(req, res){
+        res.render('resumen', {message:''});
+})
+
 router.get('/recibo/:id', function(req, res, next) {
   var id = req.params.id;
   var readTable = 'SELECT acarreos_flete.recibo_id,acarreos_flete.cantidad,recibos.hora,zonas.nombre_zona,camiones.camion_id,camiones.placas, camiones.modelo,camiones.unidad_camion, bp.razon_social AS nombre_fletero,bc.razon_social  AS nombre_banco, conceptos.nombre_concepto FROM acarreos_flete JOIN recibos ON acarreos_flete.recibo_id = recibos.recibo_id LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id LEFT JOIN proveedores AS bp ON bp.id = camiones.proveedor_id LEFT JOIN proveedores AS bc ON bc.id = fletes.banco LEFT JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id LEFT JOIN banco ON acarreos_flete.banco_id = banco.banco_id WHERE acarreos_flete.recibo_id = ?;';

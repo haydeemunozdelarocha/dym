@@ -50,7 +50,7 @@ var concepto_flete = Number(req.body.concepto_flete);
               db.query(nuevoAcarreo,values,function(err, rows){
                 if(err) throw err;
                 else {
-                    res.redirect('/recibo/'+recibo)
+                    res.redirect('/captura')
                 }
               });
         }
@@ -201,6 +201,31 @@ router.get('/totales/:obra', function(req, res, next ){
     else {
         console.log('Buscando presupuesto');
         res.json(totales)
+    }
+  });
+})
+
+router.post('/recibos/resumen', function(req, res, next ){
+  var date= Date.now();
+  var hora = moment(date).format("YYYY-MM-DD");
+  var hora_recibo = moment(date).format("YYYY-MM-DD HH:mm");
+  var date1 = hora + " 00:00";
+  var date2 = hora + " 23:59";
+  var obra_id = req.user.obra_id;
+  var numero = req.body.numero;
+  console.log(date1)
+  console.log(date2)
+
+  var recibosDia = 'SELECT recibos.camion_id,acarreos_flete.cantidad,camiones.placas,proveedor_flete.razon_social AS prov_flete, fletes.unidad,proveedor_banco.razon_social AS prov_banco,conceptos.nombre_concepto,zonas.nombre_zona,obras.nombre_obra,COUNT(*) AS viajes FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_flete ON recibos.recibo_id = acarreos_flete.recibo_id LEFT JOIN proveedores AS proveedor_banco ON proveedor_banco.id = acarreos_flete.banco_id LEFT JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id WHERE hora BETWEEN "'+date1+'" AND "'+date2+'" AND numero = '+numero+' AND recibos.obra_id = '+obra_id+' GROUP BY zona_id AND concepto_flete;';
+  db.query(recibosDia, function(err, recibos){
+    console.log(recibos)
+    if(err) throw err;
+       else {
+        if(recibos.length == 0) {
+            res.render('resumen',{message:"No se encontraron acarreos de hoy de el camión seleccionado. Por favor intente de nuevo."})
+        } else {
+        res.render('recibosresumen',{recibos:recibos,fecha:hora_recibo})
+        }
     }
   });
 })

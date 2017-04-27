@@ -263,3 +263,5 @@ document.getElementById("capturaForm").onkeypress = function(e) {
     e.preventDefault();
   }
 }
+
+
