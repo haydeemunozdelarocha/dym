@@ -71,6 +71,8 @@ router.get('/acarreomat/:proveedorid', function(req,res,err){
     db.query(listaMaterialesProveedor,[id,obra_id], function(err, rows){
     if(err) throw err;
     else {
+      console.log(listaMaterialesProveedor);
+      console.log(rows)
         res.send(rows);
     }
   });
@@ -105,7 +107,8 @@ router.get('/:proveedorid/:obraid', function(req,res,err){
   });
 })
 
-router.get('/material/:id', function(req, res, err){
+router.get('/:id', function(req, res, err){
+  console.log('getting material back end')
   var id= Number(req.params.id);
   console.log(id)
   var getMaterial = 'SELECT * FROM `materiales` WHERE `id` = ?';

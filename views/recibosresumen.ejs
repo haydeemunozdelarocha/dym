@@ -36,7 +36,11 @@
     <td><%=recibos[i].nombre_concepto%></td>
     <td><%=recibos[i].nombre_zona%></td>
     <td><%=recibos[i].cantidad%> <%=recibos[i].unidad %></td>
+    <% if(!recibos[i].prov_banco) { %>
+    <td>--</td>
+    <% } else { %>
     <td><%=recibos[i].prov_banco %></td>
+    <% } %>
    </tr>
   <% } %>
 </table>

@@ -6,7 +6,7 @@ function calcularFlete() {
   if(concepto_flete === "92" || concepto_flete === "100"){
     $('#bancoinfo').removeAttr("hidden");
     $('#banco').removeAttr("disabled");
-    $('#concepto_flete').val('82');
+    $('#concepto_flete').val(concepto_flete);
   } else {
     calcularAcarreoInt();
   }
@@ -25,6 +25,7 @@ function calcularAcarreoInt() {
     if(data.length !== 0){
       console.log(data)
         $('#precio_flete').val(data[0].precio*capacidad);
+        $('#concepto_flete').val("82");
         $('#zonas').removeAttr("disabled");
     } else {
       console.log('no data')
@@ -48,7 +49,7 @@ function calcularAcarreoEM() {
     $('#proveedor_id').val(proveedor_id);
     apiURL = '/api/materiales/acarreoext/'+proveedor_id;
   } else if(concepto_flete === "100"){
-    proveedor_id = $('#proveedor_id').val();
+    proveedor_id = $('#banco').val();
     apiURL = '/api/materiales/acarreomat/'+proveedor_id
   }
   var precio = $.ajax({
@@ -61,22 +62,45 @@ function calcularAcarreoEM() {
     console.log(data)
     if(data.length !== 0){
     $('#flete_id').val(data[0].fletes_id);
-      if (concepto_flete === "92"){
         $('#precio_material').val(data[0].precio);
         $('#concepto_flete').val(data[0].concepto);
         $('#concepto_material').val(data[0].concepto);
         $('#material_id').val(data[0].material_id);
         totalFlete();
-
-      } else if (concepto_flete === "100"){
-         var distancia = $('#distancia').val();
-        $('#bancoinfo').removeAttr("hidden");
-         $('#precio_flete').val((data[0].precio1*capacidad*1)+(data[0].precio1*capacidad*(distancia-1)));
-         $('#banco').removeAttr("disabled");
-      }
     } else {
       console.log('no data')
       alert('No se ha registrado el precio de Acarreo Interno para el proveedor de este camión.')
+    }
+});
+
+    precio.fail(function(jqXHR, textStatus, errorThrown){
+ console.log("error")
+  });
+}
+
+function getMateriales() {
+    var proveedor_id = $('#banco').val();
+
+  var precio = $.ajax({
+    url: '/api/materiales/acarreomat/'+proveedor_id,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  precio.done(function(data){
+    console.log(data)
+    if(data.length !== 0){
+        $('#material-info').removeAttr("hidden");
+        for(var i = 0; i < data.length; i++){
+           $('#material_id').append('<option value='+data[i].id+'>'+data[i].nombre_concepto+'</option>');
+           if(i+1 == data.length){
+            $('#material_id').removeAttr("disabled");
+           }
+        }
+      }
+     else {
+      console.log('no data')
+      alert('No se han registrado materiales de este proveedor.')
     }
 });
 
@@ -106,16 +130,13 @@ function totalFlete(){
   precio.done(function(data){
     console.log(data)
     $('#flete_id').val(data[0].fletes_id);
+    $('#precio_flete').val(data[0].precio*capacidad);
+    $('#unidad').val(data[0].unidad);
       if (concepto_flete === "92"){
-        $('#precio_flete').val(data[0].precio*capacidad);
-        console.log(data[0].precio*capacidad)
         $('#zonas').removeAttr("disabled");
 
       } else if (concepto_flete === "100"){
-         var distancia = $('#distancia').val();
-        $('#bancoinfo').removeAttr("hidden");
-         $('#precio_flete').val((data[0].precio1*capacidad*1)+(data[0].precio1*capacidad*(distancia-1)));
-         $('#banco').removeAttr("disabled");
+        getMateriales();
       }
     });
 
@@ -123,48 +144,14 @@ function totalFlete(){
  console.log("error")
   });
 }
-function getBanco(){
- $('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
-  var banco = $('#banco').val();
-  var concepto_flete = $('#categoria').val();
-  console.log(concepto_flete)
-  var distancia = $.ajax({
-    url: '/api/banco/materiales/'+banco,
-    type: 'GET',
-    dataType: 'json'
-  });
 
-  distancia.done(function(data){
-    if (concepto_flete === "100"){
-          $('#distancia').val(data.banco[0].distancia);
-          $('#proveedor_id').val(data.banco[0].proveedor_id);
-          $('#material-info').removeAttr('hidden');
-          $('#material_id').removeAttr('disabled');
-          for(var i = 0 ; i < data.materiales.length; i++){
-            $('#material_id').append('<option value="'+data.materiales[i].id+'">'+data.materiales[i].nombre_concepto+'</option>');
-          }
-          $('#material-status').html("");
-          $('#material_id').removeAttr("disabled");
-
-           calcularFlete();
-      } else {
-        $('#distancia').val(data.banco[0].distancia);
-        $('#proveedor_id').val(data.banco[0].proveedor_id);
-        $('#zonas').removeAttr("disabled");
-      }
-    });
-
-  distancia.fail(function(jqXHR, textStatus, errorThrown){
- console.log("error")
-  });
-
-}
 
 
 function getMaterial() {
+  console.log('getting material')
   var material_id=$('#material_id').val();
     var material = $.ajax({
-    url: '/api/materiales/material/'+material_id,
+    url: '/api/materiales/'+material_id,
     type: 'GET',
     dataType: 'json'
   });

@@ -12,6 +12,7 @@ var usuario_id = req.user.id_usuario;
 var obra_id = req.user.obra_id;
 var camion_id= Number(req.body.camion_id);
 var foto = req.body.photo;
+var unidad = req.body.unidad;
 if(!foto){
   foto = null;
 }
@@ -28,10 +29,14 @@ var concepto_flete = Number(req.body.concepto_flete);
     var material_id= Number(req.body.material_id);
     var total_material = (Number(req.body.precio_material)*cantidad);
     var concepto_material = req.body.concepto_material;
+    concepto_flete = concepto_material;
   } else if(concepto_flete == 92){
     var material_id= concepto_flete;
     var total_material = (Number(req.body.precio_material)*cantidad);
     var concepto_material = req.body.concepto_material;
+  } else if(concepto_flete == 82){
+    flete_id = null;
+    banco_id = null;
   }
       var nuevoRecibo = "INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id,camion_id) VALUE (?,?,?,?,?,?);";
       db.query(nuevoRecibo,[usuario_id,zona_id,foto,hora,obra_id,camion_id], function(err, rows){
@@ -40,11 +45,11 @@ var concepto_flete = Number(req.body.concepto_flete);
         else {
             recibo=rows.insertId;
               if(concepto_flete == 100 || concepto_flete == 92){
-                  var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id) VALUE (?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id) VALUE (?,?,?,?,?,?);'
-                  var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,material_id,cantidad,total_material,concepto_material,recibo,banco_id];
+                  var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
+                  var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad,material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
               } else {
-                  var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id) VALUE (?,?,?,?,?,?);'
-                  var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id];
+                  var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
+                  var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad];
               }
               console.log(values);
               db.query(nuevoAcarreo,values,function(err, rows){
@@ -216,7 +221,7 @@ router.post('/recibos/resumen', function(req, res, next ){
   console.log(date1)
   console.log(date2)
 
-  var recibosDia = 'SELECT recibos.camion_id,acarreos_flete.cantidad,camiones.placas,proveedor_flete.razon_social AS prov_flete, fletes.unidad,proveedor_banco.razon_social AS prov_banco,conceptos.nombre_concepto,zonas.nombre_zona,obras.nombre_obra,COUNT(*) AS viajes FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_flete ON recibos.recibo_id = acarreos_flete.recibo_id LEFT JOIN proveedores AS proveedor_banco ON proveedor_banco.id = acarreos_flete.banco_id LEFT JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id WHERE hora BETWEEN "'+date1+'" AND "'+date2+'" AND numero = '+numero+' AND recibos.obra_id = '+obra_id+' GROUP BY zona_id AND concepto_flete;';
+  var recibosDia = 'SELECT recibos.camion_id,acarreos_flete.cantidad,camiones.placas,proveedor_flete.razon_social AS prov_flete, fletes.unidad,proveedor_banco.razon_social AS prov_banco,conceptos.nombre_concepto,zonas.nombre_zona,obras.nombre_obra,COUNT(*) AS viajes FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_flete ON recibos.recibo_id = acarreos_flete.recibo_id LEFT JOIN proveedores AS proveedor_banco ON proveedor_banco.id = acarreos_flete.banco_id LEFT JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id WHERE hora BETWEEN "'+date1+'" AND "'+date2+'" AND numero = '+numero+' AND recibos.obra_id = '+obra_id+' GROUP BY concepto_flete;';
   db.query(recibosDia, function(err, recibos){
     console.log(recibos)
     if(err) throw err;
