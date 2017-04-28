@@ -10,11 +10,11 @@ var NestStrategy = require('passport-nest').Strategy;
 var bcrypt = require('bcrypt-nodejs');
 var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
+var flash = require('connect-flash');
 var db = require('./db.js');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var residentes = require('./routes/residentes');
 var admin = require('./routes/admin');
 var obras = require('./routes/api/obras');
 var proveedores = require('./routes/api/proveedores');
@@ -65,12 +65,11 @@ passport.use(
             passReqToCallback : true
         },
         function(req, username, password, done) {
-          console.log(req.body)
             db.query("SELECT * FROM usuarios WHERE username = ?",[username], function(err, rows) {
                 if (err)
                     return done(err);
                 if (rows.length) {
-                    return done(null, {error:"Username already taken.", empleado_id:req.body.empleado_id}, console.log('That username is already taken.'));
+                    return done(null, false, req.flash('error', 'Username already taken.'));
                 } else {
                     // if there is no user with that username
                     // create the user
@@ -81,16 +80,11 @@ passport.use(
                         obra_id:req.body.obra_id,
                         categoria:req.body.categoria
                     };
-                    console.log(newUserMysql)
                     var insertQuery = "INSERT INTO usuarios(username, password,empleado_id,obra_id,categoria) values (?,?,?,?,?)";
 
                     db.query(insertQuery, [newUserMysql.username, newUserMysql.password, newUserMysql.empleado_id,newUserMysql.obra_id,newUserMysql.categoria], function(err, rows) {
-                      console.log(insertQuery)
-                      console.log(newUserMysql.username, newUserMysql.password)
-                      console.log(rows);
                         newUserMysql.usuario_id= rows.insertId;
-                        console.log(newUserMysql.usuario_id)
-                            return done(null, newUserMysql);
+                            return done(null, newUserMysql, req.flash('error', 'Usuario agregado exitosamente.'));
                         })
                 }
             });
@@ -100,24 +94,21 @@ passport.use(
 passport.use(
         'local-login',
         new LocalStrategy({
-            // by default, local strategy uses username and password, we will override with email
             usernameField : 'username',
             passwordField : 'password',
             passReqToCallback : true // allows us to pass back the entire request to the callback
         },
-        function(req, username, password, done) { // callback with email and password from our form
+        function(req, username, password, done) {
             db.query("SELECT * FROM usuarios WHERE username = ?",[username], function(err, rows){
                 if (err)
-                    return done(err);
+                    return done(err, req.flash('error', err));
                 if (!rows.length) {
-                    return done(null, false, console.log('No user found.')); // req.flash is the way to set flashdata using connect-flash
+                    return done(null, false, req.flash('error', 'Invalid username or password.'));
                 }
 
-                // if the user is found but the password is wrong
                 if (!bcrypt.compareSync(password, rows[0].password))
-                    return done(null, false, console.log('Oops! Wrong password.')); // create the loginMessage and save it to session as flashdata
+                    return done(null, false, req.flash('error', 'Wrong password.')); // create the loginMessage and save it to session as flashdata
 
-                // all is well, return successful user
                 return done(null, rows[0]);
             });
         })
@@ -162,6 +153,7 @@ app.use(session({
   cookie:{maxAge:new Date(Date.now() + (3600000*24))},
   store: sessionStore
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -169,7 +161,6 @@ app.use(passport.session());
 app.use('/', routes);
 app.use('/users', users);
 app.use('/photo', photo);
-app.use('/residentes', residentes);
 app.use('/admin', admin);
 app.use('/api/obras', obras);
 app.use('/api/proveedores', proveedores);

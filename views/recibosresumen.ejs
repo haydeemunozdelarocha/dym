@@ -22,15 +22,24 @@
   <h3><strong>Placas:</strong> <%= recibos[0].placas %></h3>
   <h3><strong>Fletero:</strong> <%= recibos[0].prov_flete %></h3>
   <br>
+  <table style="width: 100%;">
+    <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
+    <td>No. Viajes</td>
+    <td>Concepto</td>
+    <td>Zona</td>
+    <td>Cantidad</td>
+    <td>Banco</td>
+   </tr>
   <% for(var i = 0; i < recibos.length; i++) { %>
-    <h3><%= recibos[i].viajes %> viajes</h3>
-    <h3><%=recibos[i].nombre_concepto%></h3>
-    <h3><%=recibos[i].nombre_zona%></h3>
-    <h3><%=recibos[i].cantidad%> <%=recibos[i].unidad %></h3>
-    <h3><%=recibos[i].prov_banco %></h3>
-    <br>
+  <tr>
+    <td><%= recibos[i].viajes %></td>
+    <td><%=recibos[i].nombre_concepto%></td>
+    <td><%=recibos[i].nombre_zona%></td>
+    <td><%=recibos[i].cantidad%> <%=recibos[i].unidad %></td>
+    <td><%=recibos[i].prov_banco %></td>
+   </tr>
   <% } %>
-
+</table>
 </div>
 <br>
 </div>

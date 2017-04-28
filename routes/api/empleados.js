@@ -50,6 +50,7 @@ router.get('/:id', function(req, res, next ){
 router.post('/', function(req,res,err){
 var nombre = req.body.nombre;
 var obra= req.body.obra;
+var usuario = req.user;
 var puesto= req.body.puesto;
 var fecha_nacimiento= moment(req.body.fecha_nacimiento).format("YYYY-MM-DD");
 var fecha_contratacion= moment(req.body.fecha_contratacion).format("YYYY-MM-DD");

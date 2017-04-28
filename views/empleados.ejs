@@ -15,7 +15,17 @@
    <% include ./partials/costosheader.ejs %>
 <% } %>
   <div id="content-container">
-    <p><h2>Empleados</h2></p>
+      <p><h2>Empleados</h2></p>
+              <% if(message) { %>
+              <br>
+                <div style="width:100%;height:35px;background-color:#89ecf9;padding:5px;border:none;border-radius:3px;">
+                <p style="color:#000;padding:5px;"><%= message %></p>
+                </div>
+                <br>
+                <% } %>
+      <% if (usuario.categoria === "administrador") { %>
+     <p><a href="/empleados/nuevo"><span class="glyphicon glyphicon-plus-sign"></span> Agregar Empleado</a></p>
+    <% } %>
   <div id="table">
 <div class="panel panel-default">
   <!-- Default panel contents -->
@@ -38,12 +48,12 @@
       <td><%= empleados[i].puesto %></td>
       <% if(!empleados[i].username) { %>
       <td><a href="/registrar/<%=empleados[i].id %>">Agregar Usuario</a></td>
-      <% } else if (empleados[i].username && usuario.categoria === "recursos") { %>
+      <% } else if (empleados[i].username && usuario.categoria === "administrador") { %>
       <td><a href="/usuarios/editar/<%= empleados[i].username %>"><%= empleados[i].username %></a></td>
       <% } else if (empleados[i].username){ %>
       <td><%= empleados[i].username %></td>
       <% } %>
-      <% if (usuario.categoria === "recursos") { %>
+      <% if (usuario.categoria === "administrador") { %>
          <td><a href="/empleados/editar/<%= empleados[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
           <td><a href="/api/empleados/borrar/<%= empleados[i].id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
       <% } %>
