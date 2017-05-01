@@ -25,22 +25,22 @@
 
   <table align="left" style="font-size: 20px;">
     <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
-    <td width="100">No. Viajes</td>
-    <td width="100">Concepto</td>
-    <td width="100">Zona</td>
-    <td width="50">Cantidad</td>
-    <td width="100">Banco</td>
+    <td width="50"><strong>No. Viajes</strong></td>
+    <td width="150"><strong>Concepto</strong></td>
+    <td width="150"><strong>Zona</strong></td>
+    <td width="50"><strong>Cantidad</strong></td>
+    <td width="150"><strong>Banco</strong></td>
    </tr>
   <% for(var i = 0; i < recibos.length; i++) { %>
   <tr>
-    <td width="100"><%= recibos[i].viajes %></td>
-    <td width="100"><%=recibos[i].nombre_concepto%></td>
-    <td width="100"><%=recibos[i].nombre_zona%></td>
-    <td width="50"><%=recibos[i].cantidad%> <%=recibos[i].unidad %></td>
+    <td width="50"><strong><%= recibos[i].viajes %></strong></td>
+    <td width="150"><strong><%=recibos[i].nombre_concepto%></strong></td>
+    <td width="150"><strong><%=recibos[i].nombre_zona%></strong></td>
+    <td width="50"><strong><%=recibos[i].cantidad%> <%=recibos[i].unidad %></strong></td>
     <% if(!recibos[i].prov_banco) { %>
-    <td width="50">--</td>
+    <td width="50"><strong>--</strong></td>
     <% } else { %>
-    <td width="100"><%=recibos[i].prov_banco %></td>
+    <td width="150"><strong><%=recibos[i].prov_banco %></strong></td>
     <% } %>
    </tr>
   <% } %>
