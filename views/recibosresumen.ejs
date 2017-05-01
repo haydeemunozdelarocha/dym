@@ -25,11 +25,11 @@
 
   <table align="left" style="font-size: 20px;">
     <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
-    <td>No. Viajes</td>
-    <td>Concepto</td>
-    <td>Zona</td>
-    <td>Cantidad</td>
-    <td>Banco</td>
+    <td width="100">No. Viajes</td>
+    <td width="100">Concepto</td>
+    <td width="100">Zona</td>
+    <td width="50">Cantidad</td>
+    <td width="100">Banco</td>
    </tr>
   <% for(var i = 0; i < recibos.length; i++) { %>
   <tr>
@@ -40,7 +40,7 @@
     <% if(!recibos[i].prov_banco) { %>
     <td width="50">--</td>
     <% } else { %>
-    <td width="50"><%=recibos[i].prov_banco %></td>
+    <td width="100"><%=recibos[i].prov_banco %></td>
     <% } %>
    </tr>
   <% } %>
