@@ -28,7 +28,7 @@
   <h3><strong>Capacidad:</strong><%=recibos[0].cantidad%> <%=recibos[0].unidad %></h3>
   <br>
 
-  <table align="left" style="font-size: 20px;margin-bottom: 25px">
+  <table align="left" style="font-size: 20px;margin-bottom: 30px">
     <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
     <td width="60"><strong>No.</strong></td>
     <td width="150"><strong>Concepto</strong></td>
@@ -58,7 +58,7 @@
   <br>
   <br>
   <h3><strong>Resumen:</strong></h3>
-  <br>
+
   <table align="left" style="font-size: 20px; margin-bottom: 20px">
     <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
     <td width="60"><strong>No. Viajes</strong></td>
@@ -73,7 +73,7 @@
     <td width="60"><strong><%= recibos[i].viajes %></strong></td>
     <td width="150"><strong><%=recibos[i].nombre_concepto%></strong></td>
     <td width="150"><strong><%=recibos[i].nombre_zona%></strong></td>
-    <td width="70"><strong><%=recibos[i].cantidad%> <%=recibos[i].unidad %></strong></td>
+    <td width="70"><strong><%=recibos[i].total_cantidad%> <%=recibos[i].unidad %></strong></td>
     <% if(!recibos[i].prov_banco) { %>
     <td width="50"><strong>--</strong></td>
     <% } else { %>
@@ -84,13 +84,12 @@
     <% } %>
   </table>
   <br>
-  <% if(total[0].total_cantidad && total[0].viajes) {%>
-  <h3><strong>Total Cantidad:</strong> <%=total[0].total_cantidad%> <%=recibos[0].unidad %></h3>
-  <h3><strong>Viajes:</strong> <%=total[0].viajes %></h3>
+  <% if(acarreos[0].total_viajes) {%>
+  <h3><strong>Viajes:</strong> <%=acarreos[0].total_viajes %></h3>
 
     <% } %>
 </div>
-<div height="150px"></div>
+<div height="200px" width="100px"></div>
 <br>
 </div>
 </div>
