@@ -180,7 +180,7 @@ function getCamion() {
   $('#search-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
 console.log("getting camion");
 var camion_id = $('#scanner').val();
-if(camion_id.length == 10){
+if(camion_id.length >= 10){
 
 
   var camion = $.ajax({
