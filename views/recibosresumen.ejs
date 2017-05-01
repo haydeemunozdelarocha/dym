@@ -22,28 +22,15 @@
   <h3><strong>Placas:</strong> <%= recibos[0].placas %></h3>
   <h3><strong>Fletero:</strong> <%= recibos[0].prov_flete %></h3>
   <br>
-<!--   <table style="width: 100%;">
-    <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
-    <td>No. Viajes</td>
-    <td>Concepto</td>
-    <td>Zona</td>
-    <td>Cantidad</td>
-    <td>Banco</td>
-   </tr>
-  <% for(var i = 0; i < recibos.length; i++) { %>
-  <tr>
-    <td><%= recibos[i].viajes %></td>
-    <td><%=recibos[i].nombre_concepto%></td>
-    <td><%=recibos[i].nombre_zona%></td>
-    <td><%=recibos[i].cantidad%> <%=recibos[i].unidad %></td>
-    <% if(!recibos[i].prov_banco) { %>
-    <td>--</td>
-    <% } else { %>
-    <td><%=recibos[i].prov_banco %></td>
-    <% } %>
-   </tr>
+
+  <% for (var i =0;i<recibos.length; i ++) { %>
+  <div>
+  <p style="display:inline;padding-right: 10px;"><%= recibos[i].viajes %></p>
+  <p style="display:inline;padding-right: 10px;"><%= recibos[i].cantidad %> <%= recibos[i].unidad %></p>
+  <p style="display:inline;padding-right: 10px;"><%= recibos[i].nombre_concepto %></p>
+  <p style="display:inline;padding-right: 10px;"><%= recibos[i].prov_banco %></p>
+  </div>
   <% } %>
-</table> -->
 </div>
 <br>
 </div>

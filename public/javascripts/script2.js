@@ -64,7 +64,8 @@ function createImgElement(base64URL) {
 }
 
 function createImgElementBase64(htmlElement) {
-  var receipt = encodeURIComponent(htmlElement + document.getElementById("printData").innerHTML); // latter portion retrieves HTML from the DOM
+  var receipt = encodeURIComponent(htmlElement + document.getElementById("printData").innerHTML);
+  console.log(receipt)
   buildURLScheme(receipt);
 }
 
@@ -80,9 +81,10 @@ function buildURLScheme(encodedReceiptBase64) {
   //var testString = "<body><div><ul><li>test</li><li>test1</li><li>test2</li><li>test3</li><li>test4</li></ul><div></body>";
 
   var passprntURL = urlStart + encodedReceiptBase64 + urlEnd;
+    console.log(passprntURL)
   //window.open(passprntURL, "");
   //OR
-  window.location.href = passprntURL;
+  // window.location.href = passprntURL;
   //OR
   //document.location.assign(passprntURL);
 
