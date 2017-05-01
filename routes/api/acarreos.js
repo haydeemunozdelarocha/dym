@@ -76,7 +76,7 @@ var concepto_flete = Number(req.body.concepto_flete);
 //Read acarreos
 
 
-router.post('/buscar', function(req,res,next){
+router.post('/buscar', function(req,res,err){
   var proveedor_id = req.body.proveedor_id;
   var categoria = req.body.categoria;
   var date1 = moment(req.body.date1).format("YYYY-MM-DD HH:mm");
@@ -95,12 +95,13 @@ router.post('/buscar', function(req,res,next){
   console.log(listaAcarreosBuscar)
     db.query(listaAcarreosBuscar, function(err, acarreos){
       console.log(acarreos)
-    if (!acarreos){
+    if (acarreos.length == 0){
       console.log('no se encontraron acarreos')
           var message = "No se encontraron acarreos sin estimación en éstas fechas."
             res.send({message: message});
     }
     else if (acarreos.length > 0){
+      var message = "";
             res.send({acarreos: acarreos, message:message});
       }
   });

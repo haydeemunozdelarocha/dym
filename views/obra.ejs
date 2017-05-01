@@ -66,6 +66,10 @@
       <canvas id="myChart"></canvas>
 </div>
 </div>
+ <% if (usuario.categoria === "administrador"){%>
+  <a href="/presupuestos/editar/<%= obra.obra_id %>" style="display:block;padding-bottom: 10px;"><span class="glyphicon glyphicon-edit"></span> Editar Presupuesto</a>
+  <br>
+  <% } %>
   <div class="panel panel-default">
       <div class="panel-heading">Presupuesto (Por Zona)</div>
       <div class="panel-body">

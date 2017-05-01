@@ -5,6 +5,8 @@ var ids = [];
 
 function buscarAcarreos(){
   console.log('buscando')
+  $('.message').html('')
+
   var proveedor_id= $('#proveedor_id').val();
   var categoria = $('#categoria').val();
   var date1 = $('#date1').val();
@@ -26,9 +28,9 @@ function buscarAcarreos(){
 
   acarreos.done(function(data){
     console.log(data)
-    if(!data.acarreos){
+    if(data.message.length > 0){
       $('.message').append(data.message)
-    }
+    } else {
     var titles;
     var container = document.getElementById('table')
     var table = document.createElement('table');
@@ -86,11 +88,14 @@ function buscarAcarreos(){
          }
         }
       }
-      $('#estimacion-button').html('<button type="submit" class="btn btn-primary" style="margin-top:3%; margin-bottom:3%; display:block;float:right" onclick="getTotales()">Crear Estimación</button>')});
+      $('#estimacion-button').html('<button type="submit" class="btn btn-primary" style="margin-top:3%; margin-bottom:3%; display:block;float:right" onclick="getTotales()">Crear Estimación</button>')
+    }
+    });
 
   acarreos.fail(function(jqXHR, textStatus, errorThrown){
     console.log(errorThrown);
-          console.log('error');
+           $('.message').append("No se encontraron acarreos de ese proveedor en esas fechas")
+
   });
 }
 
@@ -567,4 +572,47 @@ function allZonas(){
   zonas.fail(function(jqXHR, textStatus, errorThrown){
     console.log(errorThrown)
   });
+}
+
+function cerrarObra(obra_id){
+  var r = confirm("Desea continuar con el cierre de esta obra?");
+  if (r === true){
+    console.log('cerrando')
+  var obras = $.ajax({
+    url: '/api/obras/cerrar/'+obra_id,
+    type: 'GET'
+  });
+
+  obras.done(function(data){
+    console.log('done')
+    $('#desactivar'+obra_id).html("");
+     $('#desactivar'+obra_id).html("Abrir");
+    });
+
+  obras.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown)
+  });
+  }
+}
+
+function abrirObra(obra_id){
+   var r = confirm("Desea continuar con la restauración de esta obra?");
+   console.log(r)
+   if (r === true){
+     console.log('abriendo')
+      var obras = $.ajax({
+    url: '/api/obras/abrir/'+obra_id,
+    type: 'GET'
+  });
+
+  obras.done(function(data){
+    console.log('done')
+    $('#desactivar'+obra_id).html("");
+     $('#desactivar'+obra_id).html("Cerrar");
+    });
+
+  obras.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown)
+  });
+   }
 }

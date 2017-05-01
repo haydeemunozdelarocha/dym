@@ -45,10 +45,17 @@
       <td><%= obras[i].presupuesto %></td>
       <td><a href="/obras/editar/<%= obras[i].obra_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
       <td><a data-method="delete" href="/api/obras/borrar/<%= obras[i].obra_id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+      <% if (obras[i].activa === "Y") { %>
+      <td><button class="btn btn-primary" id="desactivar<%= obras[i].obra_id %>" style="width:100px" onclick = "cerrarObra(<%= obras[i].obra_id %>)">Cerrar</button></td>
+      <% } else { %>
+      <td><button class="btn btn-primary" style="width:100px" id="desactivar<%= obras[i].obra_id %>" onclick = "abrirObra(<%= obras[i].obra_id %>)">Abrir</button></td>
+      <% } %>
        <% } %>
      </tr>
     </table>
   </div>
 </div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+
 </body>
 </html>

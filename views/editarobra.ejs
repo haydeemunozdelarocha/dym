@@ -41,7 +41,8 @@
 <div class="input-group">
   <label>Estado:</label>
   <select class="form-control" name="estado" id="estado">
-      <option value="">Seleccionar Estado</option>
+      <option selected value="<%=obra[0].estado%>"><%=obra[0].estado%></option>
+      <option value="">-------</option>
       <option value="Aguascalientes">Aguascalientes</option>
       <option value="Baja California">Baja California</option>
       <option value="Baja California Sur">Baja California Sur</option>
@@ -76,12 +77,17 @@
       <option value="Zacatecas">Zacatecas</option>
   </select>
 </div>
-<div class="input-group">
-  <label>Zonas:</label>
-  <br>
-  <input type="checkbox" name="zona1" value="Plataforma" checked> Plataforma<br>
-  <input type="checkbox" name="zona2" value="Trafico Pesado" checked> Trafico Pesado<br>
-  <input type="checkbox" name="zona3" value="Trafico Ligero" checked> Trafico Ligero<br>
+<label>Zonas:</label>
+
+<div id="zonas-checkbox">
+<% for(var i = 0; i <zonas.length;i++) { %>
+<div class="zonas">
+  <input type="checkbox" name="zonas" value="<%= zonas[i].zonas_id %>"><%= zonas[i].nombre_zona %>
+</div>
+<% } %>
+<div class="zonas zona-nueva">
+Otra: <input type="text" name="" id="zonaNueva" value=""><span onclick="zonaNueva()" class="glyphicon glyphicon-plus-sign save-material"></span>
+</div>
 </div>
 
 <br>

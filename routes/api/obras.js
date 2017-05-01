@@ -127,5 +127,31 @@ router.delete('/borrar/:idobra', function(req,res,err){
   });
 })
 
+router.get('/cerrar/:id', function(req, res, next ){
+  var id= req.params.id;
+  var cerrarObra = "UPDATE obras SET activa = 'N' WHERE obra_id = ?"
+  db.query(cerrarObra,[id], function(err, obra){
+    if(err) throw err;
+    else {
+        console.log('Cerrando obra');
+        var message ="Obra cerrada exitosamente"
+        res.send({message:message})
+    }
+  });
+})
+
+router.get('/abrir/:id', function(req, res, next ){
+  var id= req.params.id;
+  var cerrarObra = "UPDATE obras SET activa = 'Y' WHERE obra_id = ?"
+  db.query(cerrarObra,[id], function(err, obra){
+    if(err) throw err;
+    else {
+        console.log('Cerrando obra');
+        var message ="Obra cerrada exitosamente"
+        res.send({message:message})
+    }
+  });
+})
+
 module.exports = router;
 

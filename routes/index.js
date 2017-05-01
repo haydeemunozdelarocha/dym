@@ -191,9 +191,9 @@ router.get('/estimaciones',isLoggedIn, function(req, res, next) {
   console.log('sending request')
       var query = '';
       if(req.user.categoria === "residente"){
-        query = ' WHERE estimaciones.obra = '+req.user.obra_id+' AND ';
+        query = ' WHERE estimaciones.obra = '+req.user.obra_id+' AND estimaciones.status != "cancelada" ';
       } else if(req.params.obra_id){
-        query = ' WHERE estimaciones.obra = '+req.query.obra_id+' AND ';
+        query = ' WHERE estimaciones.obra = '+req.query.obra_id+' AND estimaciones.status != "cancelada" ';
       } else if(req.user.categoria !== "residente"){
         if (Object.keys(req.query).length == 0){
         query = "";
@@ -581,11 +581,12 @@ router.get('/obras/nueva',isLoggedIn, function(req,res,err){
 router.get('/obras/editar/:idobra',isLoggedIn, function(req,res,err){
     console.log(req.params.idobra)
   var id =req.params.idobra;
-  var getObra = "SELECT * FROM `obras` WHERE `obra_id` = "+ id;
+  var usuario = req.user;
+  var getObra = "SELECT * FROM `obras` WHERE `obra_id` = "+ id+';SELECT * FROM zonas;';
     db.query(getObra, function(err, obra){
     if(err) throw err;
     else {
-        res.render('editarobra', { title: 'Obras', obra: obra });
+        res.render('editarobra', { title: 'Obras', obra: obra[0],zonas:obra[1],usuario:usuario });
     }
   });
 })
@@ -594,7 +595,7 @@ router.get('/obras/editar/:idobra',isLoggedIn, function(req,res,err){
 //PRESUPUESTOS
 router.get('/presupuestos',isLoggedIn, function(req,res,err){
   var usuario = req.user;
-  var infoObras = 'SELECT * FROM obras WHERE presupuesto = "N"; SELECT * FROM conceptos;SELECT * FROM zonas;SELECT presupuestos.*, conceptos.*, zonas.*, obras.* FROM presupuestos JOIN obras ON presupuestos.obra=obras.obra_id JOIN zonas ON presupuestos.zona = zonas.zonas_id JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id;';
+  var infoObras = 'SELECT * FROM obras WHERE presupuesto = "N"; SELECT * FROM conceptos WHERE conceptos_id != 352;SELECT * FROM zonas;SELECT presupuestos.*, conceptos.*, zonas.*, obras.* FROM presupuestos JOIN obras ON presupuestos.obra=obras.obra_id JOIN zonas ON presupuestos.zona = zonas.zonas_id JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id;';
     db.query(infoObras, function(err, info){
       if(err) throw err;
       else {
@@ -814,7 +815,7 @@ router.get('/proveedores/editar/:id',isLoggedIn, function(req,res,err){
 //MATERIALES
 router.get('/materiales',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
-  var readTable = 'SELECT materiales.*, conceptos.nombre_concepto, proveedores.razon_social FROM materiales LEFT JOIN proveedores ON proveedores.id = materiales.proveedor_id JOIN conceptos ON conceptos.conceptos_id = materiales.concepto;SELECT * FROM conceptos;SELECT * FROM proveedores;SELECT * FROM obras;';
+  var readTable = 'SELECT materiales.*, conceptos.nombre_concepto, proveedores.razon_social FROM materiales LEFT JOIN proveedores ON proveedores.id = materiales.proveedor_id JOIN conceptos ON conceptos.conceptos_id = materiales.concepto;SELECT * FROM conceptos WHERE conceptos_id != 352;;SELECT * FROM proveedores;SELECT * FROM obras;';
 
     db.query(readTable, function(err, info){
         if(err) throw err;
@@ -831,7 +832,7 @@ router.get('/materiales/nuevo',isLoggedIn, function(req, res, next) {
     db.query(readTable, function(err, proveedores){
     if(err) throw err;
     else {
-      var readConceptos = 'SELECT * FROM conceptos'
+      var readConceptos = 'SELECT * FROM conceptos WHERE conceptos_id != 352;'
         db.query(readConceptos, function(err, conceptos){
           if(err) throw err;
           else {

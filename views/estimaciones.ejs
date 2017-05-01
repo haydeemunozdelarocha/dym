@@ -67,6 +67,9 @@
       <td>Fecha</td>
       <td>Total</td>
       <td>Pagado</td>
+      <% if (usuario.categoria === "administrador"){%>
+        <td>Status</td>
+      <% } %>
       <td></td>
       <td></td>
      </tr>
@@ -78,6 +81,9 @@
       <td><%= estimaciones[i].fecha %></td>
       <td>$<%= estimaciones[i].total %></td>
       <td><%= estimaciones[i].pagado %></td>
+      <% if (usuario.categoria === "administrador"){%>
+        <td><%= estimaciones[i].status %></td>
+      <% } %>
       <% if(usuario.categoria !== "residente") { %>
       <td><a href="/api/estimaciones/borrar/<%= estimaciones[i].estimaciones_id%>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
       <% } %>

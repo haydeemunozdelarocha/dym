@@ -176,7 +176,7 @@ var row;
 }
 console.log(values)
 
-var nuevoPresupuesto ='INSERT INTO presupuestos(obra,concepto,cantidad,unidad,precio_unitario,total,zona) VALUES '+values+';'
+var nuevoPresupuesto ='INSERT INTO presupuestos(obra,concepto,cantidad,unidad,precio_unitario,total,zona) VALUES '+values+'; INSERT INTO presupuestos(obra,concepto,cantidad,unidad,precio_unitario,total,zona) VALUES ('+obra_id+',352,0,"m3",0,0,null);'
     db.query(nuevoPresupuesto, function(err, presupuesto){
       console.log(nuevoPresupuesto)
     if(err) throw err;
