@@ -11,7 +11,10 @@
 <body>
   <div id="content-container">
 <div id="recibo" style="margin-left:10px; padding-top:20px; padding-bottom:20px; font-size:16px;">
+<button onclick="passPRNT()" class="btn btn-primary" style="margin-bottom: 20px">Imprimir</button>
+<br>
 <img src="/images/dym-logo.png" alt="" align="center">
+
 <div id="printData">
 <h2>DYM INGENIEROS CONSTRUCTORES SA DE CV</h2>
 <h2>RECIBO ACARREOS</h2>
@@ -25,7 +28,7 @@
   <h3><strong>Capacidad:</strong><%=recibos[0].cantidad%> <%=recibos[0].unidad %></h3>
   <br>
 
-  <table align="left" style="font-size: 20px;margin-bottom: 20px">
+  <table align="left" style="font-size: 20px;margin-bottom: 25px">
     <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
     <td width="60"><strong>No.</strong></td>
     <td width="150"><strong>Concepto</strong></td>
@@ -81,14 +84,15 @@
     <% } %>
   </table>
   <br>
-  <% if(total[0].total_cantidad) {%>
-  <h3><strong>Total Cantidad:</strong><%=total[0].total_cantidad%> <%=recibos[0].unidad %></h3>
+  <% if(total[0].total_cantidad && total[0].viajes) {%>
+  <h3><strong>Total Cantidad:</strong> <%=total[0].total_cantidad%> <%=recibos[0].unidad %></h3>
+  <h3><strong>Viajes:</strong> <%=total[0].viajes %></h3>
+
     <% } %>
 </div>
-<div height="100px"></div>
+<div height="150px"></div>
 <br>
 </div>
-<button onclick="passPRNT()" class="btn btn-primary">Imprimir</button>
 </div>
 <script src="/javascripts/script2.js" type="text/javascript" charset="utf-8" async defer></script>
 
