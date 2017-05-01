@@ -4,8 +4,18 @@ var mysql = require('mysql');
 var moment= require('moment');
 var db = require('../../db.js');
 
+function isLoggedIn(req, res, next){
+    if (req.isAuthenticated()) {
+      console.log('logged in')
+      console.log(req.user)
+      next();
+    } else{
+      res.redirect('/login');
+    }
+};
+
 //agregar acarreo
-router.post('/', function(req,res, next){
+router.post('/',isLoggedIn, function(req,res, next){
 console.log(req.body)
 var recibo;
 var usuario_id = req.user.id_usuario;
@@ -210,7 +220,7 @@ router.get('/totales/:obra', function(req, res, next ){
   });
 })
 
-router.post('/recibos/resumen', function(req, res, next ){
+router.post('/recibos/resumen',isLoggedIn, function(req, res, next ){
   var date= Date.now();
   var hora = moment(date).format("YYYY-MM-DD");
   var hora_recibo = moment(date).format("YYYY-MM-DD HH:mm");
