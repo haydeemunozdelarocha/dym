@@ -84,7 +84,7 @@ function buildURLScheme(encodedReceiptBase64) {
     console.log(passprntURL)
   //window.open(passprntURL, "");
   //OR
-  // window.location.href = passprntURL;
+  window.location.href = passprntURL;
   //OR
   //document.location.assign(passprntURL);
 
