@@ -857,7 +857,11 @@ router.get('/materiales/editar/:id',isLoggedIn, function(req, res, next) {
 //CONCEPTOS
 router.get('/concepto/nuevo',isLoggedIn, function(req, res, err) {
   var usuario=req.user;
-  var row = req.query.row;
+  if(req.query.row){
+      var row = req.query.row;
+  } else {
+    var row = "materiales";
+  }
       res.render('nuevoconcepto', { title: 'Conceptos', usuario:usuario, row:row});
 });
 

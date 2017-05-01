@@ -51,9 +51,14 @@ var concepto = $.ajax({
 }
 
 function refreshParent(id,nombre){
+<% if(row === "materiales") { %>
+var select = window.opener.document.getElementById('concepto');
+<% } else { %>
 var select = window.opener.document.getElementById('concepto'+<%= row %>);
+<% } %>
 var option = document.createElement("option");
 option.setAttribute("value", id);
+option.setAttribute("selected", "selected");
 option.innerHTML = nombre;
 select.prepend(option);
 window.close();

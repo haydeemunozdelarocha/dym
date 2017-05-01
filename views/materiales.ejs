@@ -90,9 +90,9 @@
 <script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
 <script>
 
-function checarOtro(row){
-  if($('#'+row).val() === "otro"){
-    window.open('http://localhost:3000/concepto/nuevo?row='+row, 'mywin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0;');
+function checarOtro(){
+  if($('#concepto').val() === "otro"){
+    window.open('http://localhost:3000/concepto/nuevo', 'mywin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0;');
   }
 }
 function removeRow(row){
