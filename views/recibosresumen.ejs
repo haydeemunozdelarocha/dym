@@ -15,28 +15,62 @@
 <div id="printData">
 <h2>DYM INGENIEROS CONSTRUCTORES SA DE CV</h2>
 <h2>RECIBO ACARREOS</h2>
-<div id="recibo-style" style="font-size: 20px;">
 
+<div id="recibo-style" style="font-size: 20px;">
+<% if(recibos.length > 0) {%>
   <h3><strong>Fecha: </strong><%= fecha %></h3>
   <h3><strong>Camión ID:</strong> <%= recibos[0].camion_id %></h3>
   <h3><strong>Placas:</strong> <%= recibos[0].placas %></h3>
   <h3><strong>Fletero:</strong> <%= recibos[0].prov_flete %></h3>
+  <h3><strong>Capacidad:</strong><%=recibos[0].cantidad%> <%=recibos[0].unidad %></h3>
   <br>
 
-  <table align="left" style="font-size: 20px;">
+  <table align="left" style="font-size: 20px;margin-bottom: 20px">
     <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
-    <td width="50"><strong>No. Viajes</strong></td>
+    <td width="60"><strong>No.</strong></td>
     <td width="150"><strong>Concepto</strong></td>
     <td width="150"><strong>Zona</strong></td>
-    <td width="50"><strong>Cantidad</strong></td>
+    <td width="150"><strong>Banco</strong></td>
+    <td width="150"><strong>Hora</strong></td>
+
+   </tr>
+   <% } %>
+   <% if(acarreos.length > 0) {%>
+  <% for(var i = 0; i < acarreos.length; i++) { %>
+  <tr>
+    <td width="60"><strong><%= i+1 %></strong></td>
+    <td width="150"><strong><%=acarreos[i].nombre_concepto%></strong></td>
+    <td width="150"><strong><%=acarreos[i].nombre_zona%></strong></td>
+    <% if(!acarreos[i].prov_banco) { %>
+    <td width="50"><strong>--</strong></td>
+    <% } else { %>
+    <td width="150"><strong><%=acarreos[i].prov_banco %></strong></td>
+    <% } %>
+    <td width="150"><strong><%=acarreos[i].hora%></strong></td>
+
+   </tr>
+  <% } %>
+    <% } %>
+  </table>
+  <br>
+  <br>
+  <h3><strong>Resumen:</strong></h3>
+  <br>
+  <table align="left" style="font-size: 20px; margin-bottom: 20px">
+    <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
+    <td width="60"><strong>No. Viajes</strong></td>
+    <td width="150"><strong>Concepto</strong></td>
+    <td width="150"><strong>Zona</strong></td>
+    <td width="70"><strong>Cantidad</strong></td>
     <td width="150"><strong>Banco</strong></td>
    </tr>
+   <% if(recibos.length > 0) {%>
   <% for(var i = 0; i < recibos.length; i++) { %>
   <tr>
-    <td width="50"><strong><%= recibos[i].viajes %></strong></td>
+    <td width="60"><strong><%= recibos[i].viajes %></strong></td>
     <td width="150"><strong><%=recibos[i].nombre_concepto%></strong></td>
     <td width="150"><strong><%=recibos[i].nombre_zona%></strong></td>
-    <td width="50"><strong><%=recibos[i].cantidad%> <%=recibos[i].unidad %></strong></td>
+    <td width="70"><strong><%=recibos[i].cantidad%> <%=recibos[i].unidad %></strong></td>
     <% if(!recibos[i].prov_banco) { %>
     <td width="50"><strong>--</strong></td>
     <% } else { %>
@@ -44,8 +78,14 @@
     <% } %>
    </tr>
   <% } %>
+    <% } %>
   </table>
+  <br>
+  <% if(total[0].total_cantidad) {%>
+  <h3><strong>Total Cantidad:</strong><%=total[0].total_cantidad%> <%=recibos[0].unidad %></h3>
+    <% } %>
 </div>
+<div height="100px"></div>
 <br>
 </div>
 <button onclick="passPRNT()" class="btn btn-primary">Imprimir</button>

@@ -26,10 +26,11 @@ function calcularAcarreoInt() {
       console.log(data)
         $('#precio_flete').val(data[0].precio*capacidad);
         $('#concepto_flete').val("82");
+        $('#unidad').val(data[0].unidad);
         $('#zonas').removeAttr("disabled");
     } else {
       console.log('no data')
-      alert('No se ha registrado el precio de Acarreo Interno para el proveedor de este camión.')
+      alert('No se ha registrado el precio de flete para el proveedor de este camión.')
     }
 });
 
@@ -69,7 +70,7 @@ function calcularAcarreoEM() {
         totalFlete();
     } else {
       console.log('no data')
-      alert('No se ha registrado el precio de Acarreo Interno para el proveedor de este camión.')
+      alert('No se ha registrado el precio de flete para el proveedor de este camión.')
     }
 });
 
@@ -79,6 +80,8 @@ function calcularAcarreoEM() {
 }
 
 function getMateriales() {
+  $('#material-status').html("");
+  $('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
     var proveedor_id = $('#banco').val();
 
   var precio = $.ajax({
@@ -95,6 +98,7 @@ function getMateriales() {
            $('#material_id').append('<option value='+data[i].id+'>'+data[i].nombre_concepto+'</option>');
            if(i+1 == data.length){
             $('#material_id').removeAttr("disabled");
+              $('#material-status').html("");
            }
         }
       }
@@ -176,9 +180,9 @@ function getCamion() {
   $('#search-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
 console.log("getting camion");
 var camion_id = $('#scanner').val();
-if(camion_id.length >= 10){
+if(camion_id.length == 10){
 
-console.log(camion_id)
+
   var camion = $.ajax({
     url: '/api/camiones/buscar/'+camion_id,
     type: 'GET',
