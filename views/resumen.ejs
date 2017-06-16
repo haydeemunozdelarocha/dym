@@ -54,7 +54,7 @@ $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px
   var sticker = $('#sticker').val();
   console.log(sticker)
   var codigo = $.ajax({
-    url: '/api/camiones/numeroa/'+sticker,
+    url: '/api/camiones/numero/'+sticker,
     type: 'GET'
   });
 
