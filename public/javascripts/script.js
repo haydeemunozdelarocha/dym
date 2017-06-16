@@ -624,14 +624,12 @@ $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px
   console.log(sticker)
   var codigo = $.ajax({
     url: '/api/camiones/codigo/'+sticker,
-    type: 'GET',
-    data:{
-      sticker:sticker
-    }
+    type: 'GET'
   });
 
   codigo.done(function(data){
     if (data.message){
+      $('#status-codigo').html('<span style="color:red; font-size:24px;" class="glyphicon glyphicon-remove-sign"></span>');
       alert(data.message);
       var sticker = $('#sticker').val('');
     } else {

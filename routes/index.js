@@ -815,7 +815,7 @@ router.get('/proveedores/editar/:id',isLoggedIn, function(req,res,err){
 //MATERIALES
 router.get('/materiales',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
-  var readTable = 'SELECT materiales.*, conceptos.nombre_concepto, proveedores.razon_social FROM materiales LEFT JOIN proveedores ON proveedores.id = materiales.proveedor_id JOIN conceptos ON conceptos.conceptos_id = materiales.concepto;SELECT * FROM conceptos WHERE conceptos_id != 352;;SELECT * FROM proveedores;SELECT * FROM obras;';
+  var readTable = 'SELECT materiales.*, conceptos.nombre_concepto, proveedores.razon_social FROM materiales LEFT JOIN proveedores ON proveedores.id = materiales.proveedor_id JOIN conceptos ON conceptos.conceptos_id = materiales.concepto;SELECT * FROM conceptos WHERE conceptos_id != 352;SELECT * FROM proveedores;SELECT * FROM obras;';
 
     db.query(readTable, function(err, info){
         if(err) throw err;
@@ -941,7 +941,7 @@ router.get('/registrar/:idempleado',isLoggedIn, function(req, res, next) {
 //CAMIONES
 router.get('/camiones',isLoggedIn, function(req, res, next) {
     var usuario = req.user;
-  var readTable = 'SELECT camiones.*, proveedores.razon_social FROM camiones JOIN proveedores ON proveedores.id = camiones.proveedor_id';
+  var readTable = 'SELECT camiones.*, proveedores.razon_social FROM camiones JOIN proveedores ON proveedores.id = camiones.proveedor_id ORDER BY camion_id DESC';
     db.query(readTable, function(err, camiones){
     if(err) throw err;
     else {

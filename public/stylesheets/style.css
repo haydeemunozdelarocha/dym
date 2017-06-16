@@ -196,10 +196,12 @@ margin-top: 10px;
 #camion-nuevo{
   display:flex;
   flex-direction: column;
+  width:100%;
 }
 #camion-nuevo .input-group{
 margin-top: 12px;
 margin-bottom: 20px;
+width: 350px;
 }
 #sticker-container{
   display:flex;
@@ -291,4 +293,34 @@ margin-bottom: 20px;
   #content-container{
   margin-top: 15%;
 }
-  }
+
+.panel-body{
+  overflow-x:scroll;
+}
+.panel{
+  overflow-x:scroll;
+}
+.panel-heading {
+   overflow-x:scroll;
+}
+#myChart{
+  min-height:200px;
+  min-width:350px;
+}
+body{
+  padding:30px 10px;
+}
+#camion-nuevo input{
+  width:350px;
+}
+#camion-nuevo select{
+  width:350px;
+}
+.container{
+padding:0;
+}
+.container input{
+  height:50px;
+  font-size:18px;
+}
+}
