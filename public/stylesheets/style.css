@@ -193,6 +193,20 @@ margin-top: 10px;
 #boton-busqueda{
   float:right;
 }
+#camion-nuevo{
+  display:flex;
+  flex-direction: column;
+}
+#camion-nuevo .input-group{
+margin-top: 12px;
+margin-bottom: 20px;
+}
+#sticker-container{
+  display:flex;
+}
+#status-codigo{
+  padding-left: 10px;
+}
 @media(max-width: 991px) and (min-width:768px){
   .container{
     width: 95%;

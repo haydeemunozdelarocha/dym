@@ -20,6 +20,32 @@ router.get('/', function(err,res){
   });
 })
 
+router.get('/codigo/:sticker', function(req,res,err){
+  var sticker=req.params.sticker;
+  var getCodigo = 'SELECT * FROM stickers WHERE sticker_id = ?;';
+  var checkAvailability='SELECT * FROM camiones WHERE numero = ?';
+  var codigo;
+    db.query(getCodigo,[sticker], function(err, rows){
+    if(err) throw err;
+    else {
+      if(rows.length==0){
+        res.send({message:'El número de sticker no se ha creado.'})
+      } else {
+          codigo = rows[0].codigo;
+            db.query(checkAvailability,[sticker], function(err, rows){
+              if(err) throw err;
+              else {
+                if(rows.length==0){
+                  res.json(codigo);
+                } else {
+                  res.send({message:'El número de sticker no está disponible.'})
+                }
+              }
+            });
+      }
+    }
+  });
+})
 router.get('/buscar/:id', function(req, res, next ){
   var numero= req.params.id;
   db.query(getCamion,[numero], function(err, camion){

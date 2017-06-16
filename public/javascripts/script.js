@@ -616,3 +616,39 @@ function abrirObra(obra_id){
   });
    }
 }
+
+function buscarCodigo(){
+$('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
+
+  var sticker = $('#sticker').val();
+  console.log(sticker)
+  var codigo = $.ajax({
+    url: '/api/camiones/codigo/'+sticker,
+    type: 'GET',
+    data:{
+      sticker:sticker
+    }
+  });
+
+  codigo.done(function(data){
+    if (data.message){
+      alert(data.message);
+      var sticker = $('#sticker').val('');
+    } else {
+    $('#status-codigo').html('<span style="color:green; font-size:24px;" class="glyphicon glyphicon-ok-sign"></span>');
+    $('#numero').val(data);
+    $('#buscar-button').attr('disabled',true);
+    $('#sticker').attr('readonly',true);
+    $('#placas').removeAttr('disabled');
+    $('#capacidad').removeAttr('disabled');
+    $('#modelo').removeAttr('disabled');
+    $('#unidad').removeAttr('disabled');
+    $('#proveedor_id').removeAttr('disabled');
+    $('#guardar-camion').removeAttr('disabled');
+    }
+    });
+
+  codigo.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+  });
+}

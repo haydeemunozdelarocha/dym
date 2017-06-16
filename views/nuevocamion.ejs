@@ -17,31 +17,39 @@
    <% include ./partials/costosheader.ejs %>
 <% } %>
 <div id="content-container">
+<div id="camion-nuevo">
 <form action="/api/camiones" method="POST" enctype="application/x-www-form-urlencoded">
 <div class="input-group">
-  <label>Número:</label>
-  <input type="text" class="form-control" name="numero" id="numero">
+  <label>Número Sticker:</label>
+  <div id="sticker-container">
+      <input type="text" class="form-control" name="sticker" autocomplete="off" id="sticker" onchange="buscarCodigo()">
+      <div id="status-codigo"></div>
+  </div>
+  <br>
+<!--   <button type="button" id="buscar-button" class="btn btn-primary" onclick="buscarCodigo()">Buscar</button>
+ -->
 </div>
+  <input type="hidden" class="form-control" name="numero" id="numero" >
 
 <div class="input-group">
   <label>Placas:</label>
-  <input type="text" class="form-control" placeholder="Placas" name="placas" id="placas">
+  <input type="text" class="form-control" placeholder="Placas" name="placas" id="placas" disabled>
 </div>
 
 <div class="input-group">
   <label>Modelo:</label>
-    <input type="text" class="form-control" placeholder="Modelo" name="modelo" id="modelo">
+    <input type="text" class="form-control" placeholder="Modelo" name="modelo" id="modelo" disabled>
 </div>
 
 <div class="input-group">
   <label>Capacidad:</label>
-  <input type="text" class="form-control" placeholder="Capacidad" name="capacidad" id="capacidad">
+  <input type="text" class="form-control" placeholder="Capacidad" name="capacidad" id="capacidad" disabled>
 </div>
 
 <div class="input-group">
 <label>Unidad:</label>
-  <select class="form-control" name="unidad" id="unidad">
-        <option value="">Unidad</option>
+  <select class="form-control" name="unidad" id="unidad" disabled>
+      <option value="">Unidad</option>
       <option value="m">m</option>
       <option value="m2">m2</option>
       <option value="m3">m3</option>
@@ -51,7 +59,7 @@
 
 <div class="input-group">
 <label>Proveedor:</label>
-<select class="form-control" name="proveedor_id" id="proveedor_id">
+<select class="form-control" name="proveedor_id" id="proveedor_id" disabled>
             <option value="">Proveedor</option>
       <% for(var i=0; i<proveedores.length; i++) {%>
             <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
@@ -59,8 +67,11 @@
     </select>
 </div>
 <br>
-  <button type="submit" class="btn btn-primary">Guardar</button>
+  <button type="submit" class="btn btn-primary" id="guardar-camion" disabled>Guardar</button>
 </form>
 </div>
+</div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+
 </body>
 </html>
