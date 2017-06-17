@@ -1,5 +1,6 @@
 
-var path = "http://localhost:3000/";
+// var path = "http://localhost:3000/";
+var path = 'http://dymingenieros.herokuapp.com';
 var ids = [];
 
 
