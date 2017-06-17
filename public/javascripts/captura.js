@@ -1,4 +1,5 @@
-var path = "http://localhost:3000/";
+// var path = "http://localhost:3000/";
+var path = 'http://dymingenieros.herokuapp.com';
 
 function calcularFlete() {
   console.log('calculando');

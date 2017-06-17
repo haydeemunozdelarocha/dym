@@ -15,7 +15,9 @@
  * http://www.lemoda.net/maths/bezier-length/index.html
  *
  */
-var path = "http://localhost:3000/";
+// var path = "http://localhost:3000/";
+var path = 'http://dymingenieros.herokuapp.com';
+
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
