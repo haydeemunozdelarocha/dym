@@ -9,10 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 </head>
 <body>
-  <% include ./partials/costosheader.ejs %>
+<% if (usuario.categoria === "residente"){ %>
+  <% include ./partials/residentesheader.ejs %>
+<% }  else if (usuario.categoria === "administrador"){%>
+   <% include ./partials/costosheader.ejs %>
+<% } %>
   <div id="content-container">
   <p><h2>Camiones</h2></p>
-   <p><a href="/camiones/nuevo"><span class="glyphicon glyphicon-plus-sign"></span> Agregar</a></p>
+   <a href="/camiones/nuevo" style="margin-bottom: 20px;margin-top: 10px;" class="btn btn-primary">Agregar Camion</a>
 
   <div id="table">
 <div class="panel panel-default">
@@ -35,8 +39,8 @@
       <td><%= camiones[i].placas %></td>
       <td><%= camiones[i].modelo %></td>
       <td><%= camiones[i].capacidad %></td>
-      <td><a href="/camiones/editar/<%= camiones[i].camion_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
-      <td><a href="/api/camiones/borrar/<%= camiones[i].camion_id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+      <td><a href="/camiones/editar/<%= camiones[i].camion_id %>"><span class="glyphicon glyphicon-edit glyphicon-table" ></span></a></td>
+      <td><a href="/api/camiones/borrar/<%= camiones[i].camion_id %>?_method=DELETE"><span class="glyphicon glyphicon-table glyphicon-remove-circle"></span></a></td>
        <% } %>
      </tr>
     </table>

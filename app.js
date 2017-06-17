@@ -202,13 +202,13 @@ app.use(function(err, req, res, next) {
   } else {
     var usuario = {categoria:'checador'};
   }
-  res.status(err.status || 500);
+  res.status(err.status || 500 || 400 );
   res.render('error', {
-    message: err.message,
+    message: err.message || err.code,
     error: {},
     usuario: usuario
   });
 });
-
+process.setMaxListeners(0);
 
 module.exports = app;

@@ -121,6 +121,11 @@ margin-top: 10px;
 .dropdown-menu{
   background-color: #f2f4f7;
 }
+.navbar-toggle .icon-bar {
+  width:35px!important;
+  height:4px!important;
+  margin-bottom: 7px!important;
+}
 .nav>li>a, .dropdown-menu>li>a:focus, .dropdown-menu>li>a, .dropdown-menu>li{
   background-color: 4px solid transparent;
 }
@@ -322,5 +327,12 @@ padding:0;
 .container input{
   height:50px;
   font-size:18px;
+}
+.glyphicon-table{
+  font-size:24px;
+}
+.navbar-nav>li>a {
+  line-height: 35px;
+  font-size:24px;
 }
 }

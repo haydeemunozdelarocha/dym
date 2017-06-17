@@ -13,7 +13,9 @@ router.get('/', function(err,res){
   var listaCamiones = 'SELECT proveedores.razon_social, camiones.* FROM camiones INNER JOIN proveedores ON camiones.proveedor_id=proveedores.id';
 
     db.query(listaCamiones, function(err, rows){
-    if(err) throw err;
+    if(err) {
+      res.send({message:err})
+    }
     else {
         res.send(rows);
     }
@@ -26,7 +28,9 @@ router.get('/codigo/:sticker', function(req,res,err){
   var checkAvailability='SELECT * FROM camiones WHERE numero = ?';
   var codigo;
     db.query(getCodigo,[sticker], function(err, rows){
-    if(err) throw err;
+    if(err) {
+      res.send({message:err})
+    }
     else {
       if(rows.length==0){
         res.send({message:'El número de sticker no se ha creado.'})
@@ -143,7 +147,9 @@ router.delete('/borrar/:idcamion', function(req,res,err){
   var borrarCamion = 'DELETE FROM camiones WHERE camion_id = ?';
   console.log(req.params.idcamion)
   db.query(borrarCamion,[camion_id], function(err,camion){
-    if(err) throw err;
+    if(err) {
+      throw new Error('No se eliminó el camión exitosamente. Por favor elimine los acarreos ligados a este camión.',400)
+    }
     else {
         console.log('Este camion ha sido eliminada');
         res.redirect('/camiones');
