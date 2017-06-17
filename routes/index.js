@@ -10,7 +10,7 @@ var PdfPrinter = require('pdfmake/src/printer');
 
 
 // var path = 'http://localhost:3000/';
-var path = 'http://dymingenieros.herokuapp.com';
+var path = 'http://dymingenieros.herokuapp.com/';
 
    var fonts = {
         Roboto: {

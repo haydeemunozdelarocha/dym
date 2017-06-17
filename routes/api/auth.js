@@ -7,7 +7,7 @@ var passport = require('passport');
 var rp = require('request-promise');
 
 // var path = 'http://locahost:3000/';
-var path = 'http://dymingenieros.herokuapp.com';
+var path = 'http://dymingenieros.herokuapp.com/';
 
 router.get('/logout', function(req, res, next) {
 req.logout();

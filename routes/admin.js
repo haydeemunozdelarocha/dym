@@ -7,7 +7,7 @@ var passport = require('passport');
 var rp = require('request-promise');
 
 // var path = 'http://localhost:3000/';
-var path = 'http://dymingenieros.herokuapp.com';
+var path = 'http://dymingenieros.herokuapp.com/';
 
 router.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');

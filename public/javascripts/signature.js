@@ -16,7 +16,7 @@
  *
  */
 // var path = "http://localhost:3000/";
-var path = 'http://dymingenieros.herokuapp.com';
+var path = 'http://dymingenieros.herokuapp.com/';
 
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
