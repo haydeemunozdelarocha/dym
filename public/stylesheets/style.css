@@ -295,10 +295,15 @@ width: 350px;
 }
 }
 @media(max-width: 480px){
-  #content-container{
-  margin-top: 15%;
+#content-container{
+  margin-top: 20%;
 }
-
+.navbar {
+  padding-left: 14px;
+}
+.content-header{
+  margin-bottom: 6%;
+}
 .panel-body{
   overflow-x:scroll;
 }
@@ -334,5 +339,20 @@ padding:0;
 .navbar-nav>li>a {
   line-height: 35px;
   font-size:24px;
+}
+.navbar-nav .open .dropdown-menu>li>a {
+    line-height: 27px;
+  font-size:20px;
+}
+#acarreos-filters input {
+min-height: 35px;
+min-width: 100%;
+}
+#acarreos-filters select {
+height: 34px;
+width: 100%;
+}
+#mensaje-error{
+  margin-bottom:7%;
 }
 }

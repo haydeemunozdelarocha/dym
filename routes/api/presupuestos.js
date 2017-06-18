@@ -132,7 +132,7 @@ router.get('/totales/:obra', function(req, res, next ){
 
 router.get('/totales/general/:obra', function(req, res, next ){
   var obra= req.params.obra;
-  var getPresupuesto = 'SELECT SUM(cantidad) AS total_presupuesto, SUM(acumulado) AS total_acumulado FROM presupuestos WHERE obra = ?;';
+  var getPresupuesto = 'SELECT SUM(total) AS total_presupuesto, SUM(acumulado*precio_unitario) AS total_acumulado FROM presupuestos WHERE obra = ?;';
   db.query(getPresupuesto,[obra], function(err, presupuesto){
     if(err) throw err;
     else {

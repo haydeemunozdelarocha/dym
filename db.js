@@ -32,9 +32,7 @@ var db_config = {
                 q.on('end', function () {
                     conn.release();
                 });
-                pool.on('release', function (connection) {
-                    console.log('Connection %d released', connection.threadId);
-                  });
+
                 events.forEach(function (args) {
                     q.on.apply(q, args);
                 });
@@ -48,6 +46,9 @@ var db_config = {
                 return this;
             }
         };
+                        pool.on('release', function (connection) {
+                    console.log('Connection %d released', connection.threadId);
+                  });
     }
 }
 // db_config.getConnection(function(err, connection) {

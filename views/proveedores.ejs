@@ -16,9 +16,9 @@
 <% } %>
   <div id="content-container">
 
- <p><a href="/proveedores/nuevo"><span class="glyphicon glyphicon-plus-sign"></span> Agregar</a></p>
+ <a href="/proveedores/nuevo" style="margin-bottom: 20px;margin-top: 10px;" class="btn btn-primary">Agregar Proveedor</a>
 
-  <div id="table">
+<div id="table">
 <div class="panel panel-default">
   <!-- Default panel contents -->
   <div class="panel-heading">Proveedores</div>
@@ -34,8 +34,8 @@
       <td><%= proveedores[i].ciudad %></td>
       <td><%= proveedores[i].estado %></td>
       <td><%= proveedores[i].rfc %></td>
-      <td><a href="/proveedores/editar/<%= proveedores[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
-      <td><a href="/api/proveedores/borrar/<%= proveedores[i].id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
+      <td><a href="/proveedores/editar/<%= proveedores[i].id %>"><span class="glyphicon glyphicon-edit glyphicon-table"></span></a></td>
+      <td><a href="/api/proveedores/borrar/<%= proveedores[i].id %>?_method=DELETE"><span class="glyphicon glyphicon-remove-circle glyphicon-table"></span></a></td>
      </tr>
     <% } %>
     </table>

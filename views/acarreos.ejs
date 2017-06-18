@@ -16,7 +16,9 @@
    <% include ./partials/costosheader.ejs %>
 <% } %>
   <div id="content-container">
+  <div class="content-header">
     <p><h2>Acarreos</h2></p>
+    </div>
     <div id="filters-panel" class="panel panel-default">
   <div class="panel-body">
   <div id="acarreos-filters">
@@ -65,7 +67,7 @@
     <button class="btn btn-primary" id="boton-busqueda" onclick="filtroAcarreos()">Buscar</button>
     </div>
 </div>
-    <% if(message) {%>
+  <% if(message) {%>
   <div id="mensaje-error"><%= message %></div>
   <% } %>
 
