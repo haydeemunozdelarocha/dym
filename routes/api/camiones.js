@@ -6,7 +6,7 @@ var methodOverride = require('method-override');
 var db = require('../../db.js');
 
 var getCamion = "SELECT * FROM `camiones` WHERE `numero` = ?";
-var editarCamion = 'UPDATE camiones SET modelo = ?, placas = ?, capacidad= ?, numero= ? WHERE camion_id= ?';
+var editarCamion = 'UPDATE camiones SET modelo = ?, placas = ?, capacidad= ?, numero= ?,categoria=? WHERE camion_id= ?';
 
 //Read table.
 router.get('/', function(err,res){
@@ -98,12 +98,13 @@ router.post('/', function(req,res,err){
 var numero = req.body.numero;
 var modelo= req.body.modelo;
 var placas= req.body.placas;
+var categoria= req.body.categoria;
 var unidad_camion= req.body.unidad;
 var proveedor_id= req.body.proveedor_id;
 var capacidad= req.body.capacidad;
-var nuevoCamion = 'INSERT INTO camiones(modelo, numero, placas, proveedor_id, capacidad, unidad_camion) VALUE(?,?,?,?,?,?)';
+var nuevoCamion = 'INSERT INTO camiones(modelo, numero, placas, proveedor_id, capacidad, unidad_camion,categoria) VALUE(?,?,?,?,?,?,?)';
 
-    db.query(nuevoCamion,[modelo,numero,placas,proveedor_id,capacidad,unidad_camion], function(err, camion){
+    db.query(nuevoCamion,[modelo,numero,placas,proveedor_id,capacidad,unidad_camion,categoria], function(err, camion){
     if(err){
       res.render('error',{message: 'Hubo un error al guardar la entrada. Por favor inténtelo de nuevo.', usuario:usuario })
     }
@@ -120,8 +121,9 @@ var camion_id = req.params.idcamion;
 var modelo= req.body.modelo;
 var placas= req.body.placas;
 var numero= req.body.numero;
+var categoria= req.body.categoria;
 var capacidad= req.body.capacidad;
-    db.query(editarCamion,[modelo,placas,capacidad,numero,camion_id], function(err, camion){
+    db.query(editarCamion,[modelo,placas,capacidad,numero,categoria,camion_id], function(err, camion){
     if(err){
       res.render('error',{message: 'No se pudo editar el camión seleccionado. Por favor inténtelo de nuevo.', usuario:usuario })
     }

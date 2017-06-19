@@ -26,8 +26,7 @@
       <div id="status-codigo"></div>
   </div>
   <br>
-<!--   <button type="button" id="buscar-button" class="btn btn-primary" onclick="buscarCodigo()">Buscar</button>
- -->
+
 </div>
   <input type="hidden" class="form-control" name="numero" id="numero" >
 
@@ -65,6 +64,15 @@
             <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
     <% } %>
     </select>
+</div>
+<br>
+<div class="input-group">
+<label>Categoría:</label>
+  <select class="form-control" name="categoria" id="categoria" disabled>
+      <option value="">Categoría</option>
+      <option value="camion">Camión</option>
+      <option value="pipa">Pipa</option>
+  </select>
 </div>
 <br>
   <button type="submit" class="btn btn-primary" id="guardar-camion" disabled>Guardar</button>
