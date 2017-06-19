@@ -981,13 +981,14 @@ router.get('/camiones',isLoggedIn, function(req, res, next) {
 router.get('/camiones/editar/:id',isLoggedIn, function(req, res, next) {
   var id = req.params.id;
     var usuario = req.user;
-  var getCamion = "SELECT * FROM `camiones` WHERE `camion_id` = " + id;
-    db.query(getCamion, function(err, camion){
+  var getCamion = "SELECT camiones.*,stickers.sticker_id FROM `camiones` LEFT JOIN stickers ON camiones.numero = stickers.codigo WHERE `camion_id` = ?;";
+    db.query(getCamion,[id,id], function(err, camion){
         if(err) {
       res.send({message:err})
     }
     else {
-      res.render('editarcamion', { title: 'Editar Camión', camion: camion,usuario:usuario });
+      console.log(camion)
+      res.render('editarcamion', { title: 'Editar Camión', camion: camion, usuario:usuario });
     }
   });
 });

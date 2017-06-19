@@ -15,12 +15,15 @@
    <% include ./partials/costosheader.ejs %>
 <% } %>
 <div id="content-container">
-  <form action="/api/camiones/<%= camion[0].camion_id %>" method="post" enctype="application/x-www-form-urlencoded">
+  <form action="/api/camiones/<%= camion[0].camion_id %>" method="post" enctype="application/x-www-form-urlencoded" id="form-editar-camion">
   <input type="hidden" name="_method" value="put">
-  <input type="text" value="<%= camion[0].camion_id %>" name="id" id="id">
+  <div class="input-group">
+  <input type="text" value="<%= camion[0].camion_id %>" class="form-control" name="id" id="id" readonly="true">
+  </div>
 <div class="input-group">
-  <label>Número:</label>
-  <input type="text" class="form-control" name="numero" id="numero" value="<%=camion[0].numero%>">
+  <label>Número de Sticker:</label>
+  <input type="text" class="form-control" name="sticker" id="sticker" value="<%=camion[0].sticker%>" onchange="getNumero()">
+  <input type="hidden" class="form-control" name="numero" id="numero" value="<%=camion[0].numero%>">
 </div>
 
 <div class="input-group">

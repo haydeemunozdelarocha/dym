@@ -80,6 +80,10 @@ width:25%;
   float: left;
   width:50%;
 }
+#form-editar-camion input {
+  min-width: 350px;
+  margin-bottom: 3%;
+}
 .navbar .nav{
   height:74px;
 }
@@ -321,10 +325,10 @@ body{
   padding:30px 10px;
 }
 #camion-nuevo input{
-  width:350px;
+  width:100%;
 }
 #camion-nuevo select{
-  width:350px;
+  width:100%;
 }
 .container{
 padding:0;
@@ -354,5 +358,11 @@ width: 100%;
 }
 #mensaje-error{
   margin-bottom:7%;
+}
+#sticker{
+  width:90%!important;
+}
+#form-editar-camion input {
+  width:100%;
 }
 }

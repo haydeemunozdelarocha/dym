@@ -116,7 +116,9 @@ var placas= req.body.placas;
 var numero= req.body.numero;
 var capacidad= req.body.capacidad;
     db.query(editarCamion,[modelo,placas,capacidad,numero,camion_id], function(err, camion){
-    if(err) throw err;
+    if(err){
+      res.send({message:err})
+    }
     else {
         console.log('Listo');
         res.redirect('/camiones')
@@ -145,10 +147,9 @@ router.use( function( req, res, next ) {
 router.delete('/borrar/:idcamion', function(req,res,err){
   var camion_id = req.params.idcamion;
   var borrarCamion = 'DELETE FROM camiones WHERE camion_id = ?';
-  console.log(req.params.idcamion)
   db.query(borrarCamion,[camion_id], function(err,camion){
     if(err) {
-      throw new Error('No se eliminó el camión exitosamente. Por favor elimine los acarreos ligados a este camión.',400)
+      res.render('error',{link: '/camiones',message:'No se eliminó el camión exitosamente. Por favor elimine los acarreos ligados a este camión.'});
     }
     else {
         console.log('Este camion ha sido eliminada');
