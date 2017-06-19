@@ -37,7 +37,7 @@
     <tr>
       <td><a href="/estimaciones/<%= estimaciones[i].estimaciones_id %>"><%= estimaciones[i].numero %></a></td>
       <td><%= estimaciones[i].nombre_obra %></td>
-      <td><%= estimaciones[i].total %></td>
+      <td><%= estimaciones[i].total.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
       <td><a href="/estimaciones/<%= estimaciones[i].estimaciones_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
      </tr>
     <% } %>
@@ -66,17 +66,17 @@
     <tr>
       <td><a href="/obra/<%= presupuestos[i].obra %>" title=""><%= presupuestos[i].nombre_obra %></a></td>
      <%if (presupuestos[i].total_costo > presupuestos[i].total_concepto){ %>
-      <td style="color: red">$<%= presupuestos[i].total_concepto %></td>
-      <td style="color: red">$<%= presupuestos[i].total_costo %></td>
-      <td style="color: red"><%= presupuestos[i].total_concepto - presupuestos[i].total_costo %></td>
+      <td style="color: red">$<%= presupuestos[i].total_concepto.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+      <td style="color: red">$<%= presupuestos[i].total_costo.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+      <td style="color: red"><%= (presupuestos[i].total_concepto - presupuestos[i].total_costo).toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
      <% } else { %>
-      <td><%= presupuestos[i].total_concepto %></td>
+      <td>$<%= presupuestos[i].total_concepto.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
       <% if (!presupuestos[i].total_costo) { %>
       <td>--</td>
       <% } else { %>
-      <td><%= presupuestos[i].total_costo %></td>
+      <td>$<%= presupuestos[i].total_costo.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
       <% } %>
-      <td><%= presupuestos[i].total_concepto - presupuestos[i].total_costo %></td>
+      <td>$<%= (presupuestos[i].total_concepto - presupuestos[i].total_costo).toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
      </tr>
      <% } %>
     <% } %>

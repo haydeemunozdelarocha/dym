@@ -45,6 +45,8 @@
 <div class="input-group">
   <label>Estado:</label>
   <select class="form-control" name="estado" id="estado">
+      <option selected value="<%=proveedor[0].estado%>"><%=proveedor[0].estado%></option>
+      <option value="">-------</option>
       <option value="">Seleccionar Estado</option>
       <option value="Aguascalientes">Aguascalientes</option>
       <option value="Baja California">Baja California</option>
@@ -80,7 +82,26 @@
       <option value="Zacatecas">Zacatecas</option>
   </select>
 </div>
+<div class="input-group">
+  <label>Categoría:</label>
+  <select class="form-control" name="categoria" id="categoria">
+      <option selected value="<%=proveedor[0].categoria%>"><%=proveedor[0].categoria%></option>
+      <option value="">-------</option>
+      <option value="">Seleccionar Categoría</option>
+      <option value="flete">Fletero</option>
+      <option value="banco">Banco</option>
+      <option value="flete/banco">Flete/Banco</option>
+  </select>
+</div>
 
+<div class="input-group">
+<% if (proveedor[0].retencion === "N") { %>
+  <input type="checkbox" name="retencion" value="N" checked> No descontar retención.
+<%} else {%>
+  <input type="checkbox" name="retencion" value="N" > No descontar retención.
+<%} %>
+</div>
+<br>
 <br>
 <div class="input-group">
 <button type="submit" class="btn btn-primary">Submit</button>

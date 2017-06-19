@@ -4,11 +4,24 @@ var path = 'http://dymingenieros.herokuapp.com';
 function calcularFlete() {
   console.log('calculando');
   var concepto_flete = $('#categoria').val();
-  if(concepto_flete === "92" || concepto_flete === "100"){
-    $('#bancoinfo').removeAttr("hidden");
+  var categoria_fletero =  $('#fletero_categoria').val();
+  if(concepto_flete === "92"){
+    $('#material_id').removeAttr("hidden");
     $('#banco').removeAttr("disabled");
     $('#concepto_flete').val(concepto_flete);
-  } else {
+  } else if (concepto_flete === "100"){
+    if(categoria_fletero !== "flete/banco"){
+      console.log('no es flete/banco')
+    $('#bancoinfo').removeAttr("hidden");
+    $('#banco').removeAttr("disabled");
+    } else {
+      console.log(concepto_flete)
+    $('#concepto_flete').val(concepto_flete);
+    var proveedor_id = $('#fletero').val();
+    $('#banco').val(proveedor_id);
+    getMateriales();
+    }
+  }else {
     calcularAcarreoInt();
   }
 }
@@ -196,6 +209,9 @@ if(camion_id.length >= 10){
       $('#camion_id').val(data[0].camion_id);
       $('#scanner').attr("readonly", true);
       $('#fletero').val(data[0].proveedor_id);
+      $('#fletero_categoria').val(data[0].categoria);
+      $('#unidad').val(data[0].unidad_camion);
+
       console.log($('#fletero').val())
 
       $('#capacidad').val(data[0].capacidad)

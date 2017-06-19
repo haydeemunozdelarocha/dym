@@ -26,6 +26,7 @@ var unidad = req.body.unidad;
 if(!foto){
   foto = null;
 }
+var categoria_flete = req.body.fletero_categoria;
 var total_flete = req.body.precio_flete;
 var zona_id = Number(req.body.zona_id);
 var cantidad=req.body.capacidad;
@@ -48,25 +49,37 @@ var concepto_flete = Number(req.body.concepto_flete);
     flete_id = null;
     banco_id = null;
   }
-      var nuevoRecibo = "INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id,camion_id) VALUE (?,?,?,?,?,?);";
+      var nuevoRecibo = "INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id,camion_id) VALUES (?,?,?,?,?,?);";
       db.query(nuevoRecibo,[usuario_id,zona_id,foto,hora,obra_id,camion_id], function(err, rows){
+        console.log(usuario_id,zona_id,foto,hora,obra_id,camion_id)
         console.log(nuevoRecibo)
         if(err) {
-          res.render('error',{message: 'Hubo un error al capturar el acarreo.', usuario:usuario })
+          res.render('error',{message: 'Hubo un error al capturar el acarreo.' })
         }
         else {
             recibo=rows.insertId;
-              if(concepto_flete == 100 || concepto_flete == 92){
+              if(concepto_flete == 92){
+                console.log('externo')
                   var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
                   var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad,material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
-              } else {
+              } else if (concepto_flete == 82){
+                  console.log('interno')
                   var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
                   var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad];
+              } else {
+                  if(categoria_flete === 'flete/banco'){
+                      console.log('flete banco')
+                      var nuevoAcarreo = 'INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
+                      var values = [material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
+                  } else {
+                      var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
+                      var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad,material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
+                  }
               }
               console.log(values);
               db.query(nuevoAcarreo,values,function(err, rows){
                 if(err){
-          res.render('error',{message: 'Hubo un error al capturar el acarreo.', usuario:usuario })
+                res.render('error',{message: 'Hubo un error al capturar el acarreo.' })
 
                 }
                 else {

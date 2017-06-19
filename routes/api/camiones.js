@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var db = require('../../db.js');
 
-var getCamion = "SELECT * FROM `camiones` WHERE `numero` = ?";
+var getCamion = "SELECT camiones.*, proveedores.categoria FROM `camiones` LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id WHERE `numero` = ?;";
 var editarCamion = 'UPDATE camiones SET modelo = ?, placas = ?, capacidad= ?, numero= ?,categoria=? WHERE camion_id= ?';
 
 //Read table.

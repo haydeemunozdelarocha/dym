@@ -566,7 +566,7 @@ function allZonas(){
 
   zonas.done(function(data){
     var zona = data[data.length-1];
-    $('#zonas-checkbox').prepend('<div class="zonas"><input type="checkbox" name="zonas" value="'+zona.zonas_id+'">'+zona.nombre_zona+'</div>');
+    $('#zonas-checkbox').prepend('<div class="zonas"><input type="checkbox" name="zonas" value="'+zona.zonas_id+'" checked>'+zona.nombre_zona+'</div>');
     $('#zonaNueva').val('');
     });
 

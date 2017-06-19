@@ -81,20 +81,36 @@ router.use(methodOverride(function(req, res){
 
   //Update a record.
 router.put('/:id', function(req,res,err){
-   var editarObra = 'UPDATE obras SET codigo = ?, nombre_obra = ?, residente_id = ?, ciudad = ?, estado=? WHERE obra_id=?';
   var obra_id= req.params.id;
   var nombre_obra = req.body.nombre;
   var codigo = req.body.codigo;
   var residente_id = req.body.residente_id;
   var ciudad = req.body.ciudad;
   var estado = req.body.estado;
-    db.query(editarObra,[codigo,nombre_obra,residente_id,ciudad,estado,obra_id], function(err, obra){
-    if(err) throw err;
-    else {
-        console.log('Listo');
-        res.redirect('/obras');
+  var zonas = req.body.zonas;
+  var zonasValues;
+  console.log(zonas);
+  for(var i = 0; i <= zonas.length; i++){
+      if (i == zonas.length-1){
+        console.log(zonas.length-1);
+        console.log(i)
+      zonasValues += '('+obra_id+','+zonas[i]+')';
+      var editarObra = 'UPDATE obras SET codigo = ?, nombre_obra = ?, residente_id = ?, ciudad = ?, estado=? WHERE obra_id=?;DELETE FROM obras_zonas WHERE obra = ?; INSERT INTO obras_zonas (obra,zona) VALUES '+zonasValues+';';
+      db.query(editarObra,[codigo,nombre_obra,residente_id,ciudad,estado,obra_id,obra_id], function(err, obra){
+        if(err) throw err;
+        else {
+            console.log('Listo');
+            res.redirect('/obras');
+        }
+         });
+    } else if (i == 0){
+      zonasValues = '('+obra_id+','+zonas[i]+'),';
+    } else if(i){
+      zonasValues += '('+obra_id+','+zonas[i]+'),';
+                   console.log(zonasValues)
     }
-     });
+  }
+
 })
 
 
