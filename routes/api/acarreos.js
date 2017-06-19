@@ -51,7 +51,9 @@ var concepto_flete = Number(req.body.concepto_flete);
       var nuevoRecibo = "INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id,camion_id) VALUE (?,?,?,?,?,?);";
       db.query(nuevoRecibo,[usuario_id,zona_id,foto,hora,obra_id,camion_id], function(err, rows){
         console.log(nuevoRecibo)
-        if(err) throw err;
+        if(err) {
+          res.render('error',{message: 'Hubo un error al capturar el acarreo.', usuario:usuario })
+        }
         else {
             recibo=rows.insertId;
               if(concepto_flete == 100 || concepto_flete == 92){
@@ -63,7 +65,10 @@ var concepto_flete = Number(req.body.concepto_flete);
               }
               console.log(values);
               db.query(nuevoAcarreo,values,function(err, rows){
-                if(err) throw err;
+                if(err){
+          res.render('error',{message: 'Hubo un error al capturar el acarreo.', usuario:usuario })
+
+                }
                 else {
                     res.redirect('/captura')
                 }
@@ -111,7 +116,9 @@ router.get('/flete/:id', function(req, res, next ){
   var id= req.params.id;
   var getAcarreo = "SELECT * FROM `acarreos_flete` WHERE `acarreo_id` = "+id;
   db.query(getAcarreo, function(err, acarreo){
-    if(err) throw err;
+    if(err) {
+      res.send({message:'No se encontró ningun flete con ese id.'})
+    }
     else {
         console.log('Buscando acarreo por id');
         res.send(acarreo)
@@ -120,11 +127,11 @@ router.get('/flete/:id', function(req, res, next ){
 })
 
 router.get('/recibos', function(req, res, next ){
-  var getAcarreo = "SELECT * FROM `recibos` WHERE camion_id = 122";
   var acarre ='SELECT recibos.camion_id, acarreos_flete.* FROM recibos JOIN acarreos_flete ORDER BY recibos.camion_id'
-  var deleteAcarreo ="DELETE FROM acarreos_flete WHERE recibo_id = null"
   db.query(acarre, function(err, acarreo){
-    if(err) throw err;
+    if(err) {
+      res.send({message:'No se encontraron recibos.'})
+    }
     else {
         console.log('Buscando acarreo por id');
         res.send(acarreo)
@@ -135,7 +142,9 @@ router.get('/recibos', function(req, res, next ){
 router.get('/flete', function(req, res, next ){
   var getAcarreo = "SELECT * FROM `acarreos_flete`";
   db.query(getAcarreo, function(err, acarreo){
-    if(err) throw err;
+    if(err) {
+    res.send({message:'No se encontró ningun acarreo de flete.'})
+    }
     else {
         console.log('Buscando acarreo por id');
         res.send(acarreo)
@@ -146,7 +155,9 @@ router.get('/flete', function(req, res, next ){
 router.get('/material', function(req, res, next ){
   var getAcarreo = "SELECT * FROM `acarreos_material`";
   db.query(getAcarreo, function(err, acarreo){
-    if(err) throw err;
+    if(err) {
+      res.send({message:'No se encontró ningun acarreo de material.'})
+    }
     else {
         console.log('Buscando acarreo por id');
         res.send(acarreo)
@@ -163,7 +174,9 @@ router.get('/semana', function(req, res, next ){
   var endOfWeek   = moment().endOf('week').toDate();
   var getAcarreo = 'SELECT acarreos.acarreo_id, acarreos.cantidad,acarreos.total, recibos.hora,recibos.foto, conceptos.nombre_concepto,zonas.nombre_zona,materiales.precio FROM acarreos LEFT JOIN camiones ON acarreos.camion_id = camiones.camion_id LEFT JOIN recibos ON acarreos.recibo_id = recibos.recibo_id LEFT JOIN obras ON recibos.obra_id = obras.obra_id LEFT JOIN materiales ON acarreos.material_id = materiales.id OR acarreos.concepto_flete = materiales.id LEFT JOIN conceptos ON materiales.concepto = conceptos.conceptos_id LEFT JOIN zonas ON recibos.zona_id = zonas.zonas_id WHERE '+obra_query+' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" AND estimacion = "N";';
   db.query(getAcarreo, function(err, acarreo){
-    if(err) throw err;
+    if(err) {
+      res.send({message:'No se encontraron acarreos de esta semana.'})
+    }
     else {
       if(acarreo.length > 0){
         console.log('Buscando acarreo por id');
@@ -180,7 +193,9 @@ router.delete('/flete/:id', function(req,res,err){
   var id=req.params.id;
   var borrarAcarreo = 'DELETE FROM acarreos_flete WHERE recibo_id='+id;
   db.query(borrarAcarreo, function(err, response){
-    if(err) throw err;
+    if(err) {
+      res.send({message:'Hubo un error al eliminar el acarreo de flete.'})
+    }
     else {
         res.send('done');
     }
@@ -191,7 +206,9 @@ router.delete('/recibo/:id', function(req,res,err){
   var id=req.params.id;
   var borrarAcarreo = 'DELETE FROM recibos WHERE recibo_id='+id;
   db.query(borrarAcarreo, function(err, response){
-    if(err) throw err;
+    if(err){
+      res.send({message:'Hubo un error al eliminar este recibo.'})
+    }
     else {
         res.send('done');
     }
@@ -202,7 +219,9 @@ router.delete('/material/:id', function(req,res,err){
   var id=req.params.id;
   var borrarAcarreo = 'DELETE FROM acarreos_material WHERE recibo_id='+id;
   db.query(borrarAcarreo, function(err, response){
-    if(err) throw err;
+    if(err) {
+      res.send({message:'Hubo un error al eliminar el acarreo de material.'})
+    }
     else {
         res.send('done');
     }
@@ -213,7 +232,9 @@ router.get('/totales/:obra', function(req, res, next ){
   var obra= req.params.obra;
   var getAcarreoTotales = 'SELECT conceptos.nombre_concepto, sum(total) AS total_concepto, sum(cantidad) AS total_cantidad FROM acarreos LEFT JOIN materiales ON acarreos.material_id = materiales.id JOIN recibos ON acarreos.recibo_id = recibos.recibo_id JOIN conceptos ON concepto_flete = conceptos.conceptos_id OR conceptos.conceptos_id = materiales.concepto WHERE recibos.obra_id = ? GROUP BY concepto_flete, material_id;'
   db.query(getAcarreoTotales,[obra], function(err, totales){
-    if(err) throw err;
+    if(err) {
+      res.send({message:'No se encontraron totales para esta obra.'})
+    }
     else {
         console.log('Buscando presupuesto');
         res.json(totales)
@@ -236,7 +257,9 @@ router.post('/recibos/resumen',isLoggedIn, function(req, res, next ){
   var recibosDia = 'SELECT recibos.camion_id,acarreos_flete.cantidad,camiones.placas,proveedor_flete.razon_social AS prov_flete, acarreos_flete.unidad,proveedor_banco.razon_social AS prov_banco,conceptos.nombre_concepto,zonas.nombre_zona,obras.nombre_obra,COUNT(*) AS viajes,SUM(cantidad) AS total_cantidad FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_flete ON recibos.recibo_id = acarreos_flete.recibo_id LEFT JOIN proveedores AS proveedor_banco ON proveedor_banco.id = acarreos_flete.banco_id LEFT JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id WHERE hora BETWEEN "'+date1+'" AND "'+date2+'" AND numero = '+numero+' AND recibos.obra_id = '+obra_id+' GROUP BY concepto_flete;SELECT recibos.hora,acarreos_flete.cantidad,proveedor_flete.razon_social AS prov_flete, acarreos_flete.unidad,proveedor_banco.razon_social AS prov_banco,conceptos.nombre_concepto,zonas.nombre_zona,obras.nombre_obra FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_flete ON recibos.recibo_id = acarreos_flete.recibo_id LEFT JOIN proveedores AS proveedor_banco ON proveedor_banco.id = acarreos_flete.banco_id LEFT JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id WHERE hora BETWEEN "'+date1+'" AND "'+date2+'" AND numero = '+numero+' AND recibos.obra_id = '+obra_id+';SELECT COUNT(recibos.camion_id) AS total_viajes FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_flete ON recibos.recibo_id = acarreos_flete.recibo_id LEFT JOIN proveedores AS proveedor_banco ON proveedor_banco.id = acarreos_flete.banco_id LEFT JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id WHERE hora BETWEEN "'+date1+'" AND "'+date2+'" AND numero = '+numero+' AND recibos.obra_id = '+obra_id+';';
   db.query(recibosDia, function(err, recibos){
     console.log(recibos[0])
-    if(err) throw err;
+    if(err) {
+      res.send({message:'No se encontraron totales para esta obra.'})
+      }
        else {
         if(recibos[0].length == 0) {
             res.render('resumen',{message:"No se encontraron acarreos de hoy de el camión seleccionado. Por favor intente de nuevo."})

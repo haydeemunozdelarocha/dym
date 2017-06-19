@@ -534,9 +534,11 @@ router.get('/signature/:categoria/:id/:obra', isLoggedIn, function(req,res,err){
 
 router.get('/obras',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
-  var listaObras = 'SELECT obras.*, empleados.nombre, empleados.id, usuarios.categoria FROM obras LEFT JOIN empleados ON empleados.id = obras.residente_id LEFT JOIN usuarios ON usuarios.empleado_id = empleados.id WHERE usuarios.categoria = "residente"';
+  var listaObras = 'SELECT obras.*, empleados.nombre, empleados.id, usuarios.categoria FROM obras LEFT JOIN empleados ON empleados.id = obras.residente_id LEFT JOIN usuarios ON usuarios.empleado_id = empleados.id WHERE obra_id != 112';
     db.query(listaObras, function(err, obras){
-    if(err) throw err;
+    if(err){
+      res.render('error',{message: 'No se encontró ninguna obra.', usuario:usuario })
+    }
     else {
       console.log(obras)
       res.render('obras', { title: 'Obras', obras: obras, usuario:usuario });
@@ -551,7 +553,9 @@ router.get('/obra/:obraid', isLoggedIn, function(req, res, next) {
   var getEmpleados = 'SELECT * FROM empleados WHERE obra = ?;';
   var getPresupuesto = 'SELECT presupuestos.*,conceptos.nombre_concepto,zonas.nombre_zona FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = ? ORDER BY zona;';
     db.query(getObra,[obra_id], function(err, obra){
-    if(err) throw err;
+    if(err) {
+          res.render('error',{message: 'No se encontró la información de la obra seleccionada.', usuario:usuario })
+    }
     else {
         db.query(getPresupuesto,[obra_id], function(err, presupuestos){
         if(err) throw err;
@@ -573,7 +577,9 @@ router.get('/obras/nueva',isLoggedIn, function(req,res,err){
   var infoObras = 'SELECT usuarios.empleado_id, empleados.nombre FROM usuarios JOIN empleados ON usuarios.empleado_id = empleados.id WHERE categoria = "residente"; SELECT * FROM zonas;';
     db.query(infoObras, function(err, info){
       console.log(info)
-    if(err) throw err;
+    if(err){
+      res.render('error',{message: 'Esta página no esta disponible.', usuario:usuario })
+    }
     else {
         res.render('obranueva', { title: 'Obras', info: info[0], zonas: info[1], usuario:usuario });
     }
@@ -586,7 +592,9 @@ router.get('/obras/editar/:idobra',isLoggedIn, function(req,res,err){
   var usuario = req.user;
   var getObra = "SELECT * FROM `obras` WHERE `obra_id` = "+ id+';SELECT * FROM zonas;';
     db.query(getObra, function(err, obra){
-    if(err) throw err;
+    if(err) {
+      res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
+    }
     else {
         res.render('editarobra', { title: 'Obras', obra: obra[0],zonas:obra[1],usuario:usuario });
     }
@@ -599,7 +607,9 @@ router.get('/presupuestos',isLoggedIn, function(req,res,err){
   var usuario = req.user;
   var infoObras = 'SELECT * FROM obras WHERE presupuesto = "N"; SELECT * FROM conceptos WHERE conceptos_id != 352;SELECT * FROM zonas;SELECT presupuestos.*, conceptos.*, zonas.*, obras.* FROM presupuestos JOIN obras ON presupuestos.obra=obras.obra_id JOIN zonas ON presupuestos.zona = zonas.zonas_id JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id;';
     db.query(infoObras, function(err, info){
-      if(err) throw err;
+      if(err){
+      res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
+      }
       else {
         res.render('presupuestonuevo', { title: 'Presupuesto', obras: info[0], conceptos: info[1], usuario:usuario, zonas: info[2], presupuestos: info[3] });
       }
@@ -612,7 +622,9 @@ router.get('/presupuestos/:id',isLoggedIn, function(req,res,err){
   var obra_id = req.params.id;
   var infoObras = 'SELECT nombre_zona,zonas_id FROM obras_zonas JOIN zonas ON zona = zonas.zonas_id WHERE obra = ?; SELECT * FROM conceptos;SELECT presupuestos.*, conceptos.*, zonas.*, obras.* FROM presupuestos JOIN obras ON presupuestos.obra=obras.obra_id JOIN zonas ON presupuestos.zona = zonas.zonas_id JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id;';
     db.query(infoObras,[obra_id],function(err, info){
-      if(err) throw err;
+      if(err){
+      res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
+      }
       else {
         console.log(info[0])
               res.render('presupuestonuevo', { title: 'Presupuesto', obras: info[0],obra_id:obra_id, conceptos: info[1], usuario:usuario, zonas: info[0], presupuestos: info[2] });
@@ -742,7 +754,7 @@ router.get('/acarreos',isLoggedIn, function(req,res,err){
     console.log(listaAcarreos)
     db.query(listaAcarreos, function(err, rows){
     if(err) {
-      res.send({message:err})
+      res.render('error',{message: 'No se encontraron acarreos.', usuario:usuario })
     }
     else {
       var acarreos = rows[0];
@@ -774,7 +786,7 @@ obra = obra +'AND acarreos.acarreo_id ='+ id;
 
     db.query(listaAcarreos, function(err, acarreos){
     if(err) {
-      res.send({message:err})
+      res.render('error',{message: 'No se encontró el acarreo seleccionado.', usuario:usuario })
     }
     else {
       console.log(acarreos)
@@ -789,7 +801,7 @@ router.get('/proveedores',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
     db.query(readTable, function(err, proveedores){
         if(err) {
-      res.send({message:err})
+        res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
       res.render('proveedores', { title: 'Proveedores', proveedores: proveedores,usuario:usuario });
@@ -802,7 +814,7 @@ router.get('/proveedores/nuevo',isLoggedIn, function(req,res,err){
     var usuario = req.user;
     db.query(infoProveedores, function(err, info){
         if(err) {
-      res.send({message:err})
+            res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
         res.render('proveedornuevo', { title: 'Obras', info: info, usuario:usuario });
@@ -816,7 +828,7 @@ router.get('/proveedores/editar/:id',isLoggedIn, function(req,res,err){
   var getProveedor = "SELECT * FROM `proveedores` WHERE `id` = "+ id;
     db.query(getProveedor, function(err, proveedor){
         if(err) {
-      res.send({message:err})
+           res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
         res.render('editarproveedor', { title: 'Editar Proveedor', proveedor: proveedor, usuario:usuario });
@@ -831,7 +843,7 @@ router.get('/materiales',isLoggedIn, function(req, res, next) {
 
     db.query(readTable, function(err, info){
       if(err) {
-        res.send({message:err})
+              res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
       }
         else {
           res.render('materiales', { title: 'Materiales', info: info[0], proveedores:info[2],conceptos:info[1], obras:info[3],usuario:usuario });
@@ -845,7 +857,7 @@ router.get('/materiales/nuevo',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
     db.query(readTable, function(err, proveedores){
     if(err) {
-      res.send({message:err})
+           res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
       var readConceptos = 'SELECT * FROM conceptos WHERE conceptos_id != 352;'
@@ -865,7 +877,7 @@ router.get('/materiales/editar/:id',isLoggedIn, function(req, res, next) {
   var getMaterial = "SELECT materiales.id,materiales.unidad,materiales.precio,proveedores.razon_social,obras.nombre_obra,conceptos.nombre_concepto FROM materiales JOIN conceptos ON materiales.concepto = conceptos.conceptos_id JOIN obras ON materiales.obra_id = obras.obra_id JOIN proveedores ON materiales.proveedor_id = proveedores.id WHERE materiales.id = ?";
     db.query(getMaterial,[id], function(err, material){
     if(err) {
-      res.send({message:err})
+            res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
       res.render('editarmaterial', { title: 'Editar Material', material: material,usuario:usuario });
@@ -892,7 +904,7 @@ router.get('/fletes',isLoggedIn, function(req, res, next) {
 
     db.query(readTable, function(err, info){
       if(err) {
-          res.send({message:err})
+               res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
       }
         else {
           res.render('fletes', { title: 'Fletes', info: info[0], proveedores:info[1], obras:info[2],usuario:usuario });
@@ -909,7 +921,7 @@ router.get('/empleados',isLoggedIn, function(req, res, next) {
   var listaEmpleados = 'SELECT empleados.*,obras.nombre_obra,usuarios.username FROM empleados LEFT JOIN obras ON empleados.obra = obras.obra_id LEFT JOIN usuarios ON empleados.id = usuarios.empleado_id';
   db.query(listaEmpleados, function(err, empleados){
     if(err) {
-      res.send({message:err})
+          res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
     res.render('empleados', { title: 'Empleados', empleados: empleados, usuario:usuario, message:req.flash('error')[0]  });
@@ -922,7 +934,7 @@ router.get('/empleados/nuevo',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
     db.query(readTable, function(err, obras){
     if(err) {
-      res.send({message:err})
+           res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
       res.render('nuevoempleado', { title: 'Empleados', obras: obras,usuario:usuario });
@@ -956,7 +968,7 @@ router.get('/registrar/:idempleado',isLoggedIn, function(req, res, next) {
   var getEmpleado = 'SELECT * FROM empleados WHERE id = ?';
     db.query(getEmpleado,[empleado_id], function(err, empleado){
     if(err) {
-      res.send({message:err})
+      res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
       res.render('register', { title: 'Register',empleado:empleado,usuario:usuario});
@@ -970,7 +982,7 @@ router.get('/camiones',isLoggedIn, function(req, res, next) {
   var readTable = 'SELECT camiones.*, proveedores.razon_social FROM camiones JOIN proveedores ON proveedores.id = camiones.proveedor_id ORDER BY camion_id DESC';
     db.query(readTable, function(err, camiones){
     if(err) {
-      res.send({message:err})
+      res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
       res.render('camiones', { title: 'Camiones', camiones: camiones,usuario:usuario });
@@ -984,7 +996,7 @@ router.get('/camiones/editar/:id',isLoggedIn, function(req, res, next) {
   var getCamion = "SELECT camiones.*,stickers.sticker_id FROM `camiones` LEFT JOIN stickers ON camiones.numero = stickers.codigo WHERE `camion_id` = ?;";
     db.query(getCamion,[id,id], function(err, camion){
         if(err) {
-      res.send({message:err})
+      res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
       console.log(camion)
@@ -998,7 +1010,7 @@ router.get('/camiones/nuevo',isLoggedIn, function(req, res, next) {
     var getProveedores = "SELECT * FROM `proveedores`";
     db.query(getProveedores, function(err, proveedores){
         if(err) {
-      res.send({message:err})
+      res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
       res.render('nuevocamion', { title: 'Nuevo Camión', proveedores: proveedores, usuario:usuario });

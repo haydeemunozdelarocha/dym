@@ -25,7 +25,9 @@ if(req.body.retencion){
   var retencion = 'Y';
 }
   db.query(nuevoProveedor,[razon_social, direccion, telefono,ciudad,estado,rfc,retencion,categoria], function(err,proveedor){
-      if(err) throw err;
+      if(err){
+        res.render('error',{message: 'Hubo un error al guardar la entrada de proveedor nuevo. Por favor inténtelo de nuevo.', usuario:usuario })
+      }
       else {
           console.log('Nuevo proveedor agregado exitosamente');
           res.redirect('/proveedores');
@@ -36,7 +38,9 @@ if(req.body.retencion){
 //Read table.
 router.get('/', function(err,res){
     db.query(listaProveedores, function(err, rows){
-    if(err) throw err;
+    if(err){
+      res.send({message: 'Esta página no esta disponible'})
+    }
     else {
         res.send(rows);
     }
@@ -46,7 +50,10 @@ router.get('/', function(err,res){
 router.get('/:id', function(req, res, next ){
   var id= req.params.id;
   db.query(getProveedor, function(err, proveedor){
-    if(err) throw err;
+    if(err){
+      res.send({message: 'Esta página no esta disponible' })
+
+    }
     else {
         console.log('Buscando proveedor por id');
         res.send(proveedor)
@@ -74,7 +81,9 @@ router.put('/:idproveedor', function(req,res,err){
   var ciudad = req.body.ciudad;
   var estado = req.body.estado;
     db.query(editarProveedor,[razon_social,rfc,direccion,telefono,ciudad,estado,id], function(err, proveedor){
-    if(err) throw err;
+    if(err) {
+            res.send({message: 'No se pudo editar el proveedor seleccionado.'})
+    }
     else {
         console.log('Listo');
         res.redirect('/proveedores')
@@ -103,7 +112,9 @@ router.delete('/borrar/:idproveedor', function(req,res,err){
   var borrarProveedor = 'DELETE FROM proveedores WHERE id = ?';
   console.log(req.params.idobra)
   con.db(borrarProveedor,[id], function(err,proveedor){
-    if(err) throw err;
+    if(err){
+      res.send({message: 'No se pudo eliminar el proveedor seleccionado. Por favor inténtelo de nuevo.'})
+    }
     else {
         console.log('Este proveedor ha sido eliminada');
         res.redirect('/proveedores');

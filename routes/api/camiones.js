@@ -58,7 +58,9 @@ router.get('/numero/:sticker', function(req,res,err){
   var checkAvailability='SELECT * FROM camiones WHERE numero = ?';
   var codigo;
     db.query(getCodigo,[sticker], function(err, rows){
-    if(err) throw err;
+    if(err) {
+      res.send({message: 'No se encontró el número de sticker', usuario:usuario })
+    }
     else {
       if(rows.length==0){
         res.send({message:'El número de sticker no se ha creado.'})
@@ -72,7 +74,9 @@ router.get('/numero/:sticker', function(req,res,err){
 router.get('/buscar/:id', function(req, res, next ){
   var numero= req.params.id;
   db.query(getCamion,[numero], function(err, camion){
-    if(err) throw err;
+    if(err){
+      res.send({message: 'No se encontró el camión seleccionado.'})
+    }
     else {
         console.log('Buscando camion por id');
         res.send(camion)
@@ -100,7 +104,9 @@ var capacidad= req.body.capacidad;
 var nuevoCamion = 'INSERT INTO camiones(modelo, numero, placas, proveedor_id, capacidad, unidad_camion) VALUE(?,?,?,?,?,?)';
 
     db.query(nuevoCamion,[modelo,numero,placas,proveedor_id,capacidad,unidad_camion], function(err, camion){
-    if(err) throw err;
+    if(err){
+      res.render('error',{message: 'Hubo un error al guardar la entrada. Por favor inténtelo de nuevo.', usuario:usuario })
+    }
     else {
         console.log('Listo');
         res.redirect('/camiones')
@@ -117,7 +123,7 @@ var numero= req.body.numero;
 var capacidad= req.body.capacidad;
     db.query(editarCamion,[modelo,placas,capacidad,numero,camion_id], function(err, camion){
     if(err){
-      res.send({message:err})
+      res.render('error',{message: 'No se pudo editar el camión seleccionado. Por favor inténtelo de nuevo.', usuario:usuario })
     }
     else {
         console.log('Listo');
