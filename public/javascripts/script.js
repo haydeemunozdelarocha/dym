@@ -642,6 +642,7 @@ $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px
     $('#capacidad').removeAttr('disabled');
     $('#modelo').removeAttr('disabled');
     $('#unidad').removeAttr('disabled');
+    $('#categoria').removeAttr('disabled');
     $('#proveedor_id').removeAttr('disabled');
     $('#guardar-camion').removeAttr('disabled');
     }
