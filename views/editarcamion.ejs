@@ -22,7 +22,7 @@
   </div>
 <div class="input-group">
   <label>Número de Sticker:</label>
-  <input type="text" class="form-control" name="sticker" id="sticker" value="<%=camion[0].sticker%>" onchange="getNumero()">
+  <input type="text" class="form-control" name="sticker" id="sticker" value="<%=camion[0].sticker_id%>" onchange="getNumero()">
   <input type="hidden" class="form-control" name="numero" id="numero" value="<%=camion[0].numero%>">
 </div>
 
@@ -43,10 +43,18 @@
 
 <div class="input-group">
 <label>Categoría:</label>
-  <select class="form-control" name="categoria" id="categoria" disabled>
+  <select class="form-control" name="categoria" id="categoria">
       <option value="">Categoría</option>
-      <option value="camion">Camión</option>
+      <% if (camion[0].categoria === camion) { %>
+      <option value="camion" selected>Camión</option>
       <option value="pipa">Pipa</option>
+      <% } else if (camion[0].categoria === pipa) { %>
+      <option value="camion">Camión</option>
+      <option value="pipa" selected>Pipa</option>
+      <% } else { %>
+      <option value="camion">Camión</option>
+      <option value="pipa" >Pipa</option>
+      <% } %>
   </select>
 </div>
 <br>
