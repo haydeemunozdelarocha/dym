@@ -31,6 +31,7 @@
       <td>Placas</td>
       <td>Modelo</td>
       <td>Capacidad</td>
+      <td>Categoria</td>
     </tr>
     <% for(var i=0; i<camiones.length; i++) {%>
     <tr>
@@ -39,6 +40,7 @@
       <td><%= camiones[i].placas %></td>
       <td><%= camiones[i].modelo %></td>
       <td><%= camiones[i].capacidad %></td>
+       <td><%= camiones[i].categoria[0].toUpperCase() + camiones[i].categoria.substring(1) %></td>
       <td><a href="/camiones/editar/<%= camiones[i].camion_id %>"><span class="glyphicon glyphicon-edit glyphicon-table" ></span></a></td>
       <td><a href="/api/camiones/borrar/<%= camiones[i].camion_id %>?_method=DELETE"><span class="glyphicon glyphicon-table glyphicon-remove-circle"></span></a></td>
        <% } %>
