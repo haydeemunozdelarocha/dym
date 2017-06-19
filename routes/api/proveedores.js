@@ -111,7 +111,7 @@ router.delete('/borrar/:idproveedor', function(req,res,err){
   var id = req.params.idproveedor;
   var borrarProveedor = 'DELETE FROM proveedores WHERE id = ?';
   console.log(req.params.idobra)
-  con.db(borrarProveedor,[id], function(err,proveedor){
+ db.query(borrarProveedor,[id], function(err,proveedor){
     if(err){
       res.send({message: 'No se pudo eliminar el proveedor seleccionado. Por favor inténtelo de nuevo.'})
     }
