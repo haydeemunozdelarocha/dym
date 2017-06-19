@@ -45,10 +45,10 @@
 <label>Categoría:</label>
   <select class="form-control" name="categoria" id="categoria">
       <option value="">Categoría</option>
-      <% if (camion[0].categoria === camion) { %>
+      <% if (camion[0].categoria === 'camion') { %>
       <option value="camion" selected>Camión</option>
       <option value="pipa">Pipa</option>
-      <% } else if (camion[0].categoria === pipa) { %>
+      <% } else if (camion[0].categoria === 'pipa') { %>
       <option value="camion">Camión</option>
       <option value="pipa" selected>Pipa</option>
       <% } else { %>
