@@ -534,9 +534,10 @@ router.get('/signature/:categoria/:id/:obra', isLoggedIn, function(req,res,err){
 
 router.get('/obras',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
-  var listaObras = 'SELECT obras.*, empleados.nombre, empleados.id, usuarios.categoria FROM obras LEFT JOIN empleados ON empleados.id = obras.residente_id LEFT JOIN usuarios ON usuarios.empleado_id = empleados.id WHERE obra_id != 112';
+  var listaObras = 'SELECT obras.*, empleados.nombre, empleados.id, usuarios.categoria FROM obras LEFT JOIN empleados ON empleados.id = obras.residente_id LEFT JOIN usuarios ON usuarios.empleado_id = empleados.id WHERE obras.obra_id != 112';
     db.query(listaObras, function(err, obras){
     if(err){
+      console.log(err.code);
       res.render('error',{message: 'No se encontró ninguna obra.', usuario:usuario })
     }
     else {
