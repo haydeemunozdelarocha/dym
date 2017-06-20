@@ -6,7 +6,9 @@ function calcularFlete() {
   var concepto_flete = $('#categoria').val();
   var categoria_fletero =  $('#fletero_categoria').val();
   if(concepto_flete === "92"){
-    $('#material_id').removeAttr("hidden");
+    console.log('92')
+    $('#material_id').removeAttr("disabled");
+    $('#bancoinfo').removeAttr("hidden");
     $('#banco').removeAttr("disabled");
     $('#concepto_flete').val(concepto_flete);
   } else if (concepto_flete === "100"){
@@ -15,7 +17,8 @@ function calcularFlete() {
     $('#bancoinfo').removeAttr("hidden");
     $('#banco').removeAttr("disabled");
     } else {
-      console.log(concepto_flete)
+    console.log(concepto_flete)
+    $('#banco').removeAttr("disabled");
     $('#concepto_flete').val(concepto_flete);
     var proveedor_id = $('#fletero').val();
     $('#banco').val(proveedor_id);
@@ -83,8 +86,8 @@ function calcularAcarreoEM() {
         $('#material_id').val(data[0].material_id);
         totalFlete();
     } else {
-      console.log('no data')
-      alert('No se ha registrado el precio de flete para el proveedor de este camión.')
+      console.log('no data');
+      alert('No se ha registrado el precio de flete para el proveedor de este camión.');
     }
 });
 
