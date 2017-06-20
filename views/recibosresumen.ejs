@@ -20,12 +20,12 @@
 <h2>RECIBO ACARREOS</h2>
 
 <div id="recibo-style" style="font-size: 20px;">
-<% if(recibos.length > 0) {%>
+<% if(camion.length > 0) {%>
   <h3><strong>Fecha: </strong><%= fecha %></h3>
-  <h3><strong>Camión ID:</strong> <%= recibos[0].camion_id %></h3>
-  <h3><strong>Placas:</strong> <%= recibos[0].placas %></h3>
-  <h3><strong>Fletero:</strong> <%= recibos[0].prov_flete %></h3>
-  <h3><strong>Capacidad:</strong><%=recibos[0].cantidad%> <%=recibos[0].unidad %></h3>
+  <h3><strong>No. Sticker:</strong> <%= camion[0].sticker_id %></h3>
+  <h3><strong>Placas:</strong> <%= camion[0].placas %></h3>
+  <h3><strong>Fletero:</strong> <%= camion[0].prov_flete %></h3>
+  <h3><strong>Capacidad:</strong><%=camion[0].cantidad%> <%=camion[0].unidad_camion %></h3>
   <br>
 
   <table align="left" style="font-size: 20px;margin-bottom: 30px">
@@ -42,12 +42,12 @@
   <% for(var i = 0; i < acarreos.length; i++) { %>
   <tr>
     <td width="60"><strong><%= i+1 %></strong></td>
-    <td width="150"><strong><%=acarreos[i].nombre_concepto%></strong></td>
+    <td width="150"><strong><%=acarreos[i].concepto%></strong></td>
     <td width="150"><strong><%=acarreos[i].nombre_zona%></strong></td>
-    <% if(!acarreos[i].prov_banco) { %>
+    <% if(!acarreos[i].razon_social) { %>
     <td width="50"><strong>--</strong></td>
     <% } else { %>
-    <td width="150"><strong><%=acarreos[i].prov_banco %></strong></td>
+    <td width="150"><strong><%=acarreos[i].razon_social %></strong></td>
     <% } %>
     <td width="150"><strong><%=acarreos[i].hora%></strong></td>
 
@@ -67,17 +67,17 @@
     <td width="70"><strong>Cantidad</strong></td>
     <td width="150"><strong>Banco</strong></td>
    </tr>
-   <% if(recibos.length > 0) {%>
-  <% for(var i = 0; i < recibos.length; i++) { %>
+   <% if(resumen.length > 0) {%>
+  <% for(var i = 0; i < resumen.length; i++) { %>
   <tr>
-    <td width="60"><strong><%= recibos[i].viajes %></strong></td>
-    <td width="150"><strong><%=recibos[i].nombre_concepto%></strong></td>
-    <td width="150"><strong><%=recibos[i].nombre_zona%></strong></td>
-    <td width="70"><strong><%=recibos[i].total_cantidad%> <%=recibos[i].unidad %></strong></td>
-    <% if(!recibos[i].prov_banco) { %>
+    <td width="60"><strong><%= resumen[i].viajes %></strong></td>
+    <td width="150"><strong><%=resumen[i].nombre_concepto%></strong></td>
+    <td width="150"><strong><%=resumen[i].nombre_zona%></strong></td>
+    <td width="70"><strong><%=resumen[i].total_cantidad%> <%=resumen[i].unidad %></strong></td>
+    <% if(!resumen[i].razon_social) { %>
     <td width="50"><strong>--</strong></td>
     <% } else { %>
-    <td width="150"><strong><%=recibos[i].prov_banco %></strong></td>
+    <td width="150"><strong><%=resumen[i].razon_social %></strong></td>
     <% } %>
    </tr>
   <% } %>

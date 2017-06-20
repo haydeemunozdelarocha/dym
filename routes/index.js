@@ -112,7 +112,7 @@ router.get('/logout', function(req, res, next) {
 //CAPTURA DE ACARREOS
 router.get('/captura', [isLoggedIn,checkAuthToken], function(req, res){
   var obra_id =req.user.obra_id;
-  var infoProveedores = 'SELECT proveedores.id,proveedores.razon_social FROM materiales LEFT JOIN proveedores ON proveedores.id = materiales.proveedor_id WHERE obra_id = ? GROUP BY razon_social; SELECT obras_zonas.zona,zonas.nombre_zona FROM zonas LEFT JOIN obras_zonas ON zonas.zonas_id = obras_zonas.zona  WHERE obra = ?;'
+  var infoProveedores = 'SELECT proveedores.id,proveedores.razon_social FROM materiales LEFT JOIN proveedores ON proveedores.id = materiales.proveedor_id WHERE obra_id = ? GROUP BY proveedores.razon_social; SELECT obras_zonas.zona,zonas.nombre_zona FROM zonas LEFT JOIN obras_zonas ON zonas.zonas_id = obras_zonas.zona  WHERE obra = ?;'
     db.query(infoProveedores,[obra_id,obra_id], function(err, info){
     if(err) throw err;
     else {
