@@ -257,7 +257,7 @@ router.get('/totales/:obra', function(req, res, next ){
 router.post('/recibos/resumen',isLoggedIn, function(req, res, next ){
   var date= req.body.fecha;
   var hora = moment(date).format("YYYY-MM-DD");
-  var hora_recibo = moment(date).format("YYYY-MM-DD HH:mm");
+  var hora_recibo= moment.tz(date,"America/Chihuahua").format("YYYY-MM-DD HH:mm");
   var date1 = hora + " 00:00";
   var date2 = hora + " 23:59";
   var obra_id = req.user.obra_id;
