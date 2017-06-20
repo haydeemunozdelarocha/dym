@@ -23,7 +23,7 @@
       </div>
       <input type="hidden" class="form-control" id="numero" name="numero" required autofocus autocomplete="off">
       <br>
-      <input type="date" class="form-control" id="fechaRecibo" name="fecha" required autofocus autocomplete="off" disabled>
+      <input type="date" class="form-control" id="fechaRecibo" name="fecha" required disabled onchange="checkDate();">
       <br>
     <input type="submit" id="submit-button" class="btn btn-primary" value="Ver Recibo" disabled="">
     <br>
@@ -35,6 +35,7 @@
 </div>
 <script>
   $(document).ready(function() {
+    console.log('runnning')
     var date = new Date();
 
     var day = date.getDate();
@@ -47,8 +48,11 @@
     var today = year + "-" + month + "-" + day;
     $("#fechaRecibo").attr("value", today);
 });
+function checkDate(){
+  alert($("#fechaRecibo").val());
 
-  function buscarCodigo(){
+}
+function buscarCodigo(){
 $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
 
   var sticker = $('#sticker').val();

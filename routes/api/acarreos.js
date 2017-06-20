@@ -255,8 +255,7 @@ router.get('/totales/:obra', function(req, res, next ){
 })
 
 router.post('/recibos/resumen',isLoggedIn, function(req, res, next ){
-  var date= req.body.fechaRecibo;
-  console.log(date);
+  var date= req.body.fecha;
   var hora = moment(date).format("YYYY-MM-DD");
   var hora_recibo = moment(date).format("YYYY-MM-DD HH:mm");
   var date1 = hora + " 00:00";
