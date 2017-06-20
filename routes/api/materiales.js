@@ -55,9 +55,11 @@ router.get('/acarreoint/:proveedorid', function(req,res,err){
 router.get('/acarreoext/:proveedorid', function(req,res,err){
   var id = Number(req.params.proveedorid);
   var obra_id = req.user.obra_id;
+  console.log(obra_id)
   var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto FROM materiales INNER JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ? AND conceptos_id = 92';
+  console.log(listaMaterialesProveedor)
     db.query(listaMaterialesProveedor,[id,obra_id], function(err, rows){
-    if(err) throw err;
+    if(err) {console.log(err)}
     else {
         res.send(rows);
     }
