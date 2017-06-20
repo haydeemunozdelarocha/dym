@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
 var moment= require('moment');
+var moment = require('moment-timezone');
 var db = require('../../db.js');
 
 function isLoggedIn(req, res, next){
@@ -29,10 +30,11 @@ if(!foto){
 var total_flete = req.body.precio_flete;
 var zona_id = Number(req.body.zona_id);
 var cantidad=req.body.capacidad;
-var date= Date.now();
+var date = Date.now();
+var hora= moment.tz(date,"America/Chihuahua").format("YYYY-MM-DD HH:mm");
+console.log(hora)
 var flete_id = req.body.flete_id;
 var banco_id = req.body.banco_id;
-var hora = moment(date).format("YYYY-MM-DD HH:mm");
 var concepto_flete = Number(req.body.concepto_flete);
 
   if(concepto_flete == 100){
