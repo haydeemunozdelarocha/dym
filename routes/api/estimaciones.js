@@ -60,9 +60,11 @@ router.post('/', function(req,res,err) {
      buscarAcarreos = 'SELECT acarreos_material.concepto_material,materiales.material_id, recibos.zona_id,materiales.precio,materiales.unidad,presupuestos.costo,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos_material.total_material) AS total_concepto, sum(acarreos_material.cantidad) AS total_cantidad, IFNULL(presupuestos_id,(SELECT presupuestos.presupuestos_id FROM presupuestos WHERE obra = 442 AND concepto = 352)) FROM acarreos_material JOIN recibos ON acarreos_material.recibo_id = recibos.recibo_id LEFT JOIN materiales ON acarreos_material.material_id = materiales.id LEFT JOIN proveedores ON acarreos_material.banco_id = proveedores.id LEFT JOIN presupuestos ON presupuestos.concepto = acarreos_material.concepto_material AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id WHERE acarreos_mat_id IN ('+ids+') GROUP BY concepto_material,material_id, zona_id;';
   }
     console.log(buscarAcarreos)
-    var lastEstimacion = 'SELECT * FROM estimaciones WHERE obra ='+obra_id+' ORDER BY estimaciones_id DESC LIMIT 1;'
+    var lastEstimacion = 'SELECT * FROM estimaciones WHERE obra ='+obra_id+' ORDER BY estimaciones_id DESC LIMIT 1;';
+    console.log(lastEstimacion)
       db.query(lastEstimacion).then(function(rows,err){
-        if (!rows[0]){
+        console.log(err)
+        if (rows.length == 0){
           console.log("no numero")
           console.log(rows)
           numero = 1;

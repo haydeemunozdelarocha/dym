@@ -11,12 +11,10 @@ function calcularFlete() {
     $('#concepto_flete').val(concepto_flete);
   } else if (concepto_flete === "100"){
     if(categoria_fletero !== "flete/banco"){
-      console.log('no es flete/banco')
+    console.log('no es flete/banco')
     $('#bancoinfo').removeAttr("hidden");
     $('#banco').removeAttr("disabled");
     } else {
-      console.log(concepto_flete)
-    $('#concepto_flete').val(concepto_flete);
     var proveedor_id = $('#fletero').val();
     $('#banco').val(proveedor_id);
     getMateriales();
@@ -57,13 +55,16 @@ function calcularAcarreoEM() {
   var capacidad = $('#capacidad').val();
   var proveedor_id;
   var concepto_flete = $('#categoria').val();
+  var camion_categoria = $('#camion_categoria').val();
   var apiURL;
   if(concepto_flete === "92"){
     proveedor_id = $('#banco').val();
     $('#concepto_flete').val('92');
     $('#proveedor_id').val(proveedor_id);
     apiURL = '/api/materiales/acarreoext/'+proveedor_id;
-  } else if(concepto_flete === "100"){
+  } else if (camion_categoria === "pipa"){
+    getMateriales();
+  } else if (concepto_flete === "100"){
     proveedor_id = $('#banco').val();
     apiURL = '/api/materiales/acarreomat/'+proveedor_id
   }
@@ -209,14 +210,17 @@ if(camion_id.length >= 10){
       $('#camion_id').val(data[0].camion_id);
       $('#scanner').attr("readonly", true);
       $('#fletero').val(data[0].proveedor_id);
-      $('#fletero_categoria').val(data[0].categoria);
+      $('#fletero_categoria').val(data[0].proveedor_categoria);
+      $('#camion_categoria').val(data[0].categoria);
       $('#unidad').val(data[0].unidad_camion);
-
-      console.log($('#fletero').val())
-
       $('#capacidad').val(data[0].capacidad)
       $('#search-status').html("");
-      $('#categoria').removeAttr("disabled");
+      if(data[0].categoria === "pipa"){
+        $('#direccion-info').removeAttr("hidden");
+      } else {
+        $('.categoria-info').removeAttr("hidden");
+        $('#categoria').removeAttr("disabled");
+      }
       $('#search-status').append("Camión encontrado!");
     } else {
       $('#search-status').html("");
@@ -272,4 +276,17 @@ document.getElementById("capturaForm").onkeypress = function(e) {
   }
 }
 
+function checkProveedor(){
+if( $('#fletero_categoria').val() !== "flete/banco"){
+  console.log('no es flete/banco');
+  $('#bancoinfo').removeAttr("hidden");
+  console.log('not hidden');
+  $('#banco').removeAttr("disabled");
+} else {
+    console.log('flete/banco')
+    var proveedor_id = $('#fletero').val();
+    $('#banco').val(proveedor_id);
+    getMateriales();
+ }
+}
 

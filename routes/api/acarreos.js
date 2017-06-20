@@ -23,9 +23,12 @@ var obra_id = req.user.obra_id;
 var camion_id= Number(req.body.camion_id);
 var foto = req.body.photo;
 var unidad = req.body.unidad;
+var fletero = req.body.fletero;
 if(!foto){
   foto = null;
 }
+var camion_categoria = req.body.camion_categoria;
+var direccion = req.body.direccion;
 var categoria_flete = req.body.fletero_categoria;
 var total_flete = req.body.precio_flete;
 var zona_id = Number(req.body.zona_id);
@@ -36,24 +39,36 @@ var banco_id = req.body.banco_id;
 var hora = moment(date).format("YYYY-MM-DD HH:mm");
 var concepto_flete = Number(req.body.concepto_flete);
 
-  if(concepto_flete == 100){
-    var material_id= Number(req.body.material_id);
-    var total_material = (Number(req.body.precio_material)*cantidad);
-    var concepto_material = req.body.concepto_material;
-    concepto_flete = concepto_material;
-  } else if(concepto_flete == 92){
+  if(concepto_flete == 92){
     var material_id= concepto_flete;
     var total_material = (Number(req.body.precio_material)*cantidad);
     var concepto_material = req.body.concepto_material;
   } else if(concepto_flete == 82){
     flete_id = null;
     banco_id = null;
+  } else {
+    var material_id= Number(req.body.material_id);
+    var total_material = (Number(req.body.precio_material)*cantidad);
+    var concepto_material = req.body.concepto_material;
+    if(categoria_flete === 'flete/banco'){
+      banco_id = fletero;
+    }
   }
-      var nuevoRecibo = "INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id,camion_id) VALUES (?,?,?,?,?,?);";
-      db.query(nuevoRecibo,[usuario_id,zona_id,foto,hora,obra_id,camion_id], function(err, rows){
-        console.log(usuario_id,zona_id,foto,hora,obra_id,camion_id)
+  var nuevoRecibo;
+  var reciboValues;
+    if(camion_categoria === "pipa"){
+     nuevoRecibo = "INSERT INTO pipas_viajes(hora,usuario_id,camion_id,zona_id,direccion,material_id) VALUE (?,?,?,?,?,?);";
+      reciboValues =[hora,usuario_id,camion_id,zona_id,direccion,material_id];
+  } else {
+      nuevoRecibo = "INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id,camion_id) VALUES (?,?,?,?,?,?);";
+      reciboValues = [usuario_id,zona_id,foto,hora,obra_id,camion_id];
+  }
+      db.query(nuevoRecibo,reciboValues, function(err, rows){
+        console.log('sending query')
+        console.log(reciboValues)
         console.log(nuevoRecibo)
         if(err) {
+          console.log(err);
           res.render('error',{message: 'Hubo un error al capturar el acarreo.' })
         }
         else {
@@ -62,6 +77,8 @@ var concepto_flete = Number(req.body.concepto_flete);
                 console.log('externo')
                   var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
                   var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad,material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
+              } else if (camion_categoria === "pipa"){
+                    res.redirect('/captura');
               } else if (concepto_flete == 82){
                   console.log('interno')
                   var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
@@ -69,8 +86,9 @@ var concepto_flete = Number(req.body.concepto_flete);
               } else {
                   if(categoria_flete === 'flete/banco'){
                       console.log('flete banco')
-                      var nuevoAcarreo = 'INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
-                      var values = [material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
+                        var nuevoAcarreo = 'INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
+                        var values = [material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
+
                   } else {
                       var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
                       var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad,material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
@@ -79,6 +97,7 @@ var concepto_flete = Number(req.body.concepto_flete);
               console.log(values);
               db.query(nuevoAcarreo,values,function(err, rows){
                 if(err){
+                  console.log(err);
                 res.render('error',{message: 'Hubo un error al capturar el acarreo.' })
 
                 }
@@ -88,7 +107,8 @@ var concepto_flete = Number(req.body.concepto_flete);
               });
         }
       });
-})
+    })
+
 
 
 //Read acarreos
@@ -283,6 +303,62 @@ router.post('/recibos/resumen',isLoggedIn, function(req, res, next ){
   });
 })
 
+router.post('/pipa/resumen',isLoggedIn, function(req, res, next ){
 
+  var date= req.body.fechaRecibo;
+  console.log(date);
+  var hora = moment(date).format("YYYY-MM-DD");
+  var hora_recibo = moment(date).format("YYYY-MM-DD HH:mm");
+  var date1 = hora + " 00:00";
+  var date2 = hora + " 23:59";
+  var obra_id = req.user.obra_id;
+  var numero = req.body.numero;
+  console.log(date1)
+  console.log(date2)
+  var getHoras = 'SELECT TIMEDIFF((SELECT pipas_viajes.hora FROM pipas_viajes WHERE pipas_viajes.hora between "'+date1+'" and "'+date2+'" ORDER BY pipas_viajes.hora DESC LIMIT 1),(SELECT pipas_viajes.hora FROM pipas_viajes WHERE pipas_viajes.hora between "'+date1+'" and "'+date2+'" ORDER BY pipas_viajes.hora ASC LIMIT 1)) AS days;SELECT proveedores.categoria FROM stickers INNER JOIN camiones ON camiones.numero = stickers.codigo INNER JOIN proveedores ON proveedores.id = camiones.proveedor_id WHERE numero = '+numero+';SELECT pipas_viajes.zona_id,pipas_viajes.foto,pipas_viajes.material_id,pipas_viajes.hora,pipas_viajes.usuario_id,pipas_viajes.camion_id,usuarios.obra_id FROM pipas_viajes LEFT JOIN usuarios ON usuarios.id_usuario = pipas_viajes.usuario_id WHERE hora between "'+date1+'" and "'+date2+'" GROUP BY zona_id;';
+  // var recibosDia = 'SELECT recibos.camion_id,acarreos_flete.cantidad,camiones.placas,proveedor_flete.razon_social AS prov_flete, acarreos_flete.unidad,proveedor_banco.razon_social AS prov_banco,conceptos.nombre_concepto,zonas.nombre_zona,obras.nombre_obra,COUNT(*) AS viajes,SUM(cantidad) AS total_cantidad FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_flete ON recibos.recibo_id = acarreos_flete.recibo_id LEFT JOIN proveedores AS proveedor_banco ON proveedor_banco.id = acarreos_flete.banco_id LEFT JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id WHERE hora BETWEEN "'+date1+'" AND "'+date2+'" AND numero = '+numero+' AND recibos.obra_id = '+obra_id+' GROUP BY concepto_flete;SELECT recibos.hora,acarreos_flete.cantidad,proveedor_flete.razon_social AS prov_flete, acarreos_flete.unidad,proveedor_banco.razon_social AS prov_banco,conceptos.nombre_concepto,zonas.nombre_zona,obras.nombre_obra FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_flete ON recibos.recibo_id = acarreos_flete.recibo_id LEFT JOIN proveedores AS proveedor_banco ON proveedor_banco.id = acarreos_flete.banco_id LEFT JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id WHERE hora BETWEEN "'+date1+'" AND "'+date2+'" AND numero = '+numero+' AND recibos.obra_id = '+obra_id+';SELECT COUNT(recibos.camion_id) AS total_viajes FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_flete ON recibos.recibo_id = acarreos_flete.recibo_id LEFT JOIN proveedores AS proveedor_banco ON proveedor_banco.id = acarreos_flete.banco_id LEFT JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id WHERE hora BETWEEN "'+date1+'" AND "'+date2+'" AND numero = '+numero+' AND recibos.obra_id = '+obra_id+';';
+  console.log(getHoras)
+  db.query(getHoras, function(err, horas){
+    if(err) {
+      res.send({message:'No se encontraron totales para esta obra.'})
+      }
+       else {
+        console.log(horas)
+        if(horas.length == 0) {
+            res.render('resumen',{message:"No se encontraron acarreos de hoy de el camión seleccionado. Por favor intente de nuevo."})
+        } else {
+          var dias = Number(horas[0][0])/10;
+          console.log(horas[0][0].days);
+          var categoria_flete = horas[1][0];
+          var reciboValues = '';
+          for(var i = 0; i <= horas[2].length;i++){
+            var item = new Array();
+          for (var key in horas[2][i]) {
+            console.log(Object.keys(horas[2][i]).length)
+            item.push(horas[2][i][key]);
+            console.log(item)
+            if(Object.keys(horas[2][i]).length == item.length){
+              if(i < horas[2].length-1){
+              reciboValues = reciboValues +'('+ item.toString() +'),';
+              console.log(reciboValues);
+              } else {
+              reciboValues = reciboValues +'('+ item.toString() +')';
+              console.log(reciboValues);
+              }
+            }
+          }
+          }
+        //   if(categoria_flete === 'flete/banco'){
+        //     console.log('flete banco')
+        //     var nuevoAcarreo = 'INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
+        //     var values = [material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
+        //     } else {
+        //               var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
+        //               var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad,material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
+        // }
+    }
+  }
+  });
+})
 
 module.exports = router;
