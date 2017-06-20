@@ -8,26 +8,72 @@ function calcularFlete() {
   if(concepto_flete === "92"){
     console.log('92')
     $('#material_id').removeAttr("disabled");
-    $('#bancoinfo').removeAttr("hidden");
-    $('#banco').removeAttr("disabled");
+    getBancos('acarreo');
     $('#concepto_flete').val(concepto_flete);
   } else if (concepto_flete === "100"){
     if(categoria_fletero !== "flete/banco"){
-      console.log('no es flete/banco')
-    $('#bancoinfo').removeAttr("hidden");
-    $('#banco').removeAttr("disabled");
+      console.log('no es flete/banco');
+      $('#bancoinfo').attr("hidden",true);
+      $('#banco').attr("disabled");
+      getBancos('material');
     } else {
-    console.log(concepto_flete)
+    console.log(concepto_flete);
+    $('#bancoinfo').attr("hidden",true);
     $('#banco').removeAttr("disabled");
     $('#concepto_flete').val(concepto_flete);
     var proveedor_id = $('#fletero').val();
     $('#banco').val(proveedor_id);
+    if($('#banco').val()){
     getMateriales();
+    }
     }
   }else {
     calcularAcarreoInt();
   }
 }
+
+
+function getBancos(categoria){
+  console.log('getting bancos')
+  $('#banco').html('');
+   var proveedor_id =   $('#fletero').val();
+  if(categoria === "acarreo") {
+    var url = '/api/banco/acarreoext/'+proveedor_id;
+  } else {
+    var url = '/api/banco/materiales/';
+  }
+
+   var bancos = $.ajax({
+    url: url,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  bancos.done(function(data){
+    if(data.length !== 0){
+      console.log(data)
+      for(var i =0;i<= data.length;i++){
+        console.log(data[i].banco)
+        console.log(data[i].razon_social)
+        $('#banco').html('<option value="">Banco</option>');
+        $('#banco').append('<option value='+data[i].banco+'>'+data[i].razon_social+'</option>');
+        if(i == data.length-1){
+        $('#bancoinfo').removeAttr("hidden");
+        $('#banco').removeAttr("disabled");
+        }
+      }
+    } else {
+      console.log('no data')
+      alert('No se ha registrado el precio de flete de acarreo externo.')
+    }
+});
+
+    bancos.fail(function(jqXHR, textStatus, errorThrown){
+ console.log("error")
+  });
+}
+
+
 
 function calcularAcarreoInt() {
   var proveedor_id = $('#fletero').val();
@@ -67,8 +113,14 @@ function calcularAcarreoEM() {
     $('#proveedor_id').val(proveedor_id);
     apiURL = '/api/materiales/acarreoext/'+proveedor_id;
   } else if(concepto_flete === "100"){
+    if ($('#fletero_categoria').val() === "flete/banco"){
+      $('#banco-info').attr("hidden");
+       $('#banco').attr("disabled");
+       getMateriales();
+    } else {
     proveedor_id = $('#banco').val();
     apiURL = '/api/materiales/acarreomat/'+proveedor_id
+    }
   }
   var precio = $.ajax({
     url: apiURL,
@@ -100,7 +152,7 @@ function getMateriales() {
   $('#material-status').html("");
   $('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
     var proveedor_id = $('#banco').val();
-
+    console.log(proveedor_id)
   var precio = $.ajax({
     url: '/api/materiales/acarreomat/'+proveedor_id,
     type: 'GET',

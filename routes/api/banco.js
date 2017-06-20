@@ -44,6 +44,30 @@ router.get('/materiales/:id', function(req,res,err){
   });
 })
 
+router.get('/acarreoext/:id', function(req,res,err){
+  var proveedor_id = req.params.id;
+  console.log(proveedor_id)
+  var getBanco = 'SELECT fletes.banco,proveedores.razon_social FROM fletes LEFT JOIN proveedores ON fletes.banco = proveedores.id WHERE fletes.proveedor_id = ?;';
+    db.query(getBanco,[proveedor_id], function(err, banco){
+    if(err) throw err;
+    else {
+        res.json(banco)
+    }
+  });
+})
+
+router.get('/material/', function(req,res,err){
+  var obra_id = req.user.obra_id;
+  console.log(proveedor_id)
+  var getBanco = 'SELECT materiales.proveedor_id AS banco,proveedores.razon_social FROM materiales JOIN proveedores ON materiales.proveedor_id = proveedores.id WHERE obra_id = ? AND materiales.categoria = "material";';
+    db.query(getBanco,[obra_id], function(err, banco){
+    if(err) throw err;
+    else {
+        res.json(banco)
+    }
+  });
+})
+
 router.post('/', function(req,res,err){
   console.log(req.body)
   var obra_id = req.body.obra_id;

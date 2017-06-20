@@ -21,7 +21,7 @@
 
 <div id="recibo-style" style="font-size: 20px;">
 <% if(camion.length > 0) {%>
-  <h3><strong>Fecha: </strong><%= fecha %></h3>
+  <h3><strong>Fecha Recibo: </strong><%= fecha %></h3>
   <h3><strong>No. Sticker:</strong> <%= camion[0].sticker_id %></h3>
   <h3><strong>Placas:</strong> <%= camion[0].placas %></h3>
   <h3><strong>Fletero:</strong> <%= camion[0].prov_flete %></h3>
@@ -69,6 +69,8 @@
    </tr>
    <% if(resumen.length > 0) {%>
   <% for(var i = 0; i < resumen.length; i++) { %>
+  <%if (resumen[i].viajes == 0 ) { %>
+  <% } else {%>
   <tr>
     <td width="60"><strong><%= resumen[i].viajes %></strong></td>
     <td width="150"><strong><%=resumen[i].nombre_concepto%></strong></td>
@@ -80,6 +82,7 @@
     <td width="150"><strong><%=resumen[i].razon_social %></strong></td>
     <% } %>
    </tr>
+   <% } %>
   <% } %>
     <% } %>
   </table>
@@ -88,6 +91,7 @@
   <h3><strong>No. Total Viajes:</strong> <%=total[0].total_viajes %></h3>
 
     <% } %>
+  <p><strong>Impreso: </strong><%= fecha_impresion %></p>
 </div>
 <div height="200px" width="100px"></div>
 <br>
