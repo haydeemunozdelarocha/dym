@@ -25,7 +25,7 @@
   <h3><strong>No. Sticker:</strong> <%= camion[0].sticker_id %></h3>
   <h3><strong>Placas:</strong> <%= camion[0].placas %></h3>
   <h3><strong>Fletero:</strong> <%= camion[0].prov_flete %></h3>
-  <h3><strong>Capacidad:</strong><%=camion[0].cantidad%> <%=camion[0].unidad_camion %></h3>
+  <h3><strong>Capacidad:</strong><%=camion[0].capacidad%> <%=camion[0].unidad_camion %></h3>
   <br>
 
   <table align="left" style="font-size: 20px;margin-bottom: 30px">
@@ -75,7 +75,7 @@
     <td width="60"><strong><%= resumen[i].viajes %></strong></td>
     <td width="150"><strong><%=resumen[i].nombre_concepto%></strong></td>
     <td width="150"><strong><%=resumen[i].nombre_zona%></strong></td>
-    <td width="70"><strong><%=resumen[i].total_cantidad%> <%=resumen[i].unidad %></strong></td>
+    <td width="70"><strong><%=resumen[i].total_cantidad%> <%=camion[0].unidad_camion %></strong></td>
     <% if(!resumen[i].razon_social) { %>
     <td width="50"><strong>--</strong></td>
     <% } else { %>

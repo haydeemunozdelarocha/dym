@@ -54,8 +54,7 @@ router.get('/codigo/:sticker', function(req,res,err){
 
 router.get('/numero/:sticker', function(req,res,err){
   var sticker=req.params.sticker;
-  var getCodigo = 'SELECT * FROM stickers WHERE sticker_id = ?;';
-  var checkAvailability='SELECT * FROM camiones WHERE numero = ?';
+  var getCodigo = 'SELECT stickers.codigo,proveedores.categoria FROM stickers JOIN camiones ON camiones.numero = stickers.codigo JOIN proveedores ON camiones.proveedor_id = proveedores.id WHERE sticker_id = ?;';
   var codigo;
     db.query(getCodigo,[sticker], function(err, rows){
     if(err) {
@@ -65,7 +64,7 @@ router.get('/numero/:sticker', function(req,res,err){
       if(rows.length==0){
         res.send({message:'El número de sticker no se ha creado.'})
       } else {
-          res.json(rows[0].codigo);
+          res.json(rows[0]);
       }
     }
   });
