@@ -32,7 +32,8 @@ var total_flete = req.body.precio_flete;
 var zona_id = Number(req.body.zona_id);
 var cantidad=req.body.capacidad;
 var date = Date.now();
-var hora= moment.tz(date,"America/Chihuahua").format("YYYY-MM-DD HH:mm");
+var timezone = moment.tz.guess();
+var hora= moment.tz(date,timezone).format("YYYY-MM-DD hh:mm A");
 console.log(hora)
 var flete_id = req.body.flete_id;
 var banco_id = req.body.banco_id;
@@ -260,7 +261,8 @@ router.post('/recibos/resumen',isLoggedIn, function(req, res, next ){
   var date= req.body.fecha;
   var categoria = req.body.categoria;
   var hora = moment(date).format("YYYY-MM-DD");
-  var hora_recibo= moment.tz(new Date(),"America/Chihuahua").format("YYYY-MM-DD HH:mm");
+  var timezone = moment.tz.guess();
+  var hora_recibo= moment.tz(new Date(),timezone).format("YYYY-MM-DD hh:mm A");
   console.log(hora_recibo)
   var date1 = hora + " 00:00";
   var date2 = hora + " 23:59";
