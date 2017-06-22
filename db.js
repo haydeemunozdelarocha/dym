@@ -3,12 +3,9 @@ var mysql = require('mysql');
 
 var pool      =    mysql.createPool({
     connectionLimit : 150, //important
-    // host     : process.env.DYM_DB_HOST,
-    // user     : process.env.DYM_DB_USER,
-    // password : process.env.DYM_DB_PSS,
-    host     : 'localhost',
-    user     : 'root',
-    password : 'quepretty',
+    host     : process.env.DYM_DB_HOST,
+    user     : process.env.DYM_DB_USER,
+    password : process.env.DYM_DB_PSS,
     database : 'heroku_aa5f4bff4de7c3d',
     debug    :  false,
     multipleStatements: true,
