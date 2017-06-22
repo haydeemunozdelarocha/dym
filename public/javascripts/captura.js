@@ -7,6 +7,7 @@ function calcularFlete() {
   var categoria_fletero =  $('#fletero_categoria').val();
   if(concepto_flete === "92"){
     console.log('92')
+    $('#material-info').attr("hidden",true);
     $('#material_id').removeAttr("disabled");
     getBancos('acarreo');
     $('#concepto_flete').val(concepto_flete);
@@ -24,6 +25,10 @@ function calcularFlete() {
     getBancos("todos");
     }
   } else {
+    $('#bancoinfo').attr("hidden",true);
+    $('#banco').attr("disabled");
+    $('#material-info').attr("hidden",true);
+    $('#material_id').attr("disabled");
     calcularAcarreoInt();
   }
 }
@@ -165,6 +170,7 @@ function calcularAcarreoEM() {
 
 function getMateriales() {
   $('#material-status').html("");
+  $('#material_id').html("");
   $('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
     var proveedor_id = $('#banco').val();
     console.log(proveedor_id)
@@ -178,6 +184,7 @@ function getMateriales() {
     console.log(data)
     if(data.length !== 0){
         $('#material-info').removeAttr("hidden");
+        $('#material_id').html('<option value="">Material</option>');
         for(var i = 0; i < data.length; i++){
            $('#material_id').append('<option value='+data[i].id+'>'+data[i].nombre_concepto+'</option>');
            if(i+1 == data.length){
