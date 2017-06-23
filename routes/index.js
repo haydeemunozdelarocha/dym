@@ -548,21 +548,18 @@ router.get('/obras',isLoggedIn, function(req, res, next) {
 });
 
 router.get('/obra/:obraid', isLoggedIn, function(req, res, next) {
-  var fecha = moment(new Date()).format("YYYY-MM-DD");
-  console.log(fecha);
-  var date1 = fecha + " 00:00";
-  var date2 = fecha + " 23:59";
-  var obra_id = req.params.obraid;
+var obra_id = req.params.obraid;
   var usuario = req.user;
-  var getObra = 'SELECT * FROM obras WHERE obra_id = '+obra_id+'; SELECT * FROM empleados WHERE obra = '+obra_id+';SELECT presupuestos.*,conceptos.nombre_concepto,zonas.nombre_zona FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = '+obra_id+' ORDER BY zona;SELECT COUNT(*) AS viajes FROM recibos JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id WHERE hora between "'+date1+'" AND "'+date2+'" AND recibos.obra_id = '+obra_id+';SELECT conceptos.nombre_concepto,zonas.nombre_zona,SUM(presupuestos.cantidad) AS cantidad_presupuestada, SUM(acarreos_flete.cantidad) AS acumulado,SUM(presupuestos.total) AS total_presupuesto FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN presupuestos ON presupuestos.concepto = acarreos_flete.concepto_flete AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id WHERE recibos.obra_id = '+obra_id+' AND acarreos_flete.concepto_flete = 82 GROUP BY concepto_flete,zona_id UNION SELECT conceptos.nombre_concepto,zonas.nombre_zona,SUM(presupuestos.cantidad) AS cantidad_presupuestada, SUM(acarreos_material.cantidad) AS acumulado,SUM(presupuestos.total) AS total_presupuesto FROM recibos JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN presupuestos ON presupuestos.concepto = acarreos_material.concepto_material AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id JOIN conceptos ON conceptos.conceptos_id = acarreos_material.concepto_material JOIN zonas ON zonas.zonas_id = recibos.zona_id WHERE recibos.obra_id = '+obra_id+' GROUP BY concepto_material,zona_id;';
-    console.log(getObra);
+  var getObra = 'SELECT * FROM obras WHERE obra_id = '+obra_id+';SELECT * FROM empleados WHERE obra = '+obra_id+';SELECT conceptos.nombre_concepto,recibos.zona_id,zonas.nombre_zona,(case when acarreos_flete.concepto_flete = 82 then SUM(acarreos_flete.cantidad) else SUM(acarreos_material.cantidad) end) AS acumulado,(case when acarreos_flete.concepto_flete then acarreos_flete.concepto_flete else acarreos_material.concepto_material end) AS concepto,(case when acarreos_flete.unidad then acarreos_flete.unidad else acarreos_material.unidad end) AS unidad,presupuestos.total AS total_presupuestado,presupuestos.cantidad AS cantidad_presupuestada,(SELECT (SUM(COALESCE(acarreos_flete.total_flete,0)) + SUM(COALESCE(acarreos_material.total_material, 0)))) AS total FROM recibos LEFT JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete OR acarreos_material.concepto_material= conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN presupuestos ON presupuestos.concepto = (case when acarreos_flete.concepto_flete then acarreos_flete.concepto_flete else acarreos_material.concepto_material end) AND presupuestos.zona = recibos.zona_id WHERE recibos.obra_id = '+obra_id+' AND presupuestos.obra = '+obra_id+' GROUP BY nombre_concepto,nombre_zona;';
     db.query(getObra, function(err, obra){
+        console.log(getObra)
     if(err) {
+      console.log(err);
           res.render('error',{message: 'No se encontró la información de la obra seleccionada.', usuario:usuario })
     }
     else {
-       console.log(obra[4])
-      res.render('obra', { title: obra[0].nombre_obra, obra: obra[0][0], presupuestos:obra[1],empleados:obra[2],viajes:obra[3], acumulados:obra[4],fecha: fecha,usuario:usuario });
+      console.log(obra[2])
+        res.render('obra',{usuario:usuario,obra:obra[0][0],empleados:obra[1],presupuestos:obra[2]})
     }
   });
 });
