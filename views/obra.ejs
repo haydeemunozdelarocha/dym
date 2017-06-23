@@ -20,13 +20,6 @@
   <div class="content-header"><p><h2 ><%= title %></h2></p></div>
 <div class="row">
   <div class="col-sm-4">
-    <div class="panel panel-default">
-    <div class="panel-heading">Viajes Totales</div>
-        <div id="viajes" style="padding:30px;text-align: center;">
-          <h1><%=viajes[0].viajes %></h1>
-          <p><%= fecha %>
-        </div>
-    </div>
   <div class="panel panel-default">
     <div class="panel-heading">Presupuesto Total</div>
         <canvas id="totalesChart"></canvas>
@@ -67,42 +60,8 @@
 </div>
 </div>
   <div class="col-sm-8">
-    <div class="panel panel-default">
-    <div class="panel-heading">Acumulado Acarreos</div>
-        <canvas id="acarreosChart"></canvas>
-        <div id="acarreos" style="padding:0px 10px;text-align: right;">
 
-        </div>
-    </div>
 
-  <div class="panel panel-default">
-      <div class="panel-heading">Acumulado Acarreos (Por Concepto)</div>
-      <div class="panel-body">
-      <table class="table table-striped" style="font-size: 12px">
-    <tr>
-      <td>Concepto</td>
-      <td>Zona</td>
-      <td>Cantidad Pres.</td>
-      <td>Cant Acum.</td>
-      <td>Total Pres.</td>
-      <td>Diferencia</td>
-     </tr>
-    <% for(var i=0; i<acumulados.length; i++) {%>
-    <tr>
-    <td><%= acumulados.nombre_concepto %></td>
-      <td><%= acumulados[i].nombre_concepto %></td>
-     <td><%= acumulados[i].nombre_zona %></td>
-     <%if (acumulados[i].acumulado > acumulados[i].cantidad_presupuestada){ %>
-      <td style="color: red;text-align: right;"><%= acumulados[i].cantidad_presupuestada.toLocaleString(); %> <%= acumulados[i].unidad %></td>
-      <td style="color: red;text-align: right;"><%= acumulados[i].acumulado %> <%= acumulados[i].unidad %></td>
-      <td style="color: red; text-align: right;">$<%= acumulados[i].total_presupuesto %></td>
-     <% } else { %>
-
-     </tr>
-     <% } %>
-    <% } %>
-    </table></div>
-</div>
 
     <div class="panel panel-default">
       <div class="panel-heading">Presupuestado vs Actual (Por Concepto)</div>
@@ -140,9 +99,10 @@
      </tr>
      <% } %>
     <% } %>
-    </table></div>
+    </table>
+    </div>
 </div>
-</div>
+
 
 </div>
 </div>
