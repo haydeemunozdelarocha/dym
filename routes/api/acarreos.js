@@ -32,7 +32,7 @@ var total_flete = req.body.precio_flete;
 var zona_id = Number(req.body.zona_id);
 var cantidad=req.body.capacidad;
 var date = Date.now();
-var timezone = moment.tz.guess();
+var timezone = "America/Mexico_City";
 var hora= moment.tz(date,timezone).format("YYYY-MM-DD hh:mm A");
 console.log(hora)
 var flete_id = req.body.flete_id;
@@ -154,6 +154,39 @@ router.get('/recibos', function(req, res, next ){
   });
 })
 
+router.get('/acumulado',isLoggedIn, function(req, res, next ){
+  var fecha = moment(new Date()).format("YYYY-MM-DD");
+  var obra_id = req.user.obra_id;
+  var acumulado ='SELECT conceptos.nombre_concepto,SUM(presupuestos.cantidad) AS total, SUM(acarreos_flete.cantidad) AS total_acumulado FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN presupuestos ON presupuestos.concepto = acarreos_flete.concepto_flete AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete WHERE recibos.obra_id = '+obra_id+' AND acarreos_flete.concepto_flete = 82 GROUP BY concepto_flete UNION SELECT conceptos.nombre_concepto,SUM(presupuestos.cantidad),SUM(acarreos_material.cantidad) AS total_acumulado FROM recibos  JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN presupuestos ON presupuestos.concepto = acarreos_material.concepto_material AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id JOIN conceptos ON conceptos.conceptos_id = acarreos_material.concepto_material WHERE recibos.obra_id = '+obra_id+' GROUP BY concepto_material;';
+  db.query(acumulado, function(err, acarreo){
+    if(err) {
+      res.send({message:'No se encontraron recibos.'})
+    }
+    else {
+        console.log('Buscando acarreo por id');
+        res.send(acarreo)
+    }
+  });
+})
+
+router.get('/viajes', function(req, res, next ){
+  var fecha = moment(new Date()).format("YYYY-MM-DD");
+  console.log(fecha);
+  var date1 = fecha + " 00:00";
+  var date2 = fecha + " 23:59";
+  var acumulado ='SELECT COUNT(*) AS viajes FROM recibos JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id WHERE hora between "'+date1+'" AND "'+date2+'";';
+  console.log(acumulado)
+  db.query(acumulado, function(err, acarreo){
+    if(err) {
+      res.send({message:'No se encontraron recibos.'})
+    }
+    else {
+        console.log('Buscando acarreo por id');
+        res.send(acarreo)
+    }
+  });
+})
+
 router.get('/flete', function(req, res, next ){
   var getAcarreo = "SELECT * FROM `acarreos_flete`";
   db.query(getAcarreo, function(err, acarreo){
@@ -261,7 +294,7 @@ router.post('/recibos/resumen',isLoggedIn, function(req, res, next ){
   var date= req.body.fecha;
   var categoria = req.body.categoria;
   var hora = moment(date).format("YYYY-MM-DD");
-  var timezone = moment.tz.guess();
+  var timezone = "America/Mexico_City";
   var hora_recibo= moment.tz(new Date(),timezone).format("YYYY-MM-DD hh:mm A");
   console.log(hora_recibo)
   var date1 = hora + " 00:00";

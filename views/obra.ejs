@@ -20,6 +20,13 @@
   <div class="content-header"><p><h2 ><%= title %></h2></p></div>
 <div class="row">
   <div class="col-sm-4">
+    <div class="panel panel-default">
+    <div class="panel-heading">Viajes Totales</div>
+        <div id="viajes" style="padding:30px;text-align: center;">
+          <h1><%=viajes[0].viajes %></h1>
+          <p><%= fecha %>
+        </div>
+    </div>
   <div class="panel panel-default">
     <div class="panel-heading">Presupuesto Total</div>
         <canvas id="totalesChart"></canvas>
@@ -61,6 +68,43 @@
 </div>
   <div class="col-sm-8">
     <div class="panel panel-default">
+    <div class="panel-heading">Acumulado Acarreos</div>
+        <canvas id="acarreosChart"></canvas>
+        <div id="acarreos" style="padding:0px 10px;text-align: right;">
+
+        </div>
+    </div>
+
+  <div class="panel panel-default">
+      <div class="panel-heading">Acumulado Acarreos (Por Concepto)</div>
+      <div class="panel-body">
+      <table class="table table-striped" style="font-size: 12px">
+    <tr>
+      <td>Concepto</td>
+      <td>Zona</td>
+      <td>Cantidad Pres.</td>
+      <td>Cant Acum.</td>
+      <td>Total Pres.</td>
+      <td>Diferencia</td>
+     </tr>
+    <% for(var i=0; i<acumulados.length; i++) {%>
+    <tr>
+    <td><%= acumulados.nombre_concepto %></td>
+      <td><%= acumulados[i].nombre_concepto %></td>
+     <td><%= acumulados[i].nombre_zona %></td>
+     <%if (acumulados[i].acumulado > acumulados[i].cantidad_presupuestada){ %>
+      <td style="color: red;text-align: right;"><%= acumulados[i].cantidad_presupuestada.toLocaleString(); %> <%= acumulados[i].unidad %></td>
+      <td style="color: red;text-align: right;"><%= acumulados[i].acumulado %> <%= acumulados[i].unidad %></td>
+      <td style="color: red; text-align: right;">$<%= acumulados[i].total_presupuesto %></td>
+     <% } else { %>
+
+     </tr>
+     <% } %>
+    <% } %>
+    </table></div>
+</div>
+
+    <div class="panel panel-default">
       <div class="panel-heading">Presupuestado vs Actual (Por Concepto)</div>
       <div class="panel-body">
       <canvas id="myChart"></canvas>
@@ -92,10 +136,7 @@
       <td style="color: red; text-align: right;">$<%= presupuestos[i].total %></td>
       <td style="color: red;text-align: right;"><%= (presupuestos[i].total - (presupuestos[i].acumulado * presupuestos[i].precio_unitario)) %></td>
      <% } else { %>
-      <td style="text-align: right;"><%= presupuestos[i].cantidad.toLocaleString(); %> <%= presupuestos[i].unidad %></td>
-      <td style="text-align: right;"><%= presupuestos[i].acumulado.toLocaleString(); %> <%= presupuestos[i].unidad %></td>
-      <td style="text-align: right;">$<%= presupuestos[i].total.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
-      <td style="text-align: right;">$<%= (presupuestos[i].total - (presupuestos[i].acumulado * presupuestos[i].precio_unitario)).toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+
      </tr>
      <% } %>
     <% } %>
@@ -106,7 +147,8 @@
 </div>
 </div>
 <script type="text/javascript">
-getPresupuestos()
+getPresupuestos();
+getAcumulado();
 var x = [];
 var presupuestado = [];
 var actual = []
@@ -150,7 +192,50 @@ var presupuestos = $.ajax({
 
 }
 
-getTotales()
+function getAcumulado() {
+  var x = [];
+var presupuestado = [];
+var actual = []
+var acumulado = $.ajax({
+    url: '/api/acarreos/acumulado/',
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  acumulado.done(function(data){
+    console.log(data)
+    for(var i = 0; i < data.length ; i ++){
+      x.push(data[i].nombre_concepto);
+      presupuestado.push(data[i].total)
+      actual.push(data[i].total_acumulado);
+    }
+    var ctx = document.getElementById('acarreosChart').getContext('2d');
+
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: x,
+        datasets: [{
+          label: 'Presupuestado',
+          data: presupuestado,
+          backgroundColor: "rgba(10, 83, 201,0.7)"
+        }, {
+          label: 'Actual',
+          data: actual,
+          backgroundColor: "rgba(10, 83, 201,0.4)"
+        }]
+      }
+    });
+  });
+
+  acumulado.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+          console.log('error');
+  });
+
+}
+
+getTotales();
 
 function getTotales() {
   var x = [];
