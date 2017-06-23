@@ -1,6 +1,6 @@
 
-// var path = "http://localhost:3000/";
-var path = 'http://dymingenieros.herokuapp.com/';
+var path = "http://localhost:3000/";
+// var path = 'http://dymingenieros.herokuapp.com/';
 var ids = [];
 
 
@@ -114,6 +114,7 @@ function filtroAcarreos(){
   var query = '';
   if(date1 && date2){
     query = query+'date1='+date1+'&date2='+date2+'&';
+    console.log(query)
   }
   if(categoria){
     query= query + 'categoria='+categoria+'&';

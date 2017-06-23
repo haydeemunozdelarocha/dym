@@ -650,6 +650,7 @@ router.get('/acarreos',isLoggedIn, function(req,res,err){
   var query = '';
   var query2 = '';
 //no query
+console.log(req.query)
       if(Object.keys(req.query).length === 0 && req.query.constructor === Object){
         console.log('no query')
           if(usuario.categoria === 'residente'){
@@ -683,7 +684,7 @@ router.get('/acarreos',isLoggedIn, function(req,res,err){
               console.log('if categoria')
               if(req.query.date1 && req.query.date2){
                   var date1 = req.query.date1+' 00:00';
-                  var date2 = req.query.date2+' 00:00';
+                  var date2 = req.query.date2+' 23:59';
                   fecha_query = fecha_query +'recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" ';
                   query = query + ' AND '+ fecha_query;
                   }
@@ -720,14 +721,14 @@ router.get('/acarreos',isLoggedIn, function(req,res,err){
                   proveedor_query = proveedor_query +'acarreos_material.banco_id = '+req.query.proveedor+' ';
                 query = query + ' AND '+ proveedor_query;
                 }
-                listaAcarreos = "SELECT 'Material', acarreos_material.recibo_id,proveedores.razon_social,acarreos_material.cantidad,acarreos_material.unidad, nombre_concepto, acarreos_material.total_material,acarreos_material.estimacion,recibos.hora,zonas.nombre_zona,recibos.foto FROM recibos LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN materiales ON materiales.id = acarreos_material.material_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id "+query+" ORDER BY recibo_id;SELECT obra_id,nombre_obra FROM obras;SELECT zonas_id,nombre_zona FROM zonas;SELECT id,razon_social FROM proveedores;SELECT conceptos_id,nombre_concepto FROM conceptos;";
+                listaAcarreos = "SELECT 'Material' As Type, acarreos_material.recibo_id,proveedores.razon_social,acarreos_material.cantidad,acarreos_material.unidad, nombre_concepto, acarreos_material.total_material,acarreos_material.estimacion,recibos.hora,zonas.nombre_zona,recibos.foto FROM recibos LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN materiales ON materiales.id = acarreos_material.material_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id "+query+" ORDER BY recibo_id;SELECT obra_id,nombre_obra FROM obras;SELECT zonas_id,nombre_zona FROM zonas;SELECT id,razon_social FROM proveedores;SELECT conceptos_id,nombre_concepto FROM conceptos;";
                 }//done with categoria material
         } else {
         //done with categoria
           console.log('no categoria')
               if(req.query.date1 && req.query.date2){
               var date1 = req.query.date1+' 00:00';
-              var date2 = req.query.date2+' 00:00';
+              var date2 = req.query.date2+' 23:59';
               query = query +' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" ';
               query2 = query2 +' AND recibos.hora BETWEEN "'+date1+'" AND "'+date2+'" ';
             } if(req.query.zona){
