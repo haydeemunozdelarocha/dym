@@ -114,6 +114,7 @@ function filtroAcarreos(){
   var query = '';
   if(date1 && date2){
     query = query+'date1='+date1+'&date2='+date2+'&';
+    console.log(query)
   }
   if(categoria){
     query= query + 'categoria='+categoria+'&';
