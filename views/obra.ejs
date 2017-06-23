@@ -82,22 +82,22 @@
       <td>Total Acum.</td>
       <td>Diferencia</td>
      </tr>
-    <% for(var i=0; i<presupuestos.length; i++) {%>
+    <% for(var i=0; i<acarreos.length; i++) {%>
     <tr>
-      <td><%= presupuestos[i].nombre_concepto %></td>
-     <td><%= presupuestos[i].nombre_zona %></td>
-     <%if (presupuestos[i].acumulado > presupuestos[i].cantidad_presupuestada){ %>
-      <td style="color: red;text-align: right;"><%= presupuestos[i].cantidad_presupuestada.toLocaleString(); %> <%= presupuestos[i].unidad %></td>
-      <td style="color: red;text-align: right;"><%= presupuestos[i].acumulado.toLocaleString(undefined, {minimumFractionDigits: 2}) %> <%= presupuestos[i].unidad %></td>
-      <td style="color: red; text-align: right;">$<%= presupuestos[i].total_presupuestado.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
-      <td style="color: red; text-align: right;">$<%= presupuestos[i].total.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
-      <td style="color: red; text-align: right;">$<%= (presupuestos[i].total_presupuestado - presupuestos[i].total).toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+      <td><%= acarreos[i].nombre_concepto %></td>
+     <td><%= acarreos[i].nombre_zona %></td>
+     <%if (acarreos[i].acumulado > acarreos[i].cantidad_presupuestada){ %>
+      <td style="color: red;text-align: right;"><%= acarreos[i].cantidad_presupuestada.toLocaleString(); %> <%= acarreos[i].unidad %></td>
+      <td style="color: red;text-align: right;"><%= acarreos[i].acumulado.toLocaleString(undefined, {minimumFractionDigits: 2}) %> <%= acarreos[i].unidad %></td>
+      <td style="color: red; text-align: right;">$<%= acarreos[i].total_presupuestado.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+      <td style="color: red; text-align: right;">$<%= acarreos[i].total.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+      <td style="color: red; text-align: right;">$<%= (acarreos[i].total_presupuestado - acarreos[i].total).toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
      <% } else { %>
-      <td style="text-align: right;"><%= presupuestos[i].cantidad_presupuestada.toLocaleString(); %> <%= presupuestos[i].unidad %></td>
-      <td style="text-align: right;"><%= presupuestos[i].acumulado.toLocaleString(); %> <%= presupuestos[i].unidad %></td>
-      <td style="text-align: right;">$<%= presupuestos[i].total_presupuestado.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
-      <td style="text-align: right;">$<%= presupuestos[i].total.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
-      <td style="text-align: right;">$<%= (presupuestos[i].total_presupuestado - presupuestos[i].total).toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+      <td style="text-align: right;"><%= acarreos[i].cantidad_presupuestada.toLocaleString(); %> <%= acarreos[i].unidad %></td>
+      <td style="text-align: right;"><%= acarreos[i].acumulado.toLocaleString(); %> <%= acarreos[i].unidad %></td>
+      <td style="text-align: right;">$<%= acarreos[i].total_presupuestado.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+      <td style="text-align: right;">$<%= acarreos[i].total.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+      <td style="text-align: right;">$<%= (acarreos[i].total_presupuestado - acarreos[i].total).toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
 
      </tr>
      <% } %>
@@ -114,8 +114,8 @@
   <a href="/presupuestos/editar/<%= obra.obra_id %>" style="display:block;padding-bottom: 10px;"><span class="glyphicon glyphicon-edit"></span> Editar Presupuesto</a>
   <br>
   <% } %>
-   <div class="panel panel-default">
-      <div class="panel-heading">Resumen Acarreos (Por Zona)</div>
+  <div class="panel panel-default">
+      <div class="panel-heading">Presupuesto (Por Zona)</div>
       <div class="panel-body">
       <table class="table table-striped" style="font-size: 12px">
     <tr>
@@ -124,26 +124,22 @@
       <td>Cantidad Pres.</td>
       <td>Cant Acum.</td>
       <td>Total Pres.</td>
-      <td>Total Acum.</td>
       <td>Diferencia</td>
      </tr>
     <% for(var i=0; i<presupuestos.length; i++) {%>
     <tr>
       <td><%= presupuestos[i].nombre_concepto %></td>
      <td><%= presupuestos[i].nombre_zona %></td>
-     <%if (presupuestos[i].acumulado > presupuestos[i].cantidad_presupuestada){ %>
-      <td style="color: red;text-align: right;"><%= presupuestos[i].cantidad_presupuestada.toLocaleString(); %> <%= presupuestos[i].unidad %></td>
-      <td style="color: red;text-align: right;"><%= presupuestos[i].acumulado.toLocaleString(undefined, {minimumFractionDigits: 2}) %> <%= presupuestos[i].unidad %></td>
-      <td style="color: red; text-align: right;">$<%= presupuestos[i].total_presupuestado.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
-      <td style="color: red; text-align: right;">$<%= presupuestos[i].total.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
-      <td style="color: red; text-align: right;">$<%= (presupuestos[i].total_presupuestado - presupuestos[i].total).toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+     <%if (presupuestos[i].acumulado > presupuestos[i].cantidad){ %>
+      <td style="color: red;text-align: right;"><%= presupuestos[i].cantidad.toLocaleString(); %> <%= presupuestos[i].unidad %></td>
+      <td style="color: red;text-align: right;"><%= presupuestos[i].acumulado %> <%= presupuestos[i].unidad %></td>
+      <td style="color: red; text-align: right;">$<%= presupuestos[i].total %></td>
+      <td style="color: red;text-align: right;"><%= (presupuestos[i].total - (presupuestos[i].acumulado * presupuestos[i].precio_unitario)) %></td>
      <% } else { %>
-      <td style="text-align: right;"><%= presupuestos[i].cantidad_presupuestada.toLocaleString(); %> <%= presupuestos[i].unidad %></td>
+      <td style="text-align: right;"><%= presupuestos[i].cantidad.toLocaleString(); %> <%= presupuestos[i].unidad %></td>
       <td style="text-align: right;"><%= presupuestos[i].acumulado.toLocaleString(); %> <%= presupuestos[i].unidad %></td>
-      <td style="text-align: right;">$<%= presupuestos[i].total_presupuestado.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
       <td style="text-align: right;">$<%= presupuestos[i].total.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
-      <td style="text-align: right;">$<%= (presupuestos[i].total_presupuestado - presupuestos[i].total).toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
-
+      <td style="text-align: right;">$<%= (presupuestos[i].total - (presupuestos[i].acumulado * presupuestos[i].precio_unitario)).toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
      </tr>
      <% } %>
     <% } %>

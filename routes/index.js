@@ -559,7 +559,7 @@ var obra_id = req.params.obraid;
     }
     else {
       console.log(obra[2])
-        res.render('obra',{usuario:usuario,obra:obra[0][0],empleados:obra[1],presupuestos:obra[2]})
+        res.render('obra',{usuario:usuario,obra:obra[0][0],empleados:obra[1],acarreos:obra[2]})
     }
   });
 });
