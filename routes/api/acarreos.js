@@ -44,11 +44,10 @@ var concepto_flete = Number(req.body.concepto_flete);
     var total_material = (Number(req.body.precio_material)*cantidad);
     var concepto_material = req.body.concepto_material;
   } else if(concepto_flete == 82){
-    flete_id = null;
     banco_id = null;
 } else {
     var material_id= Number(req.body.material_id);
-    var total_material = (Number(req.body.precio_material)*cantidad);
+    var total_material = (Number(req.body.precio_material));
     var concepto_material = req.body.concepto_material;
 }
       var nuevoRecibo = "INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id,camion_id) VALUES (?,?,?,?,?,?);";

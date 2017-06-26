@@ -107,6 +107,7 @@ function calcularAcarreoInt() {
   precio.done(function(data){
     if(data.length !== 0){
       console.log(data)
+        $('#flete_id').val(data[0].fletes_id);
         $('#precio_flete').val(data[0].precio*capacidad);
         $('#concepto_flete').val("82");
         $('#unidad').val(data[0].unidad);
@@ -209,8 +210,7 @@ function totalFlete(){
     var proveedor_id = $('#fletero').val();
     var banco_id = $('#banco').val();
     var capacidad = $('#capacidad').val();
-    console.log(proveedor_id)
-    console.log(banco_id)
+
 
     var precio = $.ajax({
     url: '/api/fletes/precio/',
@@ -218,16 +218,20 @@ function totalFlete(){
     dataType: 'json',
     data:{
       proveedor_id:proveedor_id,
-      banco_id:banco_id
+      banco_id:banco_id,
+      concepto:concepto_flete
     }
   });
 
   precio.done(function(data){
     console.log(data)
-    $('#flete_id').val(data[0].fletes_id);
-    $('#precio_flete').val(data[0].precio*capacidad);
-    $('#unidad').val(data[0].unidad);
+    $('#flete_id').val(data[0][0].fletes_id);
+    $('#precio_flete').val(data[0][0].precio*capacidad);
+    $('#unidad').val(data[0][0].unidad);
       if (concepto_flete === "92"){
+        $('#material_id').append('<option value="'+data[1][0].id+'">'+data[1][0].concepto+'</option>');
+        $('#material_id').removeAttr("disabled");
+        $('#material_id').val(data[1][0].id);
         $('#zonas').removeAttr("disabled");
 
       } else if (concepto_flete === "100"){

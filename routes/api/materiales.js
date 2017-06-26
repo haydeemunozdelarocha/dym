@@ -43,7 +43,7 @@ router.get('/', function(err,res){
 router.get('/acarreoint/:proveedorid', function(req,res,err){
   var id = Number(req.params.proveedorid);
   var obra_id = req.user.obra_id;
-  var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto FROM materiales INNER JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ? AND conceptos_id = 82';
+  var listaMaterialesProveedor = 'SELECT * FROM fletes WHERE fletes.proveedor_id = ? AND fletes.obra_id = ? AND banco = 0';
     db.query(listaMaterialesProveedor,[id,obra_id], function(err, rows){
     if(err) throw err;
     else {
