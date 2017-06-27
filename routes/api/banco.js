@@ -30,7 +30,7 @@ router.get('/:id', function(req,res,err){
 router.get('/materiales/:id', function(req,res,err){
   var banco_id = req.params.id;
   var obra_id = req.user.obra_id;
-  var getBanco = 'SELECT fletes.banco AS banco,proveedores.razon_social FROM fletes JOIN proveedores ON fletes.banco = proveedores.id WHERE proveedor_id = ?;';
+  var getBanco = 'SELECT fletes.banco AS banco,proveedores.razon_social FROM fletes JOIN proveedores ON fletes.banco = proveedores.id WHERE proveedor_id = ? AND fletes.banco != 0;';
 
     db.query(getBanco,[banco_id], function(err, banco){
     if(err) throw err;
@@ -44,7 +44,7 @@ router.get('/materiales/:id', function(req,res,err){
 router.get('/acarreoext/:id', function(req,res,err){
   var proveedor_id = req.params.id;
   console.log(proveedor_id)
-  var getBanco = 'SELECT fletes.banco,proveedores.razon_social FROM fletes LEFT JOIN proveedores ON fletes.banco = proveedores.id WHERE fletes.proveedor_id = ?;';
+  var getBanco = 'SELECT fletes.banco,proveedores.razon_social FROM fletes LEFT JOIN proveedores ON fletes.banco = proveedores.id WHERE fletes.proveedor_id = ? AND fletes.banco != 0;';
     db.query(getBanco,[proveedor_id], function(err, banco){
     if(err) throw err;
     else {

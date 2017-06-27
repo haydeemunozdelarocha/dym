@@ -9,6 +9,22 @@ var nuevaZona = 'INSERT INTO zonas(nombre_zona) VALUE(?)';
 var listaZonas = 'SELECT * FROM zonas';
 var borrarZona = 'DELETE FROM zonas WHERE zonas_id=?';
 
+router.get('/lista/:concepto', function(req,res,err){
+  console.log('getting zonas back')
+  var obra_id = req.user.obra_id;
+  var concepto = req.params.concepto;
+  console.log(concepto)
+  var listaZonas = 'SELECT presupuestos.zona,zonas.nombre_zona FROM presupuestos JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = '+obra_id+' AND concepto = '+concepto+';'
+    db.query(listaZonas, function(err, rows){
+      console.log(listaZonas)
+    if(err) {
+      console.log(err)
+    }
+    else {
+        res.json(rows);
+    }
+  });
+})
 
 //agregar material
 router.post('/', function(req,res, next){

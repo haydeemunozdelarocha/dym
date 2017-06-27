@@ -111,7 +111,8 @@ function calcularAcarreoInt() {
         $('#precio_flete').val(data[0].precio*capacidad);
         $('#concepto_flete').val("82");
         $('#unidad').val(data[0].unidad);
-        $('#zonas').removeAttr("disabled");
+        $('#material_id').removeAttr("required");
+        getZonas();
     } else {
       console.log('no data')
       alert('No se ha registrado el precio de flete para el proveedor de este camión.')
@@ -232,8 +233,7 @@ function totalFlete(){
         $('#material_id').append('<option value="'+data[1][0].id+'">'+data[1][0].concepto+'</option>');
         $('#material_id').removeAttr("disabled");
         $('#material_id').val(data[1][0].id);
-        $('#zonas').removeAttr("disabled");
-
+        getZonas();
       } else if (concepto_flete === "100"){
         getMateriales();
       }
@@ -260,13 +260,14 @@ function getMaterial() {
     $('#precio_material').val(Number(data.precio)*capacidad);
     $('#concepto_material').val(data.concepto);
     $('#concepto_flete').val(data.concepto);
+      getZonas();
+
     });
 
   material.fail(function(jqXHR, textStatus, errorThrown){
     console.log(errorThrown);
           console.log('no material');
   });
-  $('#zonas').removeAttr("disabled");
 }
 
 
@@ -314,6 +315,46 @@ if(camion_id.length >= 9){
 }
 }
 
+function getZonas() {
+  $('#zonas-status').html("");
+  $('#zonas').html("");
+  $('#zonas-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
+console.log("getting zonas");
+var concepto = $('#concepto_flete').val();
+console.log(concepto)
+
+  var zonas = $.ajax({
+    url: '/api/zonas/lista/'+concepto,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  zonas.done(function(data){
+    if(data.length > 0){
+    $('#zonas').html("<option value=''>Zonas</option>");
+    for(var i = 0; i <= data.length ; i++) {
+    $('#zonas').append("<option value='"+data[i].zona+"'>"+data[i].nombre_zona+"</option>");
+    if(data.length == i+1){
+    $('#zonas').append("<option value='122'>Extras</option>");
+    $('#zonas-status').html("");
+    $('#zonas').removeAttr("disabled");
+    }
+    }
+    } else {
+    $('#zonas').append("<option value='122'>Extras</option>");
+    $('#zonas-status').html("");
+    $('#zonas').removeAttr("disabled");
+    }
+    });
+
+  zonas.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+      $('#zonas-status').html("");
+      $('#zonas-status').alert("No existe presupuesto para esa zona y ese concepto.");
+  });
+
+}
+
 function getProveedores(){
   $('#proveedor_id').removeAttr("disabled");
 }
@@ -341,7 +382,7 @@ function allowSubmit(){
   $('#photo-button').attr("disabled", true);
   $('#submit-button').removeAttr("disabled")
   $('#concepto').removeAttr("disabled")
-  $('#zonas').removeAttr("disabled")
+  $('#zonas').removeAttr("disabled");
   $('#material_id').removeAttr("disabled")
   $('#scanner').removeAttr("disabled")
 }
