@@ -77,7 +77,7 @@ router.get('/',isLoggedIn, function(req, res, next) {
 router.get('/administrador', isLoggedIn, function(req, res, next) {
   var usuario = req.user;
   var getObras = 'SELECT * FROM obras ORDER BY obra_id ASC;';
-  var getEstimaciones = 'SELECT estimaciones.*,obras.nombre_obra FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id WHERE status = "por autorizar";';
+  var getEstimaciones = 'SELECT estimaciones.*,obras.nombre_obra FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id WHERE proceso = "por autorizar";';
   var getPresupuesto = 'SELECT presupuestos.obra,obras.nombre_obra, sum(total) AS total_concepto, sum(acumulado*precio_unitario) AS total_costo FROM presupuestos JOIN obras ON presupuestos.obra = obras.obra_id GROUP BY obra;';
     db.query(getObras, function(err, obras){
     if(err) throw err;
