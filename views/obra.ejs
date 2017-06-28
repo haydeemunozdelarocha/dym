@@ -25,6 +25,31 @@
         <canvas id="totalesChart"></canvas>
         <div id="totales" style="padding:0px 10px;text-align: right;"></div>
     </div>
+    <div class="panel panel-default">
+    <div class="panel-heading">Estimaciones (Por autorizar)</div>
+  <div class="panel-body">
+ <table class="table table-striped" style="font-size: 14px">
+    <tr>
+      <td>Número</td>
+      <td>Obra</td>
+      <td>Total</td>
+     </tr>
+     <% if (estimaciones.length < 1) { %>
+     <td>No hay estimaciones por autorizar.</td>
+     <td></td>
+     <td></td>
+     <% } %>
+    <% for(var i=0; i<estimaciones.length; i++) {%>
+    <tr>
+      <td><a href="/estimaciones/<%= estimaciones[i].estimaciones_id %>"><%= estimaciones[i].numero %></a></td>
+      <td><%= estimaciones[i].nombre_obra %></td>
+      <td><%= estimaciones[i].total.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+      <td><a href="/estimaciones/<%= estimaciones[i].estimaciones_id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
+     </tr>
+    <% } %>
+    </table>
+  </div>
+</div>
   <div class="panel panel-default">
     <div class="panel-heading">Información</div>
   <div class="panel-body">
