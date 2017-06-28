@@ -41,13 +41,12 @@ router.get('/prueba', function(req,res,err){
     }
     else {
       if(!rows[0].proveedor_id && rows.length == 1){
-      return {message: 'No hay acarreos sin estimacion para esta semana.'};
+      console.log('No hay acarreos sin estimacion para esta semana.');
 
       } else {
-
-             console.log('---------')
-            var date = Date.now();
-            var fecha= moment(date).format("YYYY-MM-DD");
+        console.log('---------')
+        var date = Date.now();
+        var fecha= moment(date).format("YYYY-MM-DD");
               console.log(rows)
           //terminar loop
           async.eachSeries(rows, function (row, callback){
@@ -65,8 +64,8 @@ router.get('/prueba', function(req,res,err){
                 console.log(rows[0])
                 callback();
                 } else {
-                console.log(err.code +" : " + proveedor_id);
-                console.log("Error while performing Query");
+                console.log(err.code +" : No se pudo guardar la estimacion del proveedor " + proveedor_id);
+                console.log("Error al guardar la estimacion");
                  callback(null);
                 }
               })
@@ -82,7 +81,7 @@ router.get('/prueba', function(req,res,err){
                          console.log('done');
                       } else {
                         console.log(err);
-                        console.log("Error while performing Query");
+                        console.log("Error al actualizar el presupuesto");
                       }
                     })
             }
@@ -93,9 +92,7 @@ router.get('/prueba', function(req,res,err){
 })
 })
 
-function inner_callback() {
-  console.log('inner callback')
-}
+
 //Read table.
 router.get('/', function(req,res,err){
   console.log('getting request')
@@ -120,144 +117,144 @@ router.get('/autorizacion/costos', function(req,res,err){
   });
 })
 
-router.post('/', function(req,res,err) {
-  console.log('creando Estimacion')
-  var ids = req.body.acarreos;
-  var obra_id = req.user.obra_id;
-  var totales;
-  var categoria = req.body.categoria;
-  var articulos = [];
-  var estimacion_id;
-  var date = Date.now();
-  var fecha = moment(date).format("YYYY-MM-DD HH:mm");
-  var numero;
-  var status = "inicio";
-  var periodo_inicio = moment(req.body.date1).format("YYYY-MM-DD HH:mm");
-  var periodo_final = moment(req.body.date2).format("YYYY-MM-DD HH:mm");
-  var proveedor_id = req.body.proveedor_id;
-  console.log(ids)
-  console.log(categoria)
-  if(categoria === "flete"){
-     buscarAcarreos = 'SELECT acarreos_flete.concepto_flete,fletes.fletes_id, recibos.zona_id,fletes.precio,fletes.unidad,presupuestos.costo,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos_flete.total_flete) AS total_concepto, sum(acarreos_flete.cantidad) AS total_cantidad, IFNULL(presupuestos_id,(SELECT presupuestos.presupuestos_id FROM presupuestos WHERE obra = 442 AND concepto = 352)) AS presupuesto FROM acarreos_flete JOIN recibos ON acarreos_flete.recibo_id = recibos.recibo_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id LEFT JOIN proveedores ON fletes.proveedor_id = proveedores.id LEFT JOIN presupuestos ON presupuestos.concepto = acarreos_flete.concepto_flete AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id WHERE acarreo_id IN ('+ids+') GROUP BY concepto_flete,flete_id, zona_id;';
-  } else {
-     buscarAcarreos = 'SELECT acarreos_material.concepto_material,materiales.material_id, recibos.zona_id,materiales.precio,materiales.unidad,presupuestos.costo,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos_material.total_material) AS total_concepto, sum(acarreos_material.cantidad) AS total_cantidad, IFNULL(presupuestos_id,(SELECT presupuestos.presupuestos_id FROM presupuestos WHERE obra = 442 AND concepto = 352)) FROM acarreos_material JOIN recibos ON acarreos_material.recibo_id = recibos.recibo_id LEFT JOIN materiales ON acarreos_material.material_id = materiales.id LEFT JOIN proveedores ON acarreos_material.banco_id = proveedores.id LEFT JOIN presupuestos ON presupuestos.concepto = acarreos_material.concepto_material AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id WHERE acarreos_mat_id IN ('+ids+') GROUP BY concepto_material,material_id, zona_id;';
-  }
-    console.log(buscarAcarreos)
-    var lastEstimacion = 'SELECT * FROM estimaciones WHERE obra ='+obra_id+' ORDER BY estimaciones_id DESC LIMIT 1;'
-      db.query(lastEstimacion).then(function(rows,err){
-        if (!rows[0]){
-          console.log("no numero")
-          console.log(rows)
-          numero = 1;
-        }else {
-          console.log('setting numero')
-          console.log(rows)
-          numero = rows[0].numero + 1;
-          console.log(numero)
-        }
-        var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,proveedor_id,categoria,status,numero) VALUE('+obra_id+',"'+fecha+'","'+periodo_inicio+'","'+periodo_final+'",'+proveedor_id+',"'+categoria+'","'+status+'",'+numero+');';
-            console.log(nuevaEstimacion)
-        return db.query(nuevaEstimacion)
-      }).then(function(rows,err){
-            estimacion_id = rows.insertId;
-            console.log(estimacion_id)
-            if (categoria === "flete"){
-              editarAcarreosEst = 'UPDATE acarreos_flete SET estimacion_id ='+estimacion_id+' WHERE acarreo_id IN('+ids+');UPDATE acarreos_flete SET estimacion = "Y" WHERE acarreo_id IN ('+ids+');'
+// router.post('/', function(req,res,err) {
+//   console.log('creando Estimacion')
+//   var ids = req.body.acarreos;
+//   var obra_id = req.user.obra_id;
+//   var totales;
+//   var categoria = req.body.categoria;
+//   var articulos = [];
+//   var estimacion_id;
+//   var date = Date.now();
+//   var fecha = moment(date).format("YYYY-MM-DD HH:mm");
+//   var numero;
+//   var status = "inicio";
+//   var periodo_inicio = moment(req.body.date1).format("YYYY-MM-DD HH:mm");
+//   var periodo_final = moment(req.body.date2).format("YYYY-MM-DD HH:mm");
+//   var proveedor_id = req.body.proveedor_id;
+//   console.log(ids)
+//   console.log(categoria)
+//   if(categoria === "flete"){
+//      buscarAcarreos = 'SELECT acarreos_flete.concepto_flete,fletes.fletes_id, recibos.zona_id,fletes.precio,fletes.unidad,presupuestos.costo,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos_flete.total_flete) AS total_concepto, sum(acarreos_flete.cantidad) AS total_cantidad, IFNULL(presupuestos_id,(SELECT presupuestos.presupuestos_id FROM presupuestos WHERE obra = 442 AND concepto = 352)) AS presupuesto FROM acarreos_flete JOIN recibos ON acarreos_flete.recibo_id = recibos.recibo_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id LEFT JOIN proveedores ON fletes.proveedor_id = proveedores.id LEFT JOIN presupuestos ON presupuestos.concepto = acarreos_flete.concepto_flete AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id WHERE acarreo_id IN ('+ids+') GROUP BY concepto_flete,flete_id, zona_id;';
+//   } else {
+//      buscarAcarreos = 'SELECT acarreos_material.concepto_material,materiales.material_id, recibos.zona_id,materiales.precio,materiales.unidad,presupuestos.costo,presupuestos.total AS presupuestado,presupuestos.acumulado, sum(acarreos_material.total_material) AS total_concepto, sum(acarreos_material.cantidad) AS total_cantidad, IFNULL(presupuestos_id,(SELECT presupuestos.presupuestos_id FROM presupuestos WHERE obra = 442 AND concepto = 352)) FROM acarreos_material JOIN recibos ON acarreos_material.recibo_id = recibos.recibo_id LEFT JOIN materiales ON acarreos_material.material_id = materiales.id LEFT JOIN proveedores ON acarreos_material.banco_id = proveedores.id LEFT JOIN presupuestos ON presupuestos.concepto = acarreos_material.concepto_material AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id WHERE acarreos_mat_id IN ('+ids+') GROUP BY concepto_material,material_id, zona_id;';
+//   }
+//     console.log(buscarAcarreos)
+//     var lastEstimacion = 'SELECT * FROM estimaciones WHERE obra ='+obra_id+' ORDER BY estimaciones_id DESC LIMIT 1;'
+//       db.query(lastEstimacion).then(function(rows,err){
+//         if (!rows[0]){
+//           console.log("no numero")
+//           console.log(rows)
+//           numero = 1;
+//         }else {
+//           console.log('setting numero')
+//           console.log(rows)
+//           numero = rows[0].numero + 1;
+//           console.log(numero)
+//         }
+//         var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,proveedor_id,categoria,status,numero) VALUE('+obra_id+',"'+fecha+'","'+periodo_inicio+'","'+periodo_final+'",'+proveedor_id+',"'+categoria+'","'+status+'",'+numero+');';
+//             console.log(nuevaEstimacion)
+//         return db.query(nuevaEstimacion)
+//       }).then(function(rows,err){
+//             estimacion_id = rows.insertId;
+//             console.log(estimacion_id)
+//             if (categoria === "flete"){
+//               editarAcarreosEst = 'UPDATE acarreos_flete SET estimacion_id ='+estimacion_id+' WHERE acarreo_id IN('+ids+');UPDATE acarreos_flete SET estimacion = "Y" WHERE acarreo_id IN ('+ids+');'
 
-            } else {
-              editarAcarreosEst = 'UPDATE acarreos_material SET estimacion_id ='+estimacion_id+' WHERE acarreos_mat_id IN('+ids+');UPDATE acarreos_material SET estimacion = "Y" WHERE acarreo_id IN ('+ids+');'
-            }
-            return db.query(editarAcarreosEst)
-      }).then(function(rows,err){
-        console.log(editarAcarreosEst)
-        return db.query(buscarAcarreos)
-      }).then( function(rows,err){
-        console.log(rows)
-        if(err) throw err;
-        else {
-          if(rows.length < 1){
-            res.send({message: "No se encontraron acarreos en esa fecha"})
-          }
-            totales = JSON.stringify(rows);
-            totales = JSON.parse(totales);
-            console.log('setting totales')
-            console.log(totales)
-            for(var i = 0; i < totales.length ; i++){
-              if(categoria === "flete"){
-                var concepto_id = Number(totales[i].concepto_flete);
-              } else {
-                 var concepto_id = Number(totales[i].concepto);
-              }
-              var zona_id = totales[i].zona_id;
-              var esta_estimacion = Number(totales[i].total_cantidad);
-              var importe = totales[i].total_concepto;
-              var unidad = totales[i].unidad;
-              var cantidad_presupuestada = Number(totales[i].presupuestado);
-              var acumulado_anterior = Number(totales[i].acumulado);
-              var acumulado_actual = acumulado_anterior + esta_estimacion;
-              var por_ejercer = cantidad_presupuestada - acumulado_actual;
-              var precio_unitario = totales[i].precio;
-              var presupuesto_id = totales[i].presupuesto;
-              var costo_acumulado = totales[i].costo + importe;
-              console.log(costo_acumulado)
+//             } else {
+//               editarAcarreosEst = 'UPDATE acarreos_material SET estimacion_id ='+estimacion_id+' WHERE acarreos_mat_id IN('+ids+');UPDATE acarreos_material SET estimacion = "Y" WHERE acarreo_id IN ('+ids+');'
+//             }
+//             return db.query(editarAcarreosEst)
+//       }).then(function(rows,err){
+//         console.log(editarAcarreosEst)
+//         return db.query(buscarAcarreos)
+//       }).then( function(rows,err){
+//         console.log(rows)
+//         if(err) throw err;
+//         else {
+//           if(rows.length < 1){
+//             res.send({message: "No se encontraron acarreos en esa fecha"})
+//           }
+//             totales = JSON.stringify(rows);
+//             totales = JSON.parse(totales);
+//             console.log('setting totales')
+//             console.log(totales)
+//             for(var i = 0; i < totales.length ; i++){
+//               if(categoria === "flete"){
+//                 var concepto_id = Number(totales[i].concepto_flete);
+//               } else {
+//                  var concepto_id = Number(totales[i].concepto);
+//               }
+//               var zona_id = totales[i].zona_id;
+//               var esta_estimacion = Number(totales[i].total_cantidad);
+//               var importe = totales[i].total_concepto;
+//               var unidad = totales[i].unidad;
+//               var cantidad_presupuestada = Number(totales[i].presupuestado);
+//               var acumulado_anterior = Number(totales[i].acumulado);
+//               var acumulado_actual = acumulado_anterior + esta_estimacion;
+//               var por_ejercer = cantidad_presupuestada - acumulado_actual;
+//               var precio_unitario = totales[i].precio;
+//               var presupuesto_id = totales[i].presupuesto;
+//               var costo_acumulado = totales[i].costo + importe;
+//               console.log(costo_acumulado)
 
-                  var options = {
-                    method: 'POST',
-                    uri: path+'api/estimaciones/articulos',
-                    body: {
-                          concepto_id: concepto_id,
-                          esta_estimacion:esta_estimacion,
-                          precio_unitario:precio_unitario,
-                          importe: importe,
-                          estimacion_id: estimacion_id,
-                          zona_id:zona_id,
-                          unidad:unidad,
-                          cantidad_presupuestada:cantidad_presupuestada,
-                          acumulado_anterior: acumulado_anterior,
-                          acumulado_actual: acumulado_actual,
-                          por_ejercer: por_ejercer,
-                          presupuesto_id:presupuesto_id,
-                          costo_acumulado:costo_acumulado
-                    },
-                    json: true // Automatically stringifies the body to JSON
-                };
-                rp(options).then(function(response) {
-                  console.log(response)
-                  articulos.push(response.articulo)
-                  if (articulos.length == totales.length) {
-                    console.log(estimacion_id)
-                    var estimacionTotales = 'SELECT sum(importe) AS subtotal FROM estimacion_articulo WHERE estimacion_id = '+estimacion_id;
-                          db.query(estimacionTotales).then(function(rows,err){
-                            console.log(rows)
-                            var subtotal = Number(rows[0].subtotal);
-                            var retencion;
-                            var iva;
-                            var total;
-                            if (categoria === "flete"){
-                              console.log(categoria);
-                              retencion = subtotal * .04;
-                              retencion = retencion.toFixed(2);
-                              iva = subtotal*.16
-                              total = subtotal - retencion + iva;
-                            } else {
-                              retencion = 0;
-                              iva = subtotal * .16;
-                              total = subtotal + iva;
+//                   var options = {
+//                     method: 'POST',
+//                     uri: path+'api/estimaciones/articulos',
+//                     body: {
+//                           concepto_id: concepto_id,
+//                           esta_estimacion:esta_estimacion,
+//                           precio_unitario:precio_unitario,
+//                           importe: importe,
+//                           estimacion_id: estimacion_id,
+//                           zona_id:zona_id,
+//                           unidad:unidad,
+//                           cantidad_presupuestada:cantidad_presupuestada,
+//                           acumulado_anterior: acumulado_anterior,
+//                           acumulado_actual: acumulado_actual,
+//                           por_ejercer: por_ejercer,
+//                           presupuesto_id:presupuesto_id,
+//                           costo_acumulado:costo_acumulado
+//                     },
+//                     json: true // Automatically stringifies the body to JSON
+//                 };
+//                 rp(options).then(function(response) {
+//                   console.log(response)
+//                   articulos.push(response.articulo)
+//                   if (articulos.length == totales.length) {
+//                     console.log(estimacion_id)
+//                     var estimacionTotales = 'SELECT sum(importe) AS subtotal FROM estimacion_articulo WHERE estimacion_id = '+estimacion_id;
+//                           db.query(estimacionTotales).then(function(rows,err){
+//                             console.log(rows)
+//                             var subtotal = Number(rows[0].subtotal);
+//                             var retencion;
+//                             var iva;
+//                             var total;
+//                             if (categoria === "flete"){
+//                               console.log(categoria);
+//                               retencion = subtotal * .04;
+//                               retencion = retencion.toFixed(2);
+//                               iva = subtotal*.16
+//                               total = subtotal - retencion + iva;
+//                             } else {
+//                               retencion = 0;
+//                               iva = subtotal * .16;
+//                               total = subtotal + iva;
 
-                            }
-                               iva = iva.toFixed(2);
-                               total = total.toFixed(2);
-                            var updateTotals = 'UPDATE estimaciones SET subtotal ='+subtotal+',iva = '+iva+', retencion = '+retencion+', total = '+total+' WHERE estimaciones_id = '+estimacion_id+';';
-                            return db.query(updateTotals)
-                          }).then(function(rows,err){
-                            res.json({estimacion_id:estimacion_id})
-                          })
-                    }
-                })
-            }
-          }
-    })
-})
+//                             }
+//                                iva = iva.toFixed(2);
+//                                total = total.toFixed(2);
+//                             var updateTotals = 'UPDATE estimaciones SET subtotal ='+subtotal+',iva = '+iva+', retencion = '+retencion+', total = '+total+' WHERE estimaciones_id = '+estimacion_id+';';
+//                             return db.query(updateTotals)
+//                           }).then(function(rows,err){
+//                             res.json({estimacion_id:estimacion_id})
+//                           })
+//                     }
+//                 })
+//             }
+//           }
+//     })
+// })
 
 router.get('/obra/:obraid', function(req,res,err){
   var obra_id = req.params.obraid;
@@ -272,34 +269,34 @@ router.get('/obra/:obraid', function(req,res,err){
   });
 })
 
-router.post('/articulos', function(req,res,err){
-  console.log('articulos')
-  console.log(req.body)
- var concepto_id= req.body.concepto_id;
-var esta_estimacion = req.body.esta_estimacion;
- var precio_unitario= req.body.precio_unitario;
- var importe= req.body.importe;
- var estimacion_id = req.body.estimacion_id;
- var zona_id = req.body.zona_id;
- var unidad = req.body.unidad;
-  var cantidad_presupuestada = req.body.cantidad_presupuestada;
-  var acumulado_anterior= req.body.acumulado_anterior;
-  var acumulado_actual= Number(req.body.acumulado_actual);
-  var costo_acumulado = req.body.costo_acumulado;
-  var por_ejercer= req.body.por_ejercer;
-  var presupuesto_id = req.body.presupuesto_id;
-  var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ?, costo = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revisar" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
-  console.log(acumulado_actual,costo_acumulado,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer)
-  db.query(nuevoArticuloEstimacion,[acumulado_actual,costo_acumulado,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer], function(err,articulo){
-    if (err) throw err;
-    else {
-        console.log(nuevoArticuloEstimacion)
-       articulo_id = articulo[2].insertId;
-       console.log(articulo_id)
-      res.json({articulo:articulo_id})
-    }
-  })
-})
+// router.post('/articulos', function(req,res,err){
+//   console.log('articulos')
+//   console.log(req.body)
+//  var concepto_id= req.body.concepto_id;
+// var esta_estimacion = req.body.esta_estimacion;
+//  var precio_unitario= req.body.precio_unitario;
+//  var importe= req.body.importe;
+//  var estimacion_id = req.body.estimacion_id;
+//  var zona_id = req.body.zona_id;
+//  var unidad = req.body.unidad;
+//   var cantidad_presupuestada = req.body.cantidad_presupuestada;
+//   var acumulado_anterior= req.body.acumulado_anterior;
+//   var acumulado_actual= Number(req.body.acumulado_actual);
+//   var costo_acumulado = req.body.costo_acumulado;
+//   var por_ejercer= req.body.por_ejercer;
+//   var presupuesto_id = req.body.presupuesto_id;
+//   var nuevoArticuloEstimacion = 'UPDATE presupuestos SET acumulado = ?, costo = ? WHERE presupuestos_id = ?; UPDATE estimaciones SET status = "revisar" WHERE estimaciones_id = ?; INSERT INTO estimacion_articulo(concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer) VALUE(?,?,?,?,?,?,?,?,?,?,?);';
+//   console.log(acumulado_actual,costo_acumulado,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer)
+//   db.query(nuevoArticuloEstimacion,[acumulado_actual,costo_acumulado,presupuesto_id,estimacion_id,concepto_id,esta_estimacion,precio_unitario,importe,estimacion_id,zona_id,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer], function(err,articulo){
+//     if (err) throw err;
+//     else {
+//         console.log(nuevoArticuloEstimacion)
+//        articulo_id = articulo[2].insertId;
+//        console.log(articulo_id)
+//       res.json({articulo:articulo_id})
+//     }
+//   })
+// })
 
 
 router.use(bodyParser.urlencoded({extended:true}))
