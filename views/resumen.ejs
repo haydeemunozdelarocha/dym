@@ -23,7 +23,8 @@
       </div>
       <input type="hidden" class="form-control" id="numero" name="numero" required autofocus autocomplete="off">
       <br>
-      <input type="date" class="form-control" id="fechaRecibo" name="fecha" required autofocus autocomplete="off" disabled>
+      <input type="hidden" class="form-control" id="categoria-proveedor" name="categoria" required>
+      <input type="date" class="form-control" id="fechaRecibo" name="fecha" required disabled onchange="checkDate();">
       <br>
     <input type="submit" id="submit-button" class="btn btn-primary" value="Ver Recibo" disabled="">
     <br>
@@ -35,6 +36,7 @@
 </div>
 <script>
   $(document).ready(function() {
+    console.log('runnning')
     var date = new Date();
 
     var day = date.getDate();
@@ -48,7 +50,7 @@
     $("#fechaRecibo").attr("value", today);
 });
 
-  function buscarCodigo(){
+function buscarCodigo(){
 $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
 
   var sticker = $('#sticker').val();
@@ -66,6 +68,7 @@ $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px
     } else {
     $('#status-codigo').html('<span style="color:green; font-size:24px;" class="glyphicon glyphicon-ok-sign"></span>');
     $('#numero').val(data.codigo);
+    $('#categoria-proveedor').val(data.categoria);
     $('#sticker').attr('readonly',true);
     $('#fechaRecibo').removeAttr('disabled');
     $('#submit-button').removeAttr('disabled');

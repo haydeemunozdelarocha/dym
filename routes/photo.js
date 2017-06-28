@@ -26,7 +26,7 @@ function firmaCostos(obra,estimacion_id) {
     var text = '<h2>Status estimación</h2><p>La estimación '+estimacion_id+' de '+obra+' ha sido creada y autorizada por el residente y el contratista. <a href="/estimaciones/'+estimacion_id+'">Haz click aquí para firmar >>.</a>';
     var mailOptions = {
     from: 'haydeemunozdelarocha@gmail.com', // sender address
-    to: 'haydee.mr0@hotmail.com', // list of receivers
+    to: 'creyes@grupodym.com', // list of receivers
     subject: 'Estimación '+estimacion_id+' de '+obra, // Subject line
     html: text // You can choose to send an HTML body instead
 };
