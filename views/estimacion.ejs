@@ -140,8 +140,9 @@
                     <div id = "firma_residente" style="width:200px; height:100px;"><img id="signature2" src="<%= estimacion[0].firma_residente %>" alt="" width="200px"></div>
                   <%} else {%>
                         <div id = "firma_residente" style="width:200px;background-color: lightgray; height:100px;"></div>
+                        <p>Residente</p>
                   <% } %>
-                  <p><%= estimacion[0].residente %></p>
+                                          <p>Residente</p>
                 </div>
                 <div class="col-sm-3">
                   <% if (!estimacion[0].autorizacion && usuario.categoria === "administrador") { %>

@@ -193,9 +193,9 @@ router.get('/estimaciones',isLoggedIn, function(req, res, next) {
   console.log('sending request')
       var query = '';
       if(req.user.categoria === "residente"){
-        query = ' WHERE estimaciones.obra = '+req.user.obra_id+' AND estimaciones.status != "cancelada" ';
+        query = ' WHERE estimaciones.obra = '+req.user.obra_id+' AND estimaciones.proceso != "cancelada" ';
       } else if(req.params.obra_id){
-        query = ' WHERE estimaciones.obra = '+req.query.obra_id+' AND estimaciones.status != "cancelada" ';
+        query = ' WHERE estimaciones.obra = '+req.query.obra_id+' AND estimaciones.proceso != "cancelada" ';
       } else if(req.user.categoria !== "residente"){
         if (Object.keys(req.query).length == 0){
         query = "";
@@ -550,7 +550,7 @@ router.get('/obras',isLoggedIn, function(req, res, next) {
 router.get('/obra/:obraid', isLoggedIn, function(req, res, next) {
 var obra_id = req.params.obraid;
   var usuario = req.user;
-  var getObra = 'SELECT * FROM obras WHERE obra_id = '+obra_id+';SELECT * FROM empleados WHERE obra = '+obra_id+';SELECT conceptos.nombre_concepto,recibos.zona_id,zonas.nombre_zona,(case when acarreos_flete.concepto_flete = 82 then SUM(acarreos_flete.cantidad) else SUM(acarreos_material.cantidad) end) AS acumulado,(case when acarreos_flete.concepto_flete then acarreos_flete.concepto_flete else acarreos_material.concepto_material end) AS concepto,(case when acarreos_flete.unidad then acarreos_flete.unidad else acarreos_material.unidad end) AS unidad,presupuestos.total AS total_presupuestado,presupuestos.cantidad AS cantidad_presupuestada,(SELECT (SUM(COALESCE(acarreos_flete.total_flete,0)) + SUM(COALESCE(acarreos_material.total_material, 0)))) AS total FROM recibos LEFT JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete OR acarreos_material.concepto_material= conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN presupuestos ON presupuestos.concepto = (case when acarreos_flete.concepto_flete then acarreos_flete.concepto_flete else acarreos_material.concepto_material end) AND presupuestos.zona = recibos.zona_id WHERE recibos.obra_id = '+obra_id+' AND presupuestos.obra = '+obra_id+' GROUP BY nombre_concepto,nombre_zona;SELECT presupuestos.*,conceptos.nombre_concepto,zonas.nombre_zona FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = '+obra_id+' ORDER BY zona;';
+  var getObra = 'SELECT * FROM obras WHERE obra_id = '+obra_id+';SELECT * FROM empleados WHERE obra = '+obra_id+';SELECT conceptos.nombre_concepto,recibos.zona_id,zonas.nombre_zona,(case when acarreos_flete.concepto_flete = 82 then SUM(acarreos_flete.cantidad) else SUM(acarreos_material.cantidad) end) AS acumulado,(case when acarreos_flete.concepto_flete then acarreos_flete.concepto_flete else acarreos_material.concepto_material end) AS concepto,(case when acarreos_flete.unidad then acarreos_flete.unidad else acarreos_material.unidad end) AS unidad,presupuestos.total AS total_presupuestado,presupuestos.cantidad AS cantidad_presupuestada,(SELECT (SUM(COALESCE(acarreos_flete.total_flete,0)) + SUM(COALESCE(acarreos_material.total_material, 0)))) AS total FROM recibos LEFT JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete OR acarreos_material.concepto_material= conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN presupuestos ON presupuestos.concepto = (case when acarreos_flete.concepto_flete then acarreos_flete.concepto_flete else acarreos_material.concepto_material end) AND presupuestos.zona = recibos.zona_id WHERE recibos.obra_id = '+obra_id+' AND presupuestos.obra = '+obra_id+' GROUP BY nombre_concepto,nombre_zona;SELECT presupuestos.*,conceptos.nombre_concepto,zonas.nombre_zona FROM presupuestos JOIN conceptos ON presupuestos.concepto = conceptos.conceptos_id JOIN zonas ON presupuestos.zona = zonas.zonas_id WHERE obra = '+obra_id+' ORDER BY zona;SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones LEFT JOIN obras ON estimaciones.obra = obras.obra_id LEFT JOIN proveedores ON estimaciones.proveedor_id = proveedores.id  WHERE estimaciones.obra = '+obra_id+' AND proceso = "pendiente";';
     db.query(getObra, function(err, obra){
         console.log(getObra)
     if(err) {
@@ -559,7 +559,7 @@ var obra_id = req.params.obraid;
     }
     else {
 
-        res.render('obra',{usuario:usuario,obra:obra[0][0],empleados:obra[1],acarreos:obra[2],presupuestos:obra[3]})
+        res.render('obra',{usuario:usuario,obra:obra[0][0],empleados:obra[1],acarreos:obra[2],presupuestos:obra[3],estimaciones:obra[4]})
     }
   });
 });

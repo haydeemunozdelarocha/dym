@@ -6,12 +6,62 @@ var db = require('../../db.js');
 var moment= require('moment');
 var request = require('request');
 var rp = require('request-promise');
+var later = require('later');
 
-var nuevaEstimacion = 'INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,residente,proveedor_id,numero,concepto,unidad,cantidad_presupuestada,acumulado_anterior,acumulado_actual,por_ejercer,precio_unitario,importe,subtotal,iva,retencion,total) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-var listaEstimaciones = 'SELECT estimaciones.*,obras.nombre_obra,proveedores.razon_social FROM estimaciones JOIN obras ON estimaciones.obra = obras.obra_id JOIN proveedores ON estimaciones.proveedor_id = proveedores.id;';
+var textSched = later.parse.text(' at 11:59pm every sunday');
+var timer = later.setTimeout(getEstimaciones, textSched);
+var timer2 = later.setInterval(getEstimaciones, textSched);
+timer2.clear();
 
 var path = 'http://dymingenieros.herokuapp.com/';
 var numero;
+
+
+function getEstimaciones(){
+  console.log('gettin estimaciones');
+  var today = new Date();
+  var date = new Date();
+  var laterDate = new Date(date.setDate(date.getDate() - 7));
+  var date1 =  moment(laterDate).format("YYYY-MM-DD HH:MM");
+  var date2 = moment(today).format("YYYY-MM-DD HH:MM");
+  var obra_id = 452;
+  console.log(date1);
+  console.log(date2);
+  var getProveedores = "SELECT fletes.proveedor_id FROM acarreos_flete JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id JOIN recibos ON recibos.recibo_id = acarreos_flete.recibo_id JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id JOIN proveedores ON proveedores.id = fletes.proveedor_id LEFT JOIN presupuestos ON presupuestos.zona = recibos.zona_id AND presupuestos.concepto = acarreos_flete.concepto_flete AND presupuestos.obra = recibos.obra_id WHERE recibos.obra_id = "+obra_id+" AND recibos.hora BETWEEN '"+date1+"' AND '"+date2+"' AND acarreos_flete.estimacion != 'Y' OR acarreos_flete.estimacion IS NULL GROUP BY proveedor_id UNION SELECT materiales.proveedor_id FROM recibos LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN materiales ON materiales.id = acarreos_material.material_id JOIN proveedores ON proveedores.id = acarreos_material.banco_id LEFT JOIN presupuestos ON presupuestos.zona = recibos.zona_id AND presupuestos.concepto = acarreos_material.concepto_material AND presupuestos.obra = recibos.obra_id WHERE recibos.obra_id = "+obra_id+" AND recibos.hora BETWEEN '"+date1+"' AND '"+date2+"' AND acarreos_material.estimacion != 'Y' OR acarreos_material.estimacion IS NULL GROUP BY proveedor_id;";
+  console.log(getProveedores)
+  db.query(getProveedores, function(err, rows){
+    if(err) {
+      console.log(err)
+    }
+    else {
+      console.log(rows[0].proveedor_id)
+      if(!rows[0].proveedor_id && rows.length == 1){
+      return {message: 'No hay acarreos sin estimacion para esta semana.'};
+
+      } else {
+          for(var i = 0; i<rows.length; i ++){
+            if(!rows[i].proveedor_id){
+              continue;
+            } else {
+            var proveedor_id = rows[i].proveedor_id;
+            }
+            console.log(proveedor_id)
+            var date = Date.now();
+            var fecha= moment(date).format("YYYY-MM-DD");
+            console.log(fecha)
+              var nuevaEstimacion = "DROP TEMPORARY TABLE IF EXISTS numero_table;CREATE TEMPORARY TABLE IF NOT EXISTS numero_table AS (SELECT CASE WHEN (SELECT estimaciones.numero FROM estimaciones ORDER BY estimaciones_id DESC LIMIT 1) IS NULL THEN (COALESCE((SELECT estimaciones.numero FROM estimaciones ORDER BY estimaciones_id DESC LIMIT 1),1)) ELSE (SELECT SUM((SELECT estimaciones.numero FROM estimaciones ORDER BY estimaciones_id DESC LIMIT 1) + 1)) END AS numero);INSERT INTO estimaciones(obra,fecha,periodo_inicio,periodo_final,proveedor_id,numero) VALUES ("+obra_id+",'"+fecha+"','"+date1+"','"+date2+"',(SELECT proveedores.id FROM proveedores WHERE id = "+proveedor_id+"),(SELECT * FROM numero_table ORDER BY numero DESC LIMIT 1));INSERT INTO estimacion_articulo(cantidad_presupuestada,acumulado_anterior,acumulado_actual,precio_unitario,concepto_id,zona_id,esta_estimacion,unidad,importe,por_ejercer,estimacion_id) SELECT COALESCE(presupuestos.cantidad,0) AS cantidad_presupuestada,COALESCE(presupuestos.acumulado,0) AS acumulado_anterior,COALESCE((presupuestos.acumulado+(SUM(acarreos_flete.cantidad))),0) AS acumulado_actual,fletes.precio AS precio_unitario,(select conceptos.conceptos_id from conceptos where conceptos_id = acarreos_flete.concepto_flete) AS concepto_id,(select zonas.zonas_id from zonas where zonas_id = recibos.zona_id) AS zona_id,SUM(acarreos_flete.cantidad) AS esta_estimacion,acarreos_flete.unidad, SUM(total_flete) AS importe,COALESCE((presupuestos.cantidad-(presupuestos.acumulado+SUM(acarreos_flete.cantidad))),0) AS por_ejercer,(SELECT estimaciones.estimaciones_id FROM estimaciones ORDER BY estimaciones_id DESC LIMIT 1) AS estimacion_id FROM acarreos_flete JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id JOIN recibos ON recibos.recibo_id = acarreos_flete.recibo_id JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id JOIN proveedores ON proveedores.id = fletes.proveedor_id LEFT JOIN presupuestos ON presupuestos.zona = recibos.zona_id AND presupuestos.concepto = acarreos_flete.concepto_flete AND presupuestos.obra = recibos.obra_id WHERE recibos.obra_id = "+obra_id+" AND recibos.hora BETWEEN '"+date1+"' AND '"+date2+"' AND fletes.proveedor_id = "+proveedor_id+" GROUP BY nombre_concepto,nombre_zona UNION SELECT COALESCE(presupuestos.cantidad,0) AS cantidad_presupuestada,COALESCE(presupuestos.acumulado,0) AS acumulado_anterior,COALESCE((presupuestos.acumulado+(SUM(acarreos_material.cantidad))),0) AS acumulado_actual,materiales.precio AS precio_unitario,(select conceptos.conceptos_id from conceptos where conceptos_id = acarreos_material.concepto_material) AS concepto_id,(select zonas.zonas_id from zonas where zonas_id = recibos.zona_id) AS zona_id,SUM(acarreos_material.cantidad) AS esta_estimacion,acarreos_material.unidad,SUM(total_material) AS importe,COALESCE((presupuestos.cantidad-(presupuestos.acumulado+SUM(acarreos_material.cantidad))),0) AS por_ejercer,(SELECT estimaciones.estimaciones_id FROM estimaciones ORDER BY estimaciones_id DESC LIMIT 1) AS estimacion_id FROM recibos LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN materiales ON materiales.id = acarreos_material.material_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id LEFT JOIN presupuestos ON presupuestos.zona = recibos.zona_id AND presupuestos.concepto = acarreos_material.concepto_material AND presupuestos.obra = recibos.obra_id WHERE recibos.obra_id = "+obra_id+" AND materiales.proveedor_id = "+proveedor_id+" AND recibos.hora BETWEEN '"+date1+"' AND '"+date2+"' GROUP BY nombre_concepto,nombre_zona;UPDATE acarreos_flete t2,(   SELECT acarreos_flete.acarreo_id As acarreo_id FROM acarreos_flete JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id JOIN recibos ON recibos.recibo_id = acarreos_flete.recibo_id JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id JOIN proveedores ON proveedores.id = fletes.proveedor_id LEFT JOIN presupuestos ON presupuestos.zona = recibos.zona_id AND presupuestos.concepto = acarreos_flete.concepto_flete AND presupuestos.obra = recibos.obra_id WHERE recibos.obra_id = "+obra_id+" AND recibos.hora BETWEEN '"+date1+"' AND '"+date2+"' AND fletes.proveedor_id = "+proveedor_id+" ) t1 SET t2.estimacion = 'Y' WHERE t2.acarreo_id = t1.acarreo_id;UPDATE acarreos_material t2, (   SELECT acarreos_material.acarreos_mat_id AS acarreo_id FROM recibos LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN materiales ON materiales.id = acarreos_material.material_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id LEFT JOIN presupuestos ON presupuestos.zona = recibos.zona_id AND presupuestos.concepto = acarreos_material.concepto_material AND presupuestos.obra = recibos.obra_id WHERE recibos.obra_id = "+obra_id+" AND materiales.proveedor_id = "+proveedor_id+" AND recibos.hora BETWEEN '"+date1+"' AND '"+date2+"' ) t1 SET t2.estimacion = 'Y' WHERE t2.acarreos_mat_id = t1.acarreo_id; UPDATE presupuestos t3,(  SELECT presupuestos.presupuestos_id AS id,(presupuestos.acumulado+(SUM(acarreos_flete.cantidad))) AS acumulado_actual FROM acarreos_flete JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id JOIN recibos ON recibos.recibo_id = acarreos_flete.recibo_id JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN fletes ON acarreos_flete.flete_id = fletes.fletes_id JOIN proveedores ON proveedores.id = fletes.proveedor_id JOIN presupuestos ON presupuestos.zona = recibos.zona_id AND presupuestos.concepto = acarreos_flete.concepto_flete AND presupuestos.obra = recibos.obra_id WHERE recibos.obra_id = "+obra_id+" AND recibos.hora BETWEEN '"+date1+"' AND '"+date2+"' AND fletes.proveedor_id = "+proveedor_id+" GROUP BY nombre_concepto,nombre_zona ) t1 SET t3.acumulado = t1.acumulado_actual WHERE t3.presupuestos_id = t1.id; UPDATE presupuestos t4,(  SELECT presupuestos.presupuestos_id As id,(presupuestos.acumulado+(SUM(acarreos_material.cantidad))) AS acumulado_actual FROM recibos LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN materiales ON materiales.id = acarreos_material.material_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id JOIN presupuestos ON presupuestos.zona = recibos.zona_id AND presupuestos.concepto = acarreos_material.concepto_material AND presupuestos.obra = recibos.obra_id WHERE recibos.obra_id = "+obra_id+" AND materiales.proveedor_id = "+proveedor_id+" AND recibos.hora BETWEEN '"+date1+"' AND '"+date2+"' GROUP BY nombre_concepto,nombre_zona ) t1 SET t4.acumulado = t1.acumulado_actual WHERE t4.presupuestos_id = t1.id; UPDATE estimaciones t4,(SELECT estimacion_id,(SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END)*.4) AS retencion,(SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END) - (SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END)*.4) + SUM(CASE WHEN concepto_id != 92 || concepto_id != 82 THEN importe ELSE 0 END)) AS subtotal,((SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END) - (SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END)*.4) + SUM(CASE WHEN concepto_id != 92 || concepto_id != 82 THEN importe ELSE 0 END))*.16) AS iva,(((SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END) - (SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END)*.4) + SUM(CASE WHEN concepto_id != 92 || concepto_id != 82 THEN importe ELSE 0 END))*.16)+SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END) - (SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END)*.4) + SUM(CASE WHEN concepto_id != 92 || concepto_id != 82 THEN importe ELSE 0 END)) AS total FROM estimacion_articulo WHERE estimacion_id = (SELECT estimaciones.estimaciones_id FROM estimaciones ORDER BY estimaciones_id DESC LIMIT 1)) t1 SET t4.proceso = 'pendiente',t4.retencion = t1.retencion,t4.subtotal = t1.subtotal,t4.iva = t1.iva,t4.total = t1.total WHERE t4.estimaciones_id = t1.estimacion_id; SELECT * FROM estimaciones;";
+              db.query(nuevaEstimacion, function(err, rows){
+                console.log(nuevaEstimacion)
+              if(err) {console.log(err)}
+              else {
+                return 'done';
+                }
+                });
+          }
+      }
+  }
+})
+}
 
 //Read table.
 router.get('/', function(req,res,err){
