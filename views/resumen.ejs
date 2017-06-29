@@ -72,7 +72,7 @@ $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px
     $('#sticker').attr('readonly',true);
     $('#fechaRecibo').removeAttr('disabled');
     $('#submit-button').removeAttr('disabled');
-    if(data.categoria === "pipa"){
+    if(data.camion_categoria === "pipa"){
       $("#resumen-form").attr("action", "/api/acarreos/pipa/resumen");
     }
     }

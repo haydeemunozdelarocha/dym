@@ -301,7 +301,7 @@ if(camion_id.length >= 9){
       $('#capacidad').val(data[0].capacidad)
       $('#search-status').html("");
       if(data[0].categoria === "pipa"){
-        $('#direccion-info').removeAttr("hidden");
+        checkProveedor();
       } else {
         $('.categoria-info').removeAttr("hidden");
         $('#categoria').removeAttr("disabled");
