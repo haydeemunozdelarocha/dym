@@ -523,6 +523,14 @@ router.get('/estimaciones/editar/:id',isLoggedIn, function(req, res, next) {
   });
 });
 
+router.get('/precio/:articulo/:concepto/:estimacion', isLoggedIn, function(req,res,err){
+  var usuario = req.user;
+  var articulo = req.params.articulo;
+  var concepto = req.params.concepto;
+  var estimacion = req.params.estimacion;
+  res.render('editarticuloprecio',{usuario:usuario, articulo:articulo, estimacion:estimacion,concepto:concepto})
+})
+
 router.get('/signature/:categoria/:id/:obra', isLoggedIn, function(req,res,err){
   var usuario = req.user;
   var categoria = req.params.categoria;

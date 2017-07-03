@@ -653,3 +653,26 @@ $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px
     console.log(errorThrown);
   });
 }
+
+function editarPrecio(articulo,estimacion,concepto){
+var precio_unitario = $('#precio').val();
+  var precio = $.ajax({
+    url: '/api/estimaciones/precio/'+articulo+'/'+estimacion+'/'+concepto,
+    type: 'POST',
+    data:{
+      precio:precio_unitario
+    }
+  });
+
+  precio.done(function(data){
+    console.log(data)
+    if(data.done){
+      window.opener.location.reload(false);
+       window.close ();
+    }
+    });
+
+  precio.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+  });
+}

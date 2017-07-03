@@ -9,8 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
     <script type="text/javascript" src="libs/png_support/zlib.js"></script>
     <script type="text/javascript" src="libs/png_support/png.js"></script>
-    <script type="text/javascript" src="jspdf.plugin.addimage.js"></script>
-    <script type="text/javascript" src="jspdf.plugin.png_support.js"></script>
+<!--     <script type="text/javascript" src="jspdf.plugin.addimage.js"></script>
+    <script type="text/javascript" src="jspdf.plugin.png_support.js"></script> -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel='stylesheet' href='/stylesheets/style.css' />
@@ -85,6 +85,7 @@
                     <td>
                      Importe
                      </td>
+                     <td></td>
                    </tr>
                    <% for (var i = 0; i < articulos.length ; i++ ) { %>
                     <tr>
@@ -117,6 +118,9 @@
                      </td>
                      <td>
                       <p>$<%=articulos[i].importe %></p>
+                     </td>
+                     <td>
+                       <a href="javascript:window.open('http://localhost:3000/precio/<%=articulos[i].articulo_id %>/<%=articulos[i].concepto_id %>/<%=estimacion[0].estimaciones_id %>', 'preciowin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0');""><span class="glyphicon glyphicon-edit"></span></a>
                      </td>
                    </tr>
                    <% } %>

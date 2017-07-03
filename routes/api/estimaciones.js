@@ -9,22 +9,25 @@ var rp = require('request-promise');
 var later = require('later');
 var async = require('async');
 
-var textSched = later.parse.text(' at 11:59pm every sunday');
-var timer = later.setTimeout(getEstimaciones, textSched);
-var timer2 = later.setInterval(getEstimaciones, textSched);
-timer2.clear();
+// var textSched = later.parse.text(' at 11:59pm every sunday');
+// var timer = later.setTimeout(getEstimaciones, textSched);
+// var timer2 = later.setInterval(getEstimaciones, textSched);
+// timer2.clear();
 
 var path = 'http://dymingenieros.herokuapp.com/';
 var numero;
 
+router.get('/prueba', function(req,res,err){
 
-function getEstimaciones(){
+// function getEstimaciones(){
   console.log('gettin estimaciones');
   var today = new Date();
-  var date = new Date();
-  var laterDate = new Date(date.setDate(date.getDate() - 7));
-  var date1 =  moment(laterDate).format("YYYY-MM-DD HH:MM");
-  var date2 = moment(today).format("YYYY-MM-DD HH:MM");
+  // var date = new Date();
+  // var laterDate = new Date(date.setDate(date.getDate() - 7));
+  // var date1 =  moment(laterDate).format("YYYY-MM-DD HH:MM");
+  // var date2 = moment(today).format("YYYY-MM-DD HH:MM");
+    var date1 = '2017-06-18 23:59';
+  var date2 = '2017-06-25 23:59'
   var obra_id = 452;
   var resultados;
   var rounds = 0;
@@ -90,7 +93,7 @@ function getEstimaciones(){
     }
   }
 })
-}
+})
 
 
 //Read table.
@@ -255,6 +258,22 @@ router.get('/autorizacion/costos', function(req,res,err){
 //           }
 //     })
 // })
+
+router.post('/precio/:articuloid/:estimacionid/:conceptoid', function(req,res,err){
+  var articulo_id = req.params.articuloid;
+  var estimacion_id = req.params.estimacionid;
+  var precio = req.body.precio;
+  console.log('changing precio')
+  var listaEstimaciones = 'UPDATE estimacion_articulo SET precio_unitario = '+precio+', importe = (esta_estimacion * '+precio+') WHERE articulo_id = '+articulo_id+';UPDATE estimaciones t4,(SELECT estimacion_id,(SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END)*.04) AS retencion,(SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END) - (SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END)*.04) + SUM(CASE WHEN concepto_id != 92 || concepto_id != 82 THEN importe ELSE 0 END)) AS subtotal,((SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END) - (SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END)*.04) + SUM(CASE WHEN concepto_id != 92 || concepto_id != 82 THEN importe ELSE 0 END))*.16) AS iva,(((SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END) - (SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END)*.04) + SUM(CASE WHEN concepto_id != 92 || concepto_id != 82 THEN importe ELSE 0 END))*.16)+SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END) - (SUM(CASE WHEN concepto_id = 92 || concepto_id = 82 THEN importe ELSE 0 END)*.04) + SUM(CASE WHEN concepto_id != 92 || concepto_id != 82 THEN importe ELSE 0 END)) AS total FROM estimacion_articulo WHERE estimacion_id = '+estimacion_id+') t1 SET t4.retencion = t1.retencion,t4.subtotal = t1.subtotal,t4.iva = t1.iva,t4.total = t1.total WHERE t4.estimaciones_id = t1.estimacion_id;';
+
+console.log(listaEstimaciones)
+    db.query(listaEstimaciones, function(err, rows){
+    if(err) throw err;
+    else {
+        res.json({done:true});
+    }
+  });
+})
 
 router.get('/obra/:obraid', function(req,res,err){
   var obra_id = req.params.obraid;
