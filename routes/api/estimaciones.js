@@ -9,25 +9,22 @@ var rp = require('request-promise');
 var later = require('later');
 var async = require('async');
 
-// var textSched = later.parse.text(' at 11:59pm every sunday');
-// var timer = later.setTimeout(getEstimaciones, textSched);
-// var timer2 = later.setInterval(getEstimaciones, textSched);
-// timer2.clear();
+var textSched = later.parse.text(' at 11:59pm every sunday');
+var timer = later.setTimeout(getEstimaciones, textSched);
+var timer2 = later.setInterval(getEstimaciones, textSched);
+timer2.clear();
 
 var path = 'http://dymingenieros.herokuapp.com/';
 var numero;
 
 
-// function getEstimaciones(){
-router.get('/prueba', function(req,res,err){
+function getEstimaciones(){
   console.log('gettin estimaciones');
-  // var today = new Date();
-  // var date = new Date();
-  // var laterDate = new Date(date.setDate(date.getDate() - 7));
-  // var date1 =  moment(laterDate).format("YYYY-MM-DD HH:MM");
-  // var date2 = moment(today).format("YYYY-MM-DD HH:MM");
-  var date1 = '2017-06-18 23:59';
-  var date2 = '2017-06-25 23:59';
+  var today = new Date();
+  var date = new Date();
+  var laterDate = new Date(date.setDate(date.getDate() - 7));
+  var date1 =  moment(laterDate).format("YYYY-MM-DD HH:MM");
+  var date2 = moment(today).format("YYYY-MM-DD HH:MM");
   var obra_id = 452;
   var resultados;
   var rounds = 0;
@@ -93,7 +90,7 @@ router.get('/prueba', function(req,res,err){
     }
   }
 })
-})
+}
 
 
 //Read table.
