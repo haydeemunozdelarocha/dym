@@ -25,6 +25,21 @@
         <canvas id="totalesChart"></canvas>
         <div id="totales" style="padding:0px 10px;text-align: right;"></div>
     </div>
+     <div class="panel panel-default">
+    <div class="panel-heading">Acumulado de Hoy</div>
+      <div>
+        <select name="concepto-acumulado" id="concepto-acumulado" onchange="getAcumuladoDia()">
+        <option value="">Concepto</option>
+        <% for(var i=0; i<conceptos.length; i++) {%>
+        <option value="<%=conceptos[i].conceptos_id %>"><%=conceptos[i].nombre_concepto %></option>
+        <% } %>
+        </select>
+      </div>
+        <canvas id="acumuladodiaChart"></canvas>
+        <div id="acumuladodia" style="padding:0px 10px;text-align: right;">
+
+        </div>
+    </div>
     <div class="panel panel-default">
     <div class="panel-heading">Estimaciones (Por autorizar)</div>
   <div class="panel-body">
@@ -255,6 +270,54 @@ var acumulado = $.ajax({
 
 }
 
+getAcumuladoDia();
+function getAcumuladoDia() {
+var x = [];
+var presupuestado = [];
+var actual = [];
+var concepto= $('#concepto-acumulado').val() || 92;
+console.log(concepto)
+var acumulado = $.ajax({
+    url: '/api/acarreos/acumulado/dia',
+    type: 'POST',
+    dataType: 'json',
+    data:{
+      concepto: concepto
+    }
+  });
+
+  acumulado.done(function(data){
+    console.log(data)
+    for(var i = 0; i < data.length ; i ++){
+      x.push(data[i].nombre_concepto);
+      presupuestado.push(data[i].total)
+      actual.push(data[i].total_acumulado);
+    }
+    var ctx = document.getElementById('acumuladodiaChart').getContext('2d');
+
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: x,
+        datasets: [{
+          label: 'Presupuestado',
+          data: presupuestado,
+          backgroundColor: "rgba(10, 83, 201,0.7)"
+        }, {
+          label: 'Actual',
+          data: actual,
+          backgroundColor: "rgba(10, 83, 201,0.4)"
+        }]
+      }
+    });
+  });
+
+  acumulado.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+          console.log('error');
+  });
+
+}
 getTotales();
 
 function getTotales() {
