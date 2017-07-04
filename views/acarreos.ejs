@@ -73,7 +73,7 @@
   <% if(message) {%>
   <div id="mensaje-error"><%= message %></div>
   <% } %>
-<button class="btn btn-primary" style="margin-bottom: 10px;" onclick="sumarAcarreos('<% if (acarreos[0].unidad) {%><%=acarreos[0].unidad%><%} %>')">Sumar Resultados</button>
+<button class="btn btn-primary" style="margin-bottom: 10px;" onclick="sumarAcarreos('<% if (acarreos[0]) {%><%=acarreos[0].unidad%><%} %>')">Sumar Resultados</button>
 
 <div class="panel panel-default" id="acarreos-desktop">
   <!-- Default panel contents -->
