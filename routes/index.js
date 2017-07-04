@@ -642,7 +642,7 @@ router.get('/presupuestos/:id',isLoggedIn, function(req,res,err){
 router.get('/acarreos',isLoggedIn, function(req,res,err){
   var usuario = req.user;
   var obra_query='';
-  var concepto_query='';
+  var query_concepto='';
   var query_zona='';
   var recibo_query='';
   var estimacion_query='';
@@ -657,7 +657,7 @@ console.log(req.query)
           if(usuario.categoria === 'residente'){
               obra_query = 'WHERE recibos.obra_id = '+usuario.obra_id;
             }
-          var listaAcarreos = "SELECT 'Flete' As Type, acarreos_flete.recibo_id,razon_social,cantidad,acarreos_flete.unidad, nombre_concepto, total_flete,estimacion,hora,nombre_zona,foto FROM acarreos_flete JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id JOIN recibos ON recibos.recibo_id = acarreos_flete.recibo_id JOIN zonas ON zonas.zonas_id = recibos.zona_id  JOIN camiones ON recibos.camion_id = camiones.camion_id JOIN proveedores ON proveedores.id = camiones.proveedor_id UNION SELECT 'Material', acarreos_material.recibo_id,proveedores.razon_social,acarreos_material.cantidad,acarreos_material.unidad, nombre_concepto, acarreos_material.total_material,acarreos_material.estimacion,recibos.hora,zonas.nombre_zona,recibos.foto FROM recibos LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN materiales ON materiales.id = acarreos_material.material_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id "+obra_query+" ORDER BY recibo_id;SELECT obra_id,nombre_obra FROM obras;SELECT zonas_id,nombre_zona FROM zonas;SELECT id,razon_social FROM proveedores;SELECT conceptos_id,nombre_concepto FROM conceptos;";
+          var listaAcarreos = "SELECT 'Flete' As Type, acarreos_flete.recibo_id,razon_social,cantidad,acarreos_flete.unidad, nombre_concepto, total_flete,estimacion,hora,nombre_zona,foto FROM acarreos_flete JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id JOIN recibos ON recibos.recibo_id = acarreos_flete.recibo_id JOIN zonas ON zonas.zonas_id = recibos.zona_id  JOIN camiones ON recibos.camion_id = camiones.camion_id JOIN proveedores ON proveedores.id = camiones.proveedor_id UNION SELECT 'Material', acarreos_material.recibo_id,proveedores.razon_social,acarreos_material.cantidad,acarreos_material.unidad, nombre_concepto, acarreos_material.total_material,acarreos_material.estimacion,recibos.hora,zonas.nombre_zona,recibos.foto FROM recibos LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN materiales ON materiales.id = acarreos_material.material_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id "+obra_query+" ORDER BY hora DESC;SELECT obra_id,nombre_obra FROM obras;SELECT zonas_id,nombre_zona FROM zonas;SELECT id,razon_social FROM proveedores;SELECT conceptos_id,nombre_concepto FROM conceptos;";
   } else {
     //there is a query
           console.log('has query')

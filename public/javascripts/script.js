@@ -1,6 +1,6 @@
 
-// var path = "http://localhost:3000/";
-var path = 'http://dymingenieros.herokuapp.com/';
+var path = "http://localhost:3000/";
+// var path = 'http://dymingenieros.herokuapp.com/';
 var ids = [];
 
 
@@ -675,4 +675,15 @@ var precio_unitario = $('#precio').val();
   precio.fail(function(jqXHR, textStatus, errorThrown){
     console.log(errorThrown);
   });
+}
+
+function sumarAcarreos(unidad){
+
+  var array = [];
+  $('.acarreos-cantidad').each(function(){
+  array.push(Number($(this).text()));
+})
+  var sum = array.reduce(function(a, b) { return a + b; }, 0);
+  sum = sum.toLocaleString();
+  alert("Los resultados de la búsqueda suman "+ sum + " " + unidad+".");
 }

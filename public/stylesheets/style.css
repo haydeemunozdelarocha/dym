@@ -184,9 +184,7 @@ margin-top: 10px;
 .signature-pad-right{
   float:right;
 }
-#filters-panel{
-  display:flex;
-}
+
 #acarreos-filters{
   flex-grow: initial;
   flex-wrap: wrap;
@@ -218,6 +216,26 @@ width: 350px;
 #status-codigo{
   padding-left: 10px;
 }
+#suma-acarreos{
+  position: absolute;
+  min-height: 200px;
+  min-width: 40%;
+}
+#mobile-acarreos{
+  visibility: hidden;
+    display: none;
+}
+#acarreos-desktop{
+  visibility: visible;
+}
+.tarjeta-acarreo {
+  background-color: #e9e9e9;
+  border-radius: 5px;
+  padding:5px;
+  margin-bottom: 10px;
+
+
+}
 @media(max-width: 991px) and (min-width:768px){
   .container{
     width: 95%;
@@ -226,6 +244,14 @@ width: 350px;
 @media(max-width: 770px){
 .navbar .nav{
   height:auto;
+}
+#mobile-acarreos{
+  visibility: visible;
+  display: block;
+}
+#acarreos-desktop{
+  visibility: hidden;
+  display: none;
 }
 .navbar-collapse{
   height:auto;
