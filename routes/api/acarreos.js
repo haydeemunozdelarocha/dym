@@ -4,12 +4,10 @@ var mysql = require('mysql');
 var moment= require('moment');
 var moment = require('moment-timezone');
 var db = require('../../db.js');
-<<<<<<< HEAD
 var csv = require('express-csv');
-=======
 var later = require('later');
 var async = require('async');
->>>>>>> 364aaaedc9552a37d2b6cd3171b92aaac9d3f39a
+
 
 function isLoggedIn(req, res, next){
     if (req.isAuthenticated()) {
