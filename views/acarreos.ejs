@@ -34,7 +34,7 @@
       <option value="material">Material</option>
     </select>
     <% if(usuario.categoria != "residente") { %>
-    <select name="obra_id" id="obra_id">
+    <select name="obra_id" id="obra_id" required>
      <option value="">Obra</option>
     <% for(var i = 0; i < obras.length; i ++){ %>
       <option value="<%=obras[i].obra_id%>"><%=obras[i].nombre_obra%></option>
@@ -73,7 +73,7 @@
   <% if(message) {%>
   <div id="mensaje-error"><%= message %></div>
   <% } %>
-<button class="btn btn-primary" style="margin-bottom: 10px;" onclick="sumarAcarreos('<%=acarreos[0].unidad %>')">Sumar Resultados</button>
+<button class="btn btn-primary" style="margin-bottom: 10px;" onclick="sumarAcarreos('<% if (acarreos[0].unidad) {%><%=acarreos[0].unidad%><%} %>')">Sumar Resultados</button>
 
 <div class="panel panel-default" id="acarreos-desktop">
   <!-- Default panel contents -->
