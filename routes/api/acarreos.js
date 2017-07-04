@@ -152,34 +152,7 @@ router.post('/buscar', function(req,res,err){
   });
 })
 
-router.post('/acumulado/dia',isLoggedIn, function(req, res, err ){
-  console.log('getting acumulado dia')
-  var fecha = moment(new Date()).format("YYYY-MM-DD");
-  var obra_id = req.user.obra_id;
-  var concepto = req.body.concepto;
-  var date1 = fecha + " 00:00";
-  var date2 = fecha + " 23:59";
-console.log(concepto);
-  if(concepto == 82){
-      var getAcumulado ='SELECT conceptos.nombre_concepto, SUM(acarreos_flete.cantidad) AS total_acumulado,acarreos_flete.unidad FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN presupuestos ON presupuestos.concepto = acarreos_flete.concepto_flete AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete WHERE recibos.obra_id = '+obra_id+' AND recibos.hora BETWEEN "'+date1+'"" AND "'+date2+'" AND acarreos_flete.concepto_flete = 82 GROUP BY concepto_flete;';
-  } else {
-    console.log('else')
-  var getAcumulado ='SELECT conceptos.nombre_concepto,SUM(acarreos_material.cantidad) AS total_acumulado,acarreos_material.unidad FROM recibos  JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN presupuestos ON presupuestos.concepto = acarreos_material.concepto_material AND presupuestos.zona = recibos.zona_id AND presupuestos.obra = recibos.obra_id JOIN conceptos ON conceptos.conceptos_id = acarreos_material.concepto_material WHERE recibos.obra_id = '+obra_id+' AND recibos.hora BETWEEN '+date+' AND "'+date2+'" AND concepto_material = '+concepto+' GROUP BY concepto_material;';
-  console.log(acumulado)
-  }
 
-  db.query(getAcumulado, function(err, acarreo){
-    console.log(acarreo)
-    if(err) {
-      console.log(err)
-      res.send({message:'No se encontraron recibos.'})
-    }
-    else {
-        console.log('Buscando acarreo por id');
-        res.send(acarreo)
-    }
-  });
-})
 
 router.get('/flete/:id', function(req, res, next ){
   var id= req.params.id;
