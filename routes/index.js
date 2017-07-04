@@ -531,6 +531,22 @@ router.get('/precio/:articulo/:concepto/:estimacion', isLoggedIn, function(req,r
   res.render('editarticuloprecio',{usuario:usuario, articulo:articulo, estimacion:estimacion,concepto:concepto})
 })
 
+router.get('/estimaciones/acarreos/:estimacionid', isLoggedIn, function(req,res,err){
+  var usuario = req.user;
+  var estimacion = req.params.estimacionid;
+  var getAcarreos = 'SELECT "Flete" As Type, acarreos_flete.recibo_id,razon_social,cantidad,acarreos_flete.unidad, nombre_concepto, total_flete,estimacion,hora,nombre_zona,stickers.sticker_id,foto FROM acarreos_flete JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id JOIN recibos ON recibos.recibo_id = acarreos_flete.recibo_id JOIN zonas ON zonas.zonas_id = recibos.zona_id  JOIN camiones ON recibos.camion_id = camiones.camion_id JOIN proveedores ON proveedores.id = camiones.proveedor_id JOIN stickers ON stickers.codigo = camiones.numero WHERE estimacion_id = '+estimacion+' UNION SELECT "Material", acarreos_material.recibo_id,proveedores.razon_social,acarreos_material.cantidad,acarreos_material.unidad, nombre_concepto, acarreos_material.total_material,acarreos_material.estimacion,recibos.hora,zonas.nombre_zona,stickers.sticker_id,recibos.foto FROM recibos LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN materiales ON materiales.id = acarreos_material.material_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id JOIN stickers ON stickers.codigo = camiones.numero WHERE estimacion_id = '+estimacion+' ORDER BY sticker_id,hora;SELECT((SELECT COALESCE(SUM(acarreos_flete.cantidad),0) FROM acarreos_flete WHERE acarreos_flete.estimacion_id = '+estimacion+')+(SELECT COALESCE(SUM(acarreos_material.cantidad),0) FROM acarreos_material WHERE acarreos_material.estimacion_id = '+estimacion+')) AS cantidad;'
+      db.query(getAcarreos, function(err, acarreos){
+    if(err){
+      console.log(err.code);
+      res.render('error',{message: 'No se encontró ninguna obra.', usuario:usuario })
+    }
+    else {
+      console.log(acarreos)
+    res.render('veracarreos',{usuario:usuario, estimacion:estimacion,acarreos:acarreos[0],total:acarreos[1][0]})
+    }
+  });
+})
+
 router.get('/signature/:categoria/:id/:obra', isLoggedIn, function(req,res,err){
   var usuario = req.user;
   var categoria = req.params.categoria;

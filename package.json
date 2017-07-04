@@ -17,6 +17,7 @@
     "debug": "~2.2.0",
     "ejs": "~2.3.3",
     "express": "~4.13.1",
+    "express-csv": "^0.6.0",
     "express-mysql-session": "^1.2.0",
     "express-session": "^1.14.2",
     "later": "^1.2.0",

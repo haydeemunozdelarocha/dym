@@ -90,7 +90,7 @@
                    <% for (var i = 0; i < articulos.length ; i++ ) { %>
                     <tr>
                      <td>
-                       <p><%=articulos[i].nombre_concepto %></p>
+                       <p><a href="/estimaciones/acarreos/<%= estimacion[0].estimaciones_id %>" target="_blank"><%=articulos[i].nombre_concepto %></a></p>
                      </td>
                     <td>
                     <p><%=articulos[i].nombre_zona %></p>
@@ -99,25 +99,25 @@
                     <p><%=articulos[i].unidad %></p>
                      </td>
                      <td>
-                       <p><%=articulos[i].cantidad_presupuestada %></p>
+                       <p><%=articulos[i].cantidad_presupuestada.toLocaleString()  %></p>
                      </td>
                      <td>
-                       <p><%=articulos[i].acumulado_anterior %></p>
+                       <p><%=articulos[i].acumulado_anterior.toLocaleString()  %></p>
                      </td>
                      <td>
-                     <p><%=articulos[i].esta_estimacion %></p>
+                     <p><%=articulos[i].esta_estimacion.toLocaleString()  %></p>
                      </td>
                      <td>
-                        <p><%=articulos[i].acumulado_actual %></p>
+                        <p><%=articulos[i].acumulado_actual.toLocaleString()  %></p>
                      </td>
                      <td>
-                       <p><%=articulos[i].por_ejercer %></p>
+                       <p><%=articulos[i].por_ejercer.toLocaleString()  %></p>
                      </td>
                       <td>
                        <p>$<%=articulos[i].precio_unitario %></p>
                      </td>
                      <td>
-                      <p>$<%=articulos[i].importe %></p>
+                      <p>$<%=articulos[i].importe.toLocaleString()  %></p>
                      </td>
                      <td>
                        <a href="javascript:window.open('http://localhost:3000/precio/<%=articulos[i].articulo_id %>/<%=articulos[i].concepto_id %>/<%=estimacion[0].estimaciones_id %>', 'preciowin','left=20,top=20,width=600,height=340,toolbar=1,resizable=0');""><span class="glyphicon glyphicon-edit"></span></a>
@@ -144,9 +144,8 @@
                     <div id = "firma_residente" style="width:200px; height:100px;"><img id="signature2" src="<%= estimacion[0].firma_residente %>" alt="" width="200px"></div>
                   <%} else {%>
                         <div id = "firma_residente" style="width:200px;background-color: lightgray; height:100px;"></div>
-                        <p>Residente</p>
                   <% } %>
-                                          <p>Residente</p>
+                    <p>Residente</p>
                 </div>
                 <div class="col-sm-3">
                   <% if (!estimacion[0].autorizacion && usuario.categoria === "administrador") { %>
@@ -159,13 +158,13 @@
                   <p>Ing. Carlos Reyes</p>
                 </div>
                 <div class="col-sm-3" style="text-align: right;">
-                   <p>Subtotal: $<%= estimacion[0].subtotal %></p>
+                   <p>Subtotal: $<%= estimacion[0].subtotal.toLocaleString()  %></p>
                    <br>
-                   <p>Retencion: $<%= estimacion[0].retencion %></p>
+                   <p>Retencion: $<%= estimacion[0].retencion.toLocaleString()  %></p>
                    <br>
-                   <p>IVA: $<%= estimacion[0].iva %></p>
+                   <p>IVA: $<%= estimacion[0].iva.toLocaleString()  %></p>
                    <br>
-                   <p>Total: $<%= estimacion[0].total %></p>
+                   <p>Total: $<%= estimacion[0].total.toLocaleString()  %></p>
                 </div>
           </div>
           </div>

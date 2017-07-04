@@ -79,7 +79,7 @@
      <td><%= estimaciones[i].nombre_obra %></td>
       <td><%= estimaciones[i].razon_social %></td>
       <td><%= estimaciones[i].fecha %></td>
-      <td>$<%= estimaciones[i].total %></td>
+      <td>$<%= estimaciones[i].total.toLocaleString()  %></td>
       <td><%= estimaciones[i].pagado %></td>
       <% if (usuario.categoria === "administrador"){%>
         <td><%= estimaciones[i].status %></td>

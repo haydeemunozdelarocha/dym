@@ -4,6 +4,7 @@ var mysql = require('mysql');
 var moment= require('moment');
 var moment = require('moment-timezone');
 var db = require('../../db.js');
+var csv = require('express-csv');
 
 function isLoggedIn(req, res, next){
     if (req.isAuthenticated()) {
@@ -136,6 +137,28 @@ router.get('/flete/:id', function(req, res, next ){
     else {
         console.log('Buscando acarreo por id');
         res.send(acarreo)
+    }
+  });
+})
+
+router.get('/download/:estimacionid', function(req, res, next ){
+  var estimacion = req.params.estimacionid;
+  var getAcarreo = 'SELECT "Flete" As Type, acarreos_flete.recibo_id,razon_social,cantidad,acarreos_flete.unidad, nombre_concepto, total_flete,estimacion,hora,nombre_zona,stickers.sticker_id,foto FROM acarreos_flete JOIN conceptos ON acarreos_flete.concepto_flete = conceptos.conceptos_id JOIN recibos ON recibos.recibo_id = acarreos_flete.recibo_id JOIN zonas ON zonas.zonas_id = recibos.zona_id  JOIN camiones ON recibos.camion_id = camiones.camion_id JOIN proveedores ON proveedores.id = camiones.proveedor_id JOIN stickers ON stickers.codigo = camiones.numero WHERE estimacion_id = '+estimacion+' UNION SELECT "Material", acarreos_material.recibo_id,proveedores.razon_social,acarreos_material.cantidad,acarreos_material.unidad, nombre_concepto, acarreos_material.total_material,acarreos_material.estimacion,recibos.hora,zonas.nombre_zona,stickers.sticker_id,recibos.foto FROM recibos LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN materiales ON materiales.id = acarreos_material.material_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id JOIN stickers ON stickers.codigo = camiones.numero WHERE estimacion_id = '+estimacion+' ORDER BY sticker_id,hora;';
+  db.query(getAcarreo, function(err, acarreos){
+    if(err) {
+      console.log(err)
+      res.send({message:'No se encontró ningun flete con ese id.'})
+    }
+    else {
+        console.log('Buscando acarreo por id');
+          var headers = {};
+          for (header in acarreos[0]) {
+            headers[header] = header;
+          }
+          var resultWithHeaders = [];
+          resultWithHeaders.push(headers);
+          resultWithHeaders = resultWithHeaders.concat(acarreos);
+          res.csv(resultWithHeaders);
     }
   });
 })
