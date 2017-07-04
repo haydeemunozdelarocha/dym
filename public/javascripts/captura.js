@@ -291,6 +291,11 @@ if(camion_id.length > 0){
 
   camion.done(function(data){
     console.log(data)
+    if(data.length == 0){
+            $('#search-status').html("");
+      $('#search-status').append("Camión ID no se ha registrado!");
+      $('#scanner').val("");
+    }
     if(data[0].camion_id){
       $('#camion_id').val(data[0].camion_id);
       $('#scanner').attr("readonly", true);
@@ -307,9 +312,9 @@ if(camion_id.length > 0){
         $('#categoria').removeAttr("disabled");
       }
       $('#search-status').append("Camión encontrado!");
-    } else {
+    } else{
       $('#search-status').html("");
-      $('#search-status').append("Camión ID inválido!");
+      $('#search-status').append("Camión ID no se ha registrado!");
       $('#scanner').val("");
     }
     });
