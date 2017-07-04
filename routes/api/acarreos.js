@@ -378,7 +378,7 @@ router.post('/pipa/resumen',isLoggedIn, function(req, res, next ){
   });
 
 router.get('/pipa/acarreos',isLoggedIn, function(req, res, err ){
-
+// function addAcarreosPipa(){
   var date= new Date();
   var hora = moment(date).format("YYYY-MM-DD");
   var date1 = hora + " 00:00";

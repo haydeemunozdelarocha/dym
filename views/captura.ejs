@@ -39,13 +39,11 @@
             <option value="92">Acarreo Externo</option>
             <option value="100">Acarreo Material</option>
     </select>
-
       <input type="hidden" class="form-control" id="concepto_flete" name="concepto_flete">
       </div>
     </div>
       <div id="banco-status"></div>
     <div id="bancoinfo" hidden>
-    <br>
       <label for="bancoinfo">Banco:</label>
           <select class="form-control" name="banco_id" id="banco" onchange="calcularAcarreoEM()" required disabled>
             <option value="">Banco</option>
@@ -53,6 +51,7 @@
             <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
     <% } %>
     </select>
+    <br>
     </div>
 
     <div id="material-status"></div>
