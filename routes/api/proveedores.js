@@ -6,7 +6,7 @@ var methodOverride = require('method-override');
 
 var nuevoProveedor = 'INSERT INTO proveedores(razon_social,direccion,telefono,ciudad,estado,rfc,retencion,categoria) VALUE(?,?,?,?,?,?,?,?)';
 var listaProveedores = 'SELECT * FROM proveedores';
-var editarProveedor = 'UPDATE proveedores SET razon_social = ?,rfc = ?, direccion = ?, telefono = ?, ciudad = ?, estado = ? WHERE id=?';
+var editarProveedor = 'UPDATE proveedores SET razon_social = ?,rfc = ?, direccion = ?, telefono = ?, ciudad = ?, estado = ?,categoria=?,retencion=? WHERE id=?';
 var getProveedor = "SELECT * FROM `proveedores` WHERE `id` = ?";
 
 //add obra
@@ -80,7 +80,9 @@ router.put('/:idproveedor', function(req,res,err){
   var telefono = req.body.telefono;
   var ciudad = req.body.ciudad;
   var estado = req.body.estado;
-    db.query(editarProveedor,[razon_social,rfc,direccion,telefono,ciudad,estado,id], function(err, proveedor){
+    var retencion = req.body.retencion;
+    var categoria = req.body.categoria;
+    db.query(editarProveedor,[razon_social,rfc,direccion,telefono,ciudad,estado,categoria,retencion,id], function(err, proveedor){
     if(err) {
             res.send({message: 'No se pudo editar el proveedor seleccionado.'})
     }

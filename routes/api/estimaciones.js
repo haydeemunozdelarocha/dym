@@ -169,6 +169,7 @@ router.get('/autorizacion/costos', function(req,res,err){
 //             if (categoria === "flete"){
 //               editarAcarreosEst = 'UPDATE acarreos_flete SET estimacion_id ='+estimacion_id+' WHERE acarreo_id IN('+ids+');UPDATE acarreos_flete SET estimacion = "Y" WHERE acarreo_id IN ('+ids+');'
 
+
 //             } else {
 //               editarAcarreosEst = 'UPDATE acarreos_material SET estimacion_id ='+estimacion_id+' WHERE acarreos_mat_id IN('+ids+');UPDATE acarreos_material SET estimacion = "Y" WHERE acarreo_id IN ('+ids+');'
 //             }

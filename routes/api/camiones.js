@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var db = require('../../db.js');
 
-var getCamion = "SELECT camiones.*, proveedores.categoria FROM `camiones` LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id WHERE `numero` = ?;";
+var getCamion = "SELECT camiones.*, proveedores.categoria AS proveedor_categoria FROM `camiones` LEFT JOIN proveedores ON camiones.proveedor_id = proveedores.id WHERE `numero` = ?;";
 var editarCamion = 'UPDATE camiones SET modelo = ?, placas = ?, capacidad= ?, numero= ?,categoria=? WHERE camion_id= ?';
 
 //Read table.
@@ -54,7 +54,8 @@ router.get('/codigo/:sticker', function(req,res,err){
 
 router.get('/numero/:sticker', function(req,res,err){
   var sticker=req.params.sticker;
-  var getCodigo = 'SELECT stickers.codigo,proveedores.categoria FROM stickers JOIN camiones ON camiones.numero = stickers.codigo JOIN proveedores ON camiones.proveedor_id = proveedores.id WHERE sticker_id = ?;';
+  var getCodigo = 'SELECT stickers.codigo,camiones.categoria AS camion_categoria,proveedores.categoria FROM stickers JOIN camiones ON camiones.numero = stickers.codigo JOIN proveedores ON camiones.proveedor_id = proveedores.id WHERE sticker_id = ?;';
+
   var codigo;
     db.query(getCodigo,[sticker], function(err, rows){
     if(err) {
@@ -64,7 +65,8 @@ router.get('/numero/:sticker', function(req,res,err){
       if(rows.length==0){
         res.send({message:'El número de sticker no se ha creado.'})
       } else {
-          res.json(rows[0]);
+
+          res.json({codigo:rows[0].codigo,categoria:rows[0].categoria,camion_categoria:rows[0].camion_categoria});
       }
     }
   });

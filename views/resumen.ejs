@@ -14,7 +14,7 @@
   <button class="btn btn-info" style="margin-bottom: 20px;float:right;" onclick="location.replace('/captura')">Capturar</button>
 </div>
 <div id="content-container">
-<form action="/api/acarreos/recibos/resumen" method="POST" enctype="application/x-www-form-urlencoded">
+<form action="/api/acarreos/recibos/resumen" method="POST" enctype="application/x-www-form-urlencoded" id="resumen-form">
    <div class="form-group" id="camioninfo">
       <label for="camion_id">Número de Sticker</label>
         <div id="sticker-container">
@@ -72,6 +72,9 @@ $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px
     $('#sticker').attr('readonly',true);
     $('#fechaRecibo').removeAttr('disabled');
     $('#submit-button').removeAttr('disabled');
+    if(data.camion_categoria === "pipa"){
+      $("#resumen-form").attr("action", "/api/acarreos/pipa/resumen");
+    }
     }
     });
 

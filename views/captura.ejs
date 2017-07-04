@@ -23,13 +23,15 @@
 
       <input type="hidden" class="form-control" id="fletero" name="fletero">
       <input type="hidden" class="form-control" id="fletero_categoria" name="fletero_categoria">
+      <input type="hidden" class="form-control" id="camion_categoria" name="camion_categoria">
       <input type="hidden" class="form-control" id="camion_id" name="camion_id">
       <input type="hidden" class="form-control" id="capacidad" name="capacidad">
       <input type="hidden" class="form-control" id="unidad" name="unidad">
 
     </div>
-    <div class="form-group">
-    <div>
+
+    <div class="form-group categoria-info" hidden>
+
       <label for="categoria">Categoría Acarreo:</label>
         <select class="form-control" id="categoria" name="categoria" onchange="calcularFlete()" required disabled>
             <option value="">Categoría</option>
@@ -37,11 +39,11 @@
             <option value="92">Acarreo Externo</option>
             <option value="100">Acarreo Material</option>
     </select>
+      <input type="hidden" class="form-control" id="concepto_flete" name="concepto_flete">
+      </div>
     </div>
       <div id="banco-status"></div>
-      <input type="hidden" class="form-control" id="concepto_flete" name="concepto_flete">
     <div id="bancoinfo" hidden>
-    <br>
       <label for="bancoinfo">Banco:</label>
           <select class="form-control" name="banco_id" id="banco" onchange="calcularAcarreoEM()" required disabled>
             <option value="">Banco</option>
@@ -49,6 +51,7 @@
             <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
     <% } %>
     </select>
+    <br>
     </div>
 
     <div id="material-status"></div>
