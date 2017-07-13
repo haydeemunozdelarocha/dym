@@ -31,8 +31,8 @@ router.get('/prueba', function(req,res,err){
   // var date2= moment.tz(today,timezone).format("YYYY-MM-DD");
   // date1 = date1 + ' 23:59';
   // date2 = date2 +' 23:59';
-    date1 = '2017-06-18 23:59';;
-  date2 = '2017-06-25 23:59';
+  var date1 = '2017-06-25 23:59';;
+  var date2 = '2017-07-02 23:59';
   var obra_id = 452;
   var resultados;
   var rounds = 0;
@@ -366,7 +366,7 @@ router.use( function( req, res, next ) {
 router.delete('/borrar/:id', function(req,res,err){
   var estimaciones_id = req.params.id;
   console.log(estimaciones_id)
-  var borrarEstimacion = 'UPDATE acarreos_flete SET estimacion = "N" WHERE estimacion_id = ?; UPDATE acarreos_material SET estimacion = "N" WHERE estimacion_id = ?; UPDATE estimaciones SET status = "cancelada" WHERE estimaciones_id = ?;';
+  var borrarEstimacion = 'UPDATE acarreos_flete SET estimacion = "N" WHERE estimacion_id = ?; UPDATE acarreos_material SET estimacion = "N" WHERE estimacion_id = ?; DELETE FROM estimaciones WHERE estimaciones_id = ?;';
   db.query(borrarEstimacion,[estimaciones_id, estimaciones_id,estimaciones_id], function(err,estimacion){
     if(err) throw err;
     else {
