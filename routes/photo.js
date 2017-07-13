@@ -151,7 +151,7 @@ router.post('/signature', function(req, res, err) {
 
     body = new Buffer(body, 'base64');
     var date= Date.now();
-    var hora = moment(date).format("DD-MM-YYYY-hh-mm");
+    var hora = moment(date).format("DD-MM-YYYY hh:mm");
     var path ='signature/'+hora+'.jpg';
     photo="https://s3.amazonaws.com/dymingenieros/"+path;
            fsImpl.writeFile(path, body, {"ContentType":"text/plain", "ContentEncoding":"base64"}, function(err){
