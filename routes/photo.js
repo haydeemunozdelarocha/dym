@@ -187,7 +187,7 @@ router.post('/signature', function(req, res, err) {
   })
 
 function updateStatus(status,estimacion_id){
-  var cambiarStatus = 'UPDATE estimaciones SET status= ? WHERE estimaciones_id = ?';
+  var cambiarStatus = 'UPDATE estimaciones SET proceso = ? WHERE estimaciones_id = ?';
       db.query(cambiarStatus,[status,estimacion_id], function(err,estimacion){
         return estimacion_id;
       })
