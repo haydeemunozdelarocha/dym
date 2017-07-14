@@ -42,6 +42,14 @@ function isLoggedIn(req, res, next){
     }
 };
 
+function isMaster(req, res, next) {
+    if(req.user.categoria === 'master') {
+      next()
+    } else {
+      res.redirect('/')
+    }
+}
+
 function checkAuthToken(req, res, next) {
     if(!req.user.accessToken && req.user.categoria === 'checador') {
       res.cookie('user', req.user,{ maxAge: 900000 });
@@ -117,6 +125,18 @@ router.get('/captura', [isLoggedIn,checkAuthToken], function(req, res){
     if(err) throw err;
     else {
         res.render('captura', { title: 'Acarreos', proveedores: info[0],zonas:info[1] });
+    }
+  });
+})
+
+router.get('/acarreos/nuevo', [isMaster], function(req, res){
+  var usuario =req.user;
+  var infoProveedores = 'SELECT obras.obra_id, obras.nombre_obra FROM obras WHERE activa = "Y";'
+    db.query(infoProveedores, function(err, info){
+    if(err) throw err;
+    else {
+      console.log(info)
+        res.render('nuevoacarreo', { title: 'Acarreos', usuario: usuario,obras:info });
     }
   });
 })

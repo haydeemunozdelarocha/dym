@@ -135,7 +135,10 @@ function calcularAcarreoEM() {
     $('#concepto_flete').val('92');
     $('#proveedor_id').val(proveedor_id);
     apiURL = '/api/materiales/acarreoext/'+proveedor_id;
-
+      var data = new Object();
+    if($('#obra').val()){
+      data.obra_id = $('#obra').val();
+    }
   } else if (camion_categoria === "pipa"){
     getMateriales();
   } else if (concepto_flete === "100"){
@@ -145,13 +148,18 @@ function calcularAcarreoEM() {
        getMateriales();
     } else {
     proveedor_id = $('#banco').val();
-    apiURL = '/api/materiales/acarreomat/'+proveedor_id
+    apiURL = '/api/materiales/acarreomat/'+proveedor_id;
+  var data = new Object();
+    if($('#obra').val()){
+      data.obra_id = $('#obra').val();
+    }
     }
   }
   var precio = $.ajax({
     url: apiURL,
     type: 'GET',
-    dataType: 'json'
+    dataType: 'json',
+    data: data
   });
 
   precio.done(function(data){
@@ -179,11 +187,17 @@ function getMateriales() {
   $('#material_id').html("");
   $('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
     var proveedor_id = $('#banco').val();
-    console.log(proveedor_id)
+    console.log(proveedor_id);
+  var data = new Object();
+    if($('#obra').val()){
+      data.obra_id = $('#obra').val();
+    }
+    console.log(data)
   var precio = $.ajax({
     url: '/api/materiales/acarreomat/'+proveedor_id,
     type: 'GET',
-    dataType: 'json'
+    dataType: 'json',
+    data: data
   });
 
   precio.done(function(data){
@@ -329,11 +343,15 @@ function getZonas() {
 console.log("getting zonas");
 var concepto = $('#concepto_flete').val();
 console.log(concepto)
-
+  var data = new Object();
+    if($('#obra').val()){
+      data.obra_id = $('#obra').val();
+    }
   var zonas = $.ajax({
     url: '/api/zonas/lista/'+concepto,
     type: 'GET',
-    dataType: 'json'
+    dataType: 'json',
+    data: data
   });
 
   zonas.done(function(data){
@@ -341,13 +359,14 @@ console.log(concepto)
     $('#zonas').html("<option value=''>Zonas</option>");
     for(var i = 0; i <= data.length ; i++) {
     $('#zonas').append("<option value='"+data[i].zona+"'>"+data[i].nombre_zona+"</option>");
-    if(data.length == i+1){
+    if(data.length == i+1 ){
     $('#zonas').append("<option value='122'>Extras</option>");
     $('#zonas-status').html("");
     $('#zonas').removeAttr("disabled");
     }
     }
     } else {
+    $('#zonas').html("<option value=''>Zonas</option>");
     $('#zonas').append("<option value='122'>Extras</option>");
     $('#zonas-status').html("");
     $('#zonas').removeAttr("disabled");

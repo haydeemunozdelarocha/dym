@@ -13,6 +13,8 @@
   <% include ./partials/residentesheader.ejs %>
 <% }  else if (usuario.categoria === "administrador"){%>
    <% include ./partials/costosheader.ejs %>
+<% } else if (usuario.categoria === "master") {%>
+  <% include ./partials/adminheader.ejs %>
 <% } %>
     <div id="content-container">
             <div class="panel-body">
@@ -38,6 +40,9 @@
                   <div class="form-group">
                   <label for="categoria">Categoria:</label>
                   <select name="categoria" id="categoria">
+                    <% if(usuario.categoria === "master") { %>
+                    <option value="master">Master</option>
+                    <% } %>
                     <option value="residente">Residente</option>
                     <option value="checador">Checador</option>
                     <option value="administrador">Administrador</option>

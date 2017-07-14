@@ -27,7 +27,9 @@ router.post('/login', passport.authenticate('local-login', {failureRedirect : '/
     res.redirect('/obra/'+obra_id)
   } else if (req.user.categoria === 'administrador'){
     res.redirect('/administrador')
-  } else {
+  } else if (req.user.categoria === 'master'){
+    res.redirect('/administrador')
+  }else {
     console.log(req.user)
   }
   if (err) {

@@ -13,6 +13,8 @@
   <% include ./partials/residentesheader.ejs %>
 <% }  else if (usuario.categoria === "administrador"){%>
    <% include ./partials/costosheader.ejs %>
+<% } else if (usuario.categoria === "master") {%>
+  <% include ./partials/adminheader.ejs %>
 <% } %>
 <div id="content-container">
   <form action="/api/obras/<%= obra[0].obra_id %>" method="post" enctype="application/x-www-form-urlencoded">

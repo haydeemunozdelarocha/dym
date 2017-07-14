@@ -11,8 +11,10 @@
 <body>
 <% if (usuario.categoria === "residente"){ %>
   <% include ./partials/residentesheader.ejs %>
-<% }  else if (usuario.categoria === "administrador"){%>
+<% } else if (usuario.categoria === "administrador"){%>
    <% include ./partials/costosheader.ejs %>
+<% } else if (usuario.categoria === "master") {%>
+  <% include ./partials/adminheader.ejs %>
 <% } %>
   <div id = "content-container">
     <%= message %>

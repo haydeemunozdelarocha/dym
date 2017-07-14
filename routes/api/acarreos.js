@@ -24,7 +24,11 @@ router.post('/',isLoggedIn, function(req,res, next){
 console.log(req.body)
 var recibo;
 var usuario_id = req.user.id_usuario;
+if(req.user.categoria === "checador"){
 var obra_id = req.user.obra_id;
+} else {
+ var obra_id = req.body.obra_id;
+}
 var camion_id= Number(req.body.camion_id);
 var foto = req.body.photo;
 var unidad = req.body.unidad;
@@ -38,9 +42,15 @@ var categoria_flete = req.body.fletero_categoria;
 var total_flete = req.body.precio_flete;
 var zona_id = Number(req.body.zona_id);
 var cantidad=req.body.capacidad;
+if(req.user.categoria === "checador"){
 var date = Date.now();
 var timezone = "America/Mexico_City";
 var hora= moment.tz(date,timezone).format("YYYY-MM-DD hh:mm A");
+} else {
+ var date = new Date(req.body.date + ' ' + req.body.hour + ':'+req.body.minutes+ ' '+req.body.meridian);
+ var hora= moment(date).format("YYYY-MM-DD hh:mm A");
+}
+console.log(date)
 console.log(hora)
 var flete_id = req.body.flete_id;
 var banco_id = req.body.banco_id;
@@ -109,7 +119,11 @@ var concepto_flete = Number(req.body.concepto_flete);
 
                 }
                 else {
+                  if(req.user.categoria === "checador"){
                     res.redirect('/captura')
+                  } else {
+                    res.redirect('/acarreos/nuevo')
+                  }
                 }
               });
         }

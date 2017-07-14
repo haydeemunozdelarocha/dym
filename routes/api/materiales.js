@@ -42,7 +42,11 @@ router.get('/', function(err,res){
 
 router.get('/acarreoint/:proveedorid', function(req,res,err){
   var id = Number(req.params.proveedorid);
-  var obra_id = req.user.obra_id;
+  if(req.user.categoria === "checador"){
+      var obra_id = req.user.obra_id;
+    } else {
+    var obra_id = req.query.obra_id;
+    }
   var listaMaterialesProveedor = 'SELECT * FROM fletes WHERE fletes.proveedor_id = ? AND fletes.obra_id = ? AND banco = 0';
     db.query(listaMaterialesProveedor,[id,obra_id], function(err, rows){
     if(err) throw err;
@@ -54,7 +58,11 @@ router.get('/acarreoint/:proveedorid', function(req,res,err){
 
 router.get('/acarreoext/:proveedorid', function(req,res,err){
   var id = Number(req.params.proveedorid);
-  var obra_id = req.user.obra_id;
+  if(req.user.categoria === "checador"){
+      var obra_id = req.user.obra_id;
+    } else {
+    var obra_id = req.query.obra_id;
+    }
   console.log(obra_id)
   var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto FROM materiales INNER JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ? AND conceptos_id = 92';
   console.log(listaMaterialesProveedor)
@@ -68,7 +76,14 @@ router.get('/acarreoext/:proveedorid', function(req,res,err){
 
 router.get('/acarreomat/:proveedorid', function(req,res,err){
   var id = Number(req.params.proveedorid);
-  var obra_id = req.user.obra_id;
+
+  var obra_id;
+  if(req.user.categoria === "checador"){
+      obra_id = req.user.obra_id;
+    } else {
+    obra_id = req.query.obra_id;
+    }
+    console.log(obra_id)
   var listaMaterialesProveedor = 'SELECT materiales.*, conceptos.nombre_concepto FROM materiales INNER JOIN conceptos ON materiales.concepto = conceptos.conceptos_id WHERE materiales.proveedor_id = ? AND materiales.obra_id = ? AND conceptos_id != 92 AND conceptos_id != 82';
     db.query(listaMaterialesProveedor,[id,obra_id], function(err, rows){
     if(err) throw err;
