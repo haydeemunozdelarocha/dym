@@ -31,8 +31,8 @@ router.get('/prueba', function(req,res,err){
   // var date2= moment.tz(today,timezone).format("YYYY-MM-DD");
   // date1 = date1 + ' 23:59';
   // date2 = date2 +' 23:59';
-  var date1 = '2017-06-25 23:59';;
-  var date2 = '2017-07-01 23:59';
+  var date1 = '2017-07-01 23:59';;
+  var date2 = '2017-07-09 23:59';
   var obra_id = 452;
   var resultados;
   var rounds = 0;
