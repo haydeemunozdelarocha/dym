@@ -92,7 +92,7 @@
                    <% for (var i = 0; i < articulos.length ; i++ ) { %>
                     <tr>
                      <td>
-                       <p><a href="/estimaciones/acarreos/<%= estimacion[0].estimaciones_id %>" target="_blank"><%=articulos[i].nombre_concepto %></a></p>
+                       <p><a href="/estimaciones/acarreos/<%= estimacion[0].estimaciones_id %>/<%=articulos[i].concepto_id %>" target="_blank"><%=articulos[i].nombre_concepto %></a></p>
                      </td>
                     <td>
                     <p><%=articulos[i].nombre_zona %></p>
