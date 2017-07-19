@@ -1,0 +1,118 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DYM Ingenieros Constructores | Ticket</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+<input type="hidden" id="camion_id" value="<%=camion[0].camion_id %>">
+<div id="revisar-container">
+<div class="recibo-popup" id="popup-loading">
+</div>
+<div class="recibo-popup" id="popup-firma">
+<div class="recibo-popup-header">
+  <h1 style="text-align: right;" class="popup-close" onclick="closePopup()">X</h1>
+</div>
+    <h3>Autorizar</h3>
+    <div id="pin-container">
+    <p>Ingrese un código de 4 caracteres:</p>
+    <input type="password" maxlength="4" name="pin1" id="pin1" required><br>
+    <p>Ingresélo de nuevo:</p>
+    <input type="password" maxlength="4" name="pin2" id="pin2" required oninput="checkPin()">
+</div>
+<div id="signature-pad" class="m-signature-pad">
+<p> Por favor ingrese su firma:</p>
+    <div class="signature-pad-body" style="background-color: lightgray">
+    <canvas width="500px"></canvas></div><div class="signature-pad-footer">
+    <div class="signature-pad-left">
+    <button type="button" class="button clear btn btn-primary" data-action="clear">Borrar</button>
+    </div>
+    <div class="signature-pad-right">
+    <button type="button" class="button save btn btn-primary" data-action="save-png">Guardar</button>
+    </div>
+    </div>
+    </div>
+</div>
+
+<div class="recibo-popup" id="popup-autorizacion">
+<div class="recibo-popup-header">
+  <h1 style="text-align: right;" class="popup-close" onclick="closePopup()">X</h1>
+</div>
+    <h3>Autorizar</h3>
+    <div id="pin-container">
+    <p>Ingrese un código de 4 caracteres:</p>
+    <input type="password" maxlength="4" name="pin1" id="pin1" required><br>
+    <button type="button" class="button save btn btn-primary" onClick="autorizar()">Guardar</button>
+    </div>
+  </div>
+<% if(camion.length > 0) {%>
+  <h3><strong>Fecha Recibo: </strong><%= fecha %></h3>
+  <h3><strong>No. Sticker:</strong> <%= camion[0].sticker_id %></h3>
+  <h3><strong>Placas:</strong> <%= camion[0].placas %></h3>
+  <h3><strong>Fletero:</strong> <%= camion[0].prov_flete %></h3>
+  <h3><strong>Capacidad:</strong><%=camion[0].capacidad%> <%=camion[0].unidad_camion %></h3>
+  <br>
+  <br>
+  <br>
+  <h3><strong>Resumen:</strong></h3>
+  <table class="table" style="font-size: 16px; margin-bottom: 20px">
+    <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
+    <td width="150"><strong>Concepto</strong></td>
+    <td width="150"><strong>Zona</strong></td>
+    <td width="60"><strong>No. Viajes</strong></td>
+
+   </tr>
+     <% if(resumen.length > 0) {%>
+  <% for(var i = 0; i < resumen.length; i++) { %>
+  <%if (resumen[i].viajes == 0 ) { %>
+  <% } else {%>
+  <tr>
+    <td width="150"><strong><%=resumen[i].nombre_concepto%></strong></td>
+    <td width="150"><strong><%=resumen[i].nombre_zona%></strong></td>
+    <td width="60"><strong><%= resumen[i].viajes %></strong></td>
+   </tr>
+   <% } %>
+  <% } %>
+    <% } %>
+  </table>
+  <% if(total[0].total_viajes) {%>
+  <h3><strong>No. Total Viajes:</strong> <%=total[0].total_viajes %></h3>
+  <br>
+    <% } %>
+
+<h3><strong>Detalle:</strong></h3>
+  <table class="table" style="font-size: 16px;margin-bottom: 30px">
+    <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
+    <td width="60"><strong>No.</strong></td>
+    <td width="150"><strong>Concepto</strong></td>
+    <td width="150"><strong>Zona</strong></td>
+    <td width="150"><strong>Hora</strong></td>
+    <td></td>
+   </tr>
+   <% } %>
+   <% if(acarreos.length > 0) {%>
+  <% for(var i = 0; i < acarreos.length; i++) { %>
+  <tr>
+    <td width="60"><strong><%= i+1 %></strong></td>
+    <td width="150"><strong><%=acarreos[i].concepto%></strong></td>
+    <td width="150"><strong><%=acarreos[i].nombre_zona%></strong></td>
+    <td width="150"><strong><%=moment(acarreos[i].hora).format("HH:mm A")%></strong></td>
+    <td><input style="zoom: 2.5;" type="checkbox" name="acarreos" class="acarreos" value="<%=acarreos[i].recibo_id%>"></td>
+   </tr>
+  <% } %>
+    <% } %>
+  </table>
+<div class="btn btn-primary" onclick="aprobarPopup(<%= camion[0].camion_id %>)">Aprobar</div>
+<div class="btn btn-danger">Reportar Cambios</div>
+<br>
+</div>
+
+<script src="/javascripts/signaturerecibos.js" type="text/javascript" charset="utf-8" async defer></script>
+
+</body>
+</html>

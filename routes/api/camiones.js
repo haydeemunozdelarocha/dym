@@ -22,6 +22,26 @@ router.get('/', function(err,res){
   });
 })
 
+router.post('/checkfirma', function(req,res,err){
+  console.log('checking')
+  var camion_id = req.body.camion_id;
+  var listaCamiones = 'SELECT camiones.firma,camiones.pin FROM camiones WHERE camion_id = ?';
+
+    db.query(listaCamiones,[camion_id],function(err, rows){
+      console.log(listaCamiones)
+    if(err) {
+      res.send({message:err})
+    }
+    else {
+      if(!rows[0].firma && !rows[0].pin ){
+        res.json({pin:null});
+      } else {
+        res.json({pin: rows[0].pin})
+      }
+      }
+  });
+})
+
 router.get('/codigo/:sticker', function(req,res,err){
   var sticker=req.params.sticker;
   var getCodigo = 'SELECT * FROM stickers WHERE sticker_id = ?;';

@@ -7,7 +7,49 @@ body {
 a {
   color: #00B7FF;
 }
-
+.recibo-popup{
+  position:fixed;
+    width:350px;
+    right: 0;
+    left: 0;
+    margin: auto;
+  min-height:400px;
+  background-color: white;
+  padding:20px;
+  -webkit-box-shadow: -1px 1px 5px 3px rgba(163,163,163,0.75);
+ -moz-box-shadow: -1px 1px 5px 3px rgba(163,163,163,0.75);
+ box-shadow: -1px 1px 5px 3px rgba(163,163,163,0.75);
+ visibility:hidden;
+}
+#popup-loading{
+  display:flex;
+  align-items: center;
+}
+#pin-container{
+  margin-bottom:20px;
+}
+#pin-container input {
+  height:60px;
+  width:112px;
+  text-align: center;
+  font-size: 30px;
+}
+#loading-icon-popup{
+  margin:auto;
+  text-align: center;
+  vertical-align: center;
+}
+.popup-close{
+  cursor:pointer;
+}
+.recibo-popup-header{
+  display:block;
+  margin-top: -22px;
+  float:right;
+}
+#revisar-container{
+  padding:2px;
+}
 #content-container{
   margin-top: 5%;
 }
