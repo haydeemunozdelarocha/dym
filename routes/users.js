@@ -97,4 +97,20 @@ router.get('/auth/nest/callback',passport.authenticate('nest'),
 //     });
 // });
 
+router.post('/checkpin', function(req,res,next){
+  var id = req.body.id;
+  var pin = req.body.pin;
+
+      db.query("SELECT * FROM `usuarios` WHERE `id_usuario` = '" + id + "' AND pin ="+pin,function(err,rows){
+      if (err)
+                return err;
+       if (!rows.length) {
+                 res.json({status:"ID o Pin incorrecto."});
+            } else {
+              console.log(rows);
+              res.json({status:"success"})
+            }
+    });
+});
+
 module.exports = router;

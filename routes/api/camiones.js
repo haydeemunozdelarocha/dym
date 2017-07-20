@@ -74,7 +74,7 @@ router.get('/codigo/:sticker', function(req,res,err){
 
 router.get('/numero/:sticker', function(req,res,err){
   var sticker=req.params.sticker;
-  var getCodigo = 'SELECT stickers.codigo,camiones.categoria AS camion_categoria,proveedores.categoria FROM stickers JOIN camiones ON camiones.numero = stickers.codigo JOIN proveedores ON camiones.proveedor_id = proveedores.id WHERE sticker_id = ?;';
+  var getCodigo = 'SELECT camiones.camion_id,camiones.categoria AS camion_categoria,proveedores.categoria FROM stickers JOIN camiones ON camiones.numero = stickers.codigo JOIN proveedores ON camiones.proveedor_id = proveedores.id WHERE sticker_id = ?;';
 
   var codigo;
     db.query(getCodigo,[sticker], function(err, rows){
@@ -86,7 +86,7 @@ router.get('/numero/:sticker', function(req,res,err){
         res.send({message:'El número de sticker no se ha creado.'})
       } else {
 
-          res.json({codigo:rows[0].codigo,categoria:rows[0].categoria,camion_categoria:rows[0].camion_categoria});
+          res.json({camion_id:rows[0].camion_id,categoria:rows[0].categoria,camion_categoria:rows[0].camion_categoria});
       }
     }
   });

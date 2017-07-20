@@ -46,12 +46,62 @@
     <h3>Autorizar</h3>
     <div id="pin-container">
     <p>Ingrese un código de 4 caracteres:</p>
-    <input type="password" maxlength="4" name="pin1" id="pin1" required><br>
+    <input type="password" id="confirm" hidden>
+    <input type="password" maxlength="4" name="pin" id="pin" required><br>
     <button type="button" class="button save btn btn-primary" onClick="autorizar()">Guardar</button>
     </div>
   </div>
+
+  <div class="recibo-popup" id="popup-editar">
+<div class="recibo-popup-header">
+  <h1 style="text-align: right;" class="popup-close" onclick="closePopup()">X</h1>
+</div>
+    <h3>Editar</h3>
+    <div id ="confirmacion-residente">
+    <p>Residente: Por favor ingrese la información de acceso</p>
+    <div class="form-group">
+    <label for="residente-id">ID:</label>
+    <input type="text" class="form-control" id="residente_id">
+    <br>
+    <label for="residente-pin">PIN:</label>
+    <input type="password" class="form-control" id="residente_pin" maxlength="4">
+    </div>
+    <button type="button" class="button save btn btn-primary" onClick="claveResidente()">Confirmar</button>
+    </div>
+    <div id="editar-container" style="visibility: hidden;display:none">
+    <input type="text" id="acarreo_id" hidden>
+    <div class="form-group">
+      <label for="banco_id">Banco</label>
+        <select class="form-control" name="banco_id" id="banco_id">
+          <option value="">Banco</option>
+        </select>
+    </div>
+    <div class="form-group">
+      <label for="material_id">Material</label>
+        <select class="form-control" name="material_id" id="material_id">
+          <option value="">Material</option>
+        </select>
+    </div>
+    <div class="form-group">
+      <label for="concepto">Concepto</label>
+        <select class="form-control" name="concepto" id="concepto">
+          <option value="">Concepto</option>
+        </select>
+    </div>
+
+  <div class="form-group">
+      <label for="zona">Zona</label>
+        <select class="form-control" name="zona" id="zona">
+          <option value="">Zona</option>
+        </select>
+    </div>
+        <button type="button" class="button save btn btn-primary" onClick="editar()">Guardar</button>
+    </div>
+  </div>
+
 <% if(camion.length > 0) {%>
   <h3><strong>Fecha Recibo: </strong><%= fecha %></h3>
+  <input type="hidden" id="fecha" value="<%= fecha %>">
   <h3><strong>No. Sticker:</strong> <%= camion[0].sticker_id %></h3>
   <h3><strong>Placas:</strong> <%= camion[0].placas %></h3>
   <h3><strong>Fletero:</strong> <%= camion[0].prov_flete %></h3>
@@ -92,7 +142,7 @@
     <td width="150"><strong>Concepto</strong></td>
     <td width="150"><strong>Zona</strong></td>
     <td width="150"><strong>Hora</strong></td>
-    <td></td>
+    <td class="acarreos" style="visibility:hidden;"></td>
    </tr>
    <% } %>
    <% if(acarreos.length > 0) {%>
@@ -102,17 +152,99 @@
     <td width="150"><strong><%=acarreos[i].concepto%></strong></td>
     <td width="150"><strong><%=acarreos[i].nombre_zona%></strong></td>
     <td width="150"><strong><%=moment(acarreos[i].hora).format("HH:mm A")%></strong></td>
-    <td><input style="zoom: 2.5;" type="checkbox" name="acarreos" class="acarreos" value="<%=acarreos[i].recibo_id%>"></td>
+    <td><input style="zoom: 2.5;visibility:hidden;display:none" type="checkbox" name="acarreos" class="acarreos" value="<%=acarreos[i].recibo_id%>"></td>
    </tr>
   <% } %>
     <% } %>
   </table>
 <div class="btn btn-primary" onclick="aprobarPopup(<%= camion[0].camion_id %>)">Aprobar</div>
-<div class="btn btn-danger">Reportar Cambios</div>
+<div class="btn btn-danger" id="reportar-boton" onclick="checkboxesOn()">Reportar Cambios</div>
 <br>
 </div>
+<div style="visibility: hidden; display:none">
+<div id="printData">
+<h2>DYM INGENIEROS CONSTRUCTORES SA DE CV</h2>
+<h2>RECIBO ACARREOS</h2>
 
-<script src="/javascripts/signaturerecibos.js" type="text/javascript" charset="utf-8" async defer></script>
+<div id="recibo-style" style="font-size: 20px;">
+<% if(camion.length > 0) {%>
+  <h3><strong>Fecha Recibo: </strong><%= fecha %></h3>
+  <h3><strong>No. Sticker:</strong> <%= camion[0].sticker_id %></h3>
+  <h3><strong>Placas:</strong> <%= camion[0].placas %></h3>
+  <h3><strong>Fletero:</strong> <%= camion[0].prov_flete %></h3>
+  <h3><strong>Capacidad:</strong><%=camion[0].capacidad%> <%=camion[0].unidad_camion %></h3>
+  <br>
+
+  <table align="left" style="font-size: 20px;margin-bottom: 30px">
+    <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
+    <td width="60"><strong>No.</strong></td>
+    <td width="150"><strong>Concepto</strong></td>
+    <td width="150"><strong>Zona</strong></td>
+    <td width="150"><strong>Banco</strong></td>
+    <td width="150"><strong>Hora</strong></td>
+
+   </tr>
+   <% } %>
+   <% if(acarreos.length > 0) {%>
+  <% for(var i = 0; i < acarreos.length; i++) { %>
+  <tr>
+    <td width="60"><strong><%= i+1 %></strong></td>
+    <td width="150"><strong><%=acarreos[i].concepto%></strong></td>
+    <td width="150"><strong><%=acarreos[i].nombre_zona%></strong></td>
+    <% if(!acarreos[i].razon_social) { %>
+    <td width="50"><strong>--</strong></td>
+    <% } else { %>
+    <td width="150"><strong><%=acarreos[i].razon_social %></strong></td>
+    <% } %>
+    <td width="150"><strong><%=acarreos[i].hora%></strong></td>
+
+   </tr>
+  <% } %>
+    <% } %>
+  </table>
+  <br>
+  <br>
+  <h3><strong>Resumen:</strong></h3>
+
+  <table align="left" style="font-size: 20px; margin-bottom: 20px">
+    <tr style="height:30px; padding-bottom: 20px; border-bottom: solid 1px black">
+    <td width="60"><strong>No. Viajes</strong></td>
+    <td width="150"><strong>Concepto</strong></td>
+    <td width="150"><strong>Zona</strong></td>
+    <td width="70"><strong>Cantidad</strong></td>
+    <td width="150"><strong>Banco</strong></td>
+   </tr>
+   <% if(resumen.length > 0) {%>
+  <% for(var i = 0; i < resumen.length; i++) { %>
+  <%if (resumen[i].viajes == 0 ) { %>
+  <% } else {%>
+  <tr>
+    <td width="60"><strong><%= resumen[i].viajes %></strong></td>
+    <td width="150"><strong><%=resumen[i].nombre_concepto%></strong></td>
+    <td width="150"><strong><%=resumen[i].nombre_zona%></strong></td>
+    <td width="70"><strong><%=resumen[i].total_cantidad%> <%=camion[0].unidad_camion %></strong></td>
+    <% if(!resumen[i].razon_social) { %>
+    <td width="50"><strong>--</strong></td>
+    <% } else { %>
+    <td width="150"><strong><%=resumen[i].razon_social %></strong></td>
+    <% } %>
+   </tr>
+   <% } %>
+  <% } %>
+    <% } %>
+  </table>
+  <br>
+  <% if(total[0].total_viajes) {%>
+  <h3><strong>No. Total Viajes:</strong> <%=total[0].total_viajes %></h3>
+
+    <% } %>
+  <p><strong>Impreso: </strong><%= fecha_impresion %></p>
+</div>
+<div height="200px" width="100px"></div>
+<br>
+</div>
+</div>
+<script src="/javascripts/script2.js" type="text/javascript" charset="utf-8" async defer></script>
 
 </body>
 </html>
