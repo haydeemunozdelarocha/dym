@@ -694,27 +694,37 @@ function autorizar(){
     var checkedVals = $('.acarreos:checkbox').map(function() {
     return this.value;
     }).get();
-   if($('#confirm').val() === $('#pin').val()){
-      var image = $.ajax({
-        url: '/api/acarreos/aprobar',
-        type: 'POST',
-        contentType: "application/json",
-        data: JSON.stringify({acarreos:checkedVals})
-      });
 
-      image.done(function(data){
-        console.log(data)
-        if(data.status === "success"){
+    if(checkedVals.length < 1){
           closePopup();
           passPRNT();
-        }
+    }else {
+       if($('#confirm').val() === $('#pin').val()){
+            var image = $.ajax({
+              url: '/api/acarreos/aprobar',
+              type: 'POST',
+              contentType: "application/json",
+              data: JSON.stringify({acarreos:checkedVals})
+            });
 
-        });
+            image.done(function(data){
+              console.log(data)
+              if(data.status === "success"){
+                closePopup();
+                passPRNT();
+              }
 
-      image.fail(function(jqXHR, textStatus, errorThrown){
-          alert('Error');
-      });
-   }
+              });
+
+            image.fail(function(jqXHR, textStatus, errorThrown){
+                alert('Error');
+            });
+         } else {
+          alert('Número de pin inválido.');
+          $('#pin').val('');
+         }
+    }
+
 }
 
 function aprobarPopup(camionId){
@@ -760,8 +770,6 @@ function closePopup(){
   $('.acarreos').css('visibility','hidden');
   $('.acarreos').css('display','none');
   $('.acarreos').attr('checked', false);
-  $('#aprobar-boton').css('visibility','hidden');
-  $('#aprobar-boton').css('display','none');
   $('#reportar-boton').html('Reportar Cambios');
   $('#reportar-boton').attr('onclick','checkboxesOn()');
 }
@@ -791,8 +799,9 @@ function checkboxesOn(){
   $('.acarreos').css('visibility','visible');
   $('.acarreos').css('display','block');
   $('#aprobar-boton').css('visibility','hidden');
-  $('#aprobar-boton').css('display','block');
+  $('#aprobar-boton').css('display','none');
   $('#agregar-boton').css('visibility','visible');
+  $('#borrar-boton').css('visibility','visible');
   $('#reportar-boton').html('Editar');
   $('#reportar-boton').attr('onclick','editarAcarreos()');
 }
@@ -808,16 +817,15 @@ var checkedVals = $('.acarreos:checkbox:checked').map(function() {
   if(checkedVals.length == $('.acarreos:checkbox:checked').length){
       console.log(checkedVals[0])
     $('#acarreo_id').val(checkedVals[0]);
-     $('#tipo').val('editar');
-    popUpResidente();
+    popUpResidente('editar');
   }
 }
   //send request to show acarreos
 }
 
-function popUpResidente(){
+function popUpResidente(tipo){
   $('#popup-residente').css('visibility','visible');
-  $('#tipo').val('agregar');
+  $('#tipo').val(tipo);
 }
 
 function claveResidente(tipo){
@@ -846,16 +854,20 @@ console.log(residente_id);
                 } else {
                   if(tipo === 'editar'){
                   getAcarreo();
-                  } else {
+                  } else if(tipo ==="borrar"){
+                  borrarAcarreo();
+                  }else {
                     $('#banco_id').val($('#proveedor_id').val());
                     console.log($('#banco_id').val());
                     $('#popup-loading').css('visibility','hidden');
                     $('#popup-loading').html('');
                     $('#popup-editar').css('visibility','visible');
                     $('#editar-container').css('visibility','visible');
+                    $('#editar-form').css('visibility','visible');
                     $('#editar-container').css('display','block');
                     $('#hora-container').css('visibility','visible');
                     $('#hora-container').css('display','block');
+                    $('#save-button').attr('onclick','addAcarreo()');
                   }
                 }
             } else{
@@ -940,6 +952,8 @@ function getFlete(){
 
           fletes.done(function(data){
             console.log(data);
+            $('#flete_id').val(data[0].fletes_id);
+            $('#precio-flete').val(data[0].precio);
             });
 
           fletes.fail(function(jqXHR, textStatus, errorThrown){
@@ -966,6 +980,7 @@ function getMateriales(value){
             console.log(data);
             getZonas();
             $('#material_id').val(data[0].id);
+            $('#precio_material').val(data[0].precio);
             });
 
           materiales.fail(function(jqXHR, textStatus, errorThrown){
@@ -1054,6 +1069,29 @@ function updateAcarreo(){
 }
 
 function addAcarreo(){
+  var camion_id = $('#camion_id').val();
+  var unidad = $('#unidad').val();
+  var cantidad = $('#capacidad').val();
+  var fletero = $('#proveedor_id').val();
+  var categoria_flete = $('#categoria').val();
+  var camion_categoria = $('#categoria-camion').val();
+  if($('#precio-flete').val()){
+    var total_flete = $('#precio-flete').val() * cantidad;
+  } else {
+    var total_flete=0;
+  }
+  var zona_id = $('#zona').val();
+  var date= $('#fecha').val();
+  var hour= $('#hora').val();
+  var minutes= $('#minutos').val();
+  var meridian= $('#meridiano').val();
+  var flete_id = $('#flete_id').val();
+  var banco_id = $('#banco_id').val();
+  var concepto_flete = $('#concepto').val();
+  var material_id = $('#material_id').val();
+  var concepto_material = $('#concepto').val();
+   var precio_material = $('#concepto').val();
+
        var acarreo = $.ajax({
             url: '/api/acarreos/',
             type: 'POST',
@@ -1061,11 +1099,14 @@ function addAcarreo(){
                 unidad:unidad,
                 fletero:fletero,
                 camion_categoria:camion_categoria,
-                categoria_flete:categoria_flete,
+                fletero_categoria:categoria_flete,
                 total_flete:total_flete,
                 zona_id: zona_id,
-                cantidad:cantidad,
-                hora:hora,
+                capacidad:cantidad,
+                date:date,
+                hour:hour,
+                minutes:minutes,
+                meridian:meridian,
                 flete_id:flete_id,
                 banco_id:banco_id,
                 concepto_flete:concepto_flete,
@@ -1077,7 +1118,9 @@ function addAcarreo(){
 
           acarreo.done(function(data){
             console.log(data);
-            // location.reload();
+            if(data.status === "success"){
+            location.reload();
+            }
             });
 
           acarreo.fail(function(jqXHR, textStatus, errorThrown){
@@ -1085,6 +1128,44 @@ function addAcarreo(){
               alert('Error');
           });
 }
+
+function confirmBorrar(){
+if($('.acarreos:checkbox:checked').length < 1 || $('.acarreos:checkbox:checked').length > 1 ){
+  alert('Por favor seleccione solamente un acarreo para borrar.');
+} else {
+var checkedVals = $('.acarreos:checkbox:checked').map(function() {
+    return this.value;
+}).get();
+  if(checkedVals.length == $('.acarreos:checkbox:checked').length){
+      console.log(checkedVals[0])
+    $('#acarreo_id').val(checkedVals[0]);
+  if (window.confirm("Seguro que desea borrar este acarreo?")) {
+    popUpResidente('borrar');
+}
+}
+}
+}
+
+function borrarAcarreo(){
+
+  var recibo_id = $('#acarreo_id').val();;
+        var acarreo = $.ajax({
+            url: '/api/acarreos/recibo/'+recibo_id,
+            type: 'DELETE'
+          });
+
+          acarreo.done(function(data){
+            console.log(data);
+            if(data === "done"){
+            location.reload();
+            }
+            });
+
+          acarreo.fail(function(jqXHR, textStatus, errorThrown){
+            console.log(errorThrown)
+              alert('Error');
+          });
+           }
 
 
 // location.replace('http://localhost:3000/api/acarreos/?camion_id='+camion_id+'&categoria='+categoria+'&fecha='+fecha)

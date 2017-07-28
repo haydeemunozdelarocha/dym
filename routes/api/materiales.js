@@ -44,7 +44,7 @@ router.get('/banco/:banco/:concepto', function(req,res,err){
   var banco_id = req.params.banco;
   var obra_id = req.user.obra_id;
   var concepto_id = req.params.concepto;
-  var listaMateriales = 'SELECT materiales.id FROM materiales WHERE proveedor_id ='+banco_id+' AND obra_id ='+obra_id+' AND concepto='+concepto_id+';';
+  var listaMateriales = 'SELECT materiales.id,materiales.precio FROM materiales WHERE proveedor_id ='+banco_id+' AND obra_id ='+obra_id+' AND concepto='+concepto_id+';';
   console.log(listaMateriales);
     db.query(listaMateriales, function(err, rows){
     if(err) throw err;
