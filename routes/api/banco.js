@@ -66,6 +66,17 @@ router.get('/material/', function(req,res,err){
   });
 })
 
+router.get('/banco/:camionid', function(req,res,err){
+ var camion_id = req.params.camionid;
+  var getBanco = 'SELECT (case when banco = 0 then fletes.proveedor_id else banco end) as banco,(case when razon_social is null then (SELECT proveedores.razon_social FROM camiones JOIN proveedores ON camiones.proveedor_id =proveedores.id WHERE camion_id = '+camion_id+') else razon_social end) as razon_social FROM fletes LEFT JOIN proveedores ON fletes.banco = proveedores.id WHERE proveedor_id = (SELECT proveedor_id FROM camiones WHERE camion_id = '+camion_id+') ;';
+    db.query(getBanco, function(err, banco){
+    if(err) throw err;
+    else {
+        res.json(banco)
+    }
+  });
+})
+
 router.post('/', function(req,res,err){
   console.log(req.body)
   var obra_id = req.body.obra_id;

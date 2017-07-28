@@ -40,6 +40,20 @@ router.get('/', function(err,res){
   });
 })
 
+router.get('/banco/:banco/:concepto', function(req,res,err){
+  var banco_id = req.params.banco;
+  var obra_id = req.user.obra_id;
+  var concepto_id = req.params.concepto;
+  var listaMateriales = 'SELECT materiales.id FROM materiales WHERE proveedor_id ='+banco_id+' AND obra_id ='+obra_id+' AND concepto='+concepto_id+';';
+  console.log(listaMateriales);
+    db.query(listaMateriales, function(err, rows){
+    if(err) throw err;
+    else {
+        res.send(rows);
+    }
+  });
+})
+
 router.get('/acarreoint/:proveedorid', function(req,res,err){
   var id = Number(req.params.proveedorid);
   if(req.user.categoria === "checador"){
