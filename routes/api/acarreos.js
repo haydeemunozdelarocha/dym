@@ -3,6 +3,8 @@ var router = express.Router();
 var mysql = require('mysql');
 var moment= require('moment');
 var moment = require('moment-timezone');
+var bodyParser = require('body-parser');
+var methodOverride = require('method-override');
 var db = require('../../db.js');
 var csv = require('express-csv');
 var later = require('later');
@@ -487,5 +489,30 @@ router.get('/pipa/acarreos',isLoggedIn, function(req, res, err ){
 })
 
 });
+
+router.use(bodyParser.urlencoded({extended:true}))
+router.use(methodOverride(function(req, res){
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    var method = req.body._method
+    delete req.body._method
+    return method
+  }
+}))
+
+router.put('/editar', function(req,res,err){
+  var recibo_id=req.body.recibo_id;
+    var zona_id=req.body.zona_id;
+    var estimacion_id=req.body.estimacion_id;
+  var editarRecibo = 'UPDATE recibos SET zona_id = '+zona_id+' WHERE recibo_id ='+recibo_id+';SET @acarreo_mat := (SELECT acarreos_mat_id FROM acarreos_material WHERE recibo_id = '+recibo_id+' LIMIT 1);UPDATE acarreos_material SET estimacion = "Y", estimacion_id = '+estimacion_id+' WHERE acarreos_mat_id = @acarreo_mat;SET @acarreo_flete := (SELECT acarreo_id FROM acarreos_flete WHERE recibo_id = '+recibo_id+' LIMIT 1);UPDATE acarreos_flete SET estimacion = "Y", estimacion_id = '+estimacion_id+' WHERE acarreo_id = @acarreo_flete;';
+
+    db.query(editarRecibo, function(err, recibo){
+    if(err) throw err;
+    else {
+        console.log('Listo');
+        res.redirect('/acarreos/update');
+    }
+  });
+})
 
 module.exports = router;
