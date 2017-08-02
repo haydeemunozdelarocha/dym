@@ -1,0 +1,45 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DYM Ingenieros Constructores | Acarreo - Captura</title>
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+<% if (usuario.categoria === "master"){%>
+   <% include ./partials/adminheader.ejs %>
+<% } else if (usuario.categoria === "master") {%>
+  <% include ./partials/adminheader.ejs %>
+<% } %>
+<div id="content-container">
+<form action="/api/acarreos/editar" method="POST" enctype="application/x-www-form-urlencoded">
+  <input type="hidden" name="_method" value="put">
+    <div class="form-group" id="obrainfo">
+      <label for="obrainfo">Zona:</label>
+          <select class="form-control" name="zona_id" id="zona" required>
+           <% for(var i = 0; i < zonas.length ; i ++) { %>
+           <option value="<%= zonas[i].zonas_id %>"><%= zonas[i].nombre_zona %></option>
+           <% } %>
+    </select>
+    <br>
+    </div>
+    <label for="recibo_id"># Recibo</label>
+    <input type="text" name="recibo_id">
+    <label for="recibo_id"># Estimacion</label>
+    <input type="text" name="estimacion_id">
+
+
+    <div class="form-group" name="submit" id="submit" style="margin-top: 10px">
+    <input type="submit" id="submit-button" class="btn btn-primary" value="Guardar">
+
+    </div>
+</form>
+</div>
+
+<script src="/javascripts/captura.js" type="text/javascript" charset="utf-8" async defer></script>
+</body>
+</html>
