@@ -772,6 +772,8 @@ function closePopup(){
   $('.acarreos').attr('checked', false);
   $('#reportar-boton').html('Reportar Cambios');
   $('#reportar-boton').attr('onclick','checkboxesOn()');
+  $('#hora-container').css('visibility','hidden');
+
 }
 
 function checkPin(){
@@ -849,16 +851,12 @@ console.log(residente_id);
             if(data.status === "success"){
                 $('#popup-residente').css('visibility','hidden');
                 $('#popup-residente').css('display','none');
-                if($('#categoria').val() ==="flete"){
-                getBancos();
-                } else {
                   if(tipo === 'editar'){
                   getAcarreo();
                   } else if(tipo ==="borrar"){
                   borrarAcarreo();
                   }else {
-                    $('#banco_id').val($('#proveedor_id').val());
-                    console.log($('#banco_id').val());
+                    getBancos();
                     $('#popup-loading').css('visibility','hidden');
                     $('#popup-loading').html('');
                     $('#popup-editar').css('visibility','visible');
@@ -869,7 +867,7 @@ console.log(residente_id);
                     $('#hora-container').css('display','block');
                     $('#save-button').attr('onclick','addAcarreo()');
                   }
-                }
+
             } else{
               alert('Contraseña incorrecta');
               $('#popup-loading').css('visibility','hidden');
@@ -900,10 +898,11 @@ function getAcarreo(){
           acarreo.done(function(data){
             console.log(data);
             $('#concepto').val(data[0].concepto_material);
-            if($('#categoria').val()==="flete/banco"){
+            if(!data[0].flete_id){
             $('#banco_id').val(data[0].proveedor_id);
             } else {
             $('#banco_id').val(data[0].banco_id);
+            getBancos();
             }
             getMateriales(data[0].material_id);
             getZonas(data[0].zona_id);
@@ -917,6 +916,8 @@ function getAcarreo(){
 
 function getBancos(){
     var camion_id = $('#camion_id').val();
+    $('#banco_id').html('');
+    $('#banco_id').append('<option value="">Banco</option>');
 
    var bancos = $.ajax({
             url: '/api/banco/banco/'+camion_id,
@@ -927,11 +928,11 @@ function getBancos(){
             console.log(data);
             for(var i = 0; i <data.length; i++){
             $('#banco_id').append('<option value="'+data[i].banco+'">'+data[i].razon_social+'</option>');
+            if(i == data.length-1){
+             $('#banco').css('display','block');
+            $('#banco').css('visibility','visible');
             }
-            $('#banco').attr('display','block');
-            $('#banco').attr('visibility','visible');
-
-            getAcarreo();
+            }
             });
 
           bancos.fail(function(jqXHR, textStatus, errorThrown){
@@ -941,28 +942,32 @@ function getBancos(){
 }
 
 function getFlete(){
-  if($('#categoria').val()==="flete"){
+
   var proveedor_id = $('#proveedor_id').val();
   var banco_id = $('#banco_id').val();
   var concepto = $('#concepto').val();
    var fletes = $.ajax({
-            url: '/api/fletes/precio/',
-            type: 'GET'
+            url: '/api/fletes/precio',
+            type: 'POST',
+            data: {
+              proveedor_id:proveedor_id,
+              banco_id:banco_id,
+              concepto:concepto
+            }
           });
 
           fletes.done(function(data){
             console.log(data);
-            $('#flete_id').val(data[0].fletes_id);
-            $('#precio-flete').val(data[0].precio);
+            $('#flete_id').val(data[0][0].fletes_id);
+            $('#precio-flete').val(data[0][0].precio);
+            getZonas();
             });
 
           fletes.fail(function(jqXHR, textStatus, errorThrown){
             console.log(errorThrown)
               alert('Error');
           });
-  }else{
-    console.log('no es flete');
-  }
+
 }
 
 function getMateriales(value){
@@ -970,7 +975,7 @@ function getMateriales(value){
   var concepto = $('#concepto').val();
   if(value){
     $('#material_id').val(value);
-  } else {
+  } else if(banco_id && concepto){
        var materiales = $.ajax({
             url: '/api/materiales/banco/'+banco_id+'/'+concepto,
             type: 'GET'
@@ -993,6 +998,7 @@ function getMateriales(value){
 function getZonas(value){
   checkAcarreo();
   var concepto_id = $('#concepto').val();
+  console.log(value)
   if(!value){
     var value = $('#zona').val();
   }

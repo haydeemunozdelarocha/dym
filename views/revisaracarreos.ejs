@@ -125,7 +125,7 @@
         <select class="form-control" name="concepto" id="concepto" onchange="getMateriales();">
           <option value="">Concepto</option>
           <% for(var i =0; i < conceptos.length;i++){ %>
-          <option value="<%=conceptos[i].concepto%>"><%=conceptos[i].nombre_concepto%></option>
+          <option value="<%=conceptos[i].conceptos_id%>"><%=conceptos[i].nombre_concepto%></option>
           <% } %>
         </select>
     </div>
@@ -201,6 +201,7 @@
     <td width="60"><strong>No.</strong></td>
     <td width="150"><strong>Concepto</strong></td>
     <td width="150"><strong>Zona</strong></td>
+    <td width="150"><strong>Banco</strong></td>
     <td width="150"><strong>Hora</strong></td>
     <td class="acarreos" style="visibility:hidden;"></td>
    </tr>
@@ -211,6 +212,7 @@
     <td width="60"><strong><%= i+1 %></strong></td>
     <td width="150"><strong><%=acarreos[i].concepto%></strong></td>
     <td width="150"><strong><%=acarreos[i].nombre_zona%></strong></td>
+    <td width="150"><strong><%=acarreos[i].razon_social%></strong></td>
     <td width="150"><strong><%=moment(acarreos[i].hora).format("HH:mm A")%></strong></td>
     <% if(acarreos[i].aprobado === "Y"){ %>
     <td><span class="glyphicon glyphicon-ok"></span></td>

@@ -142,7 +142,102 @@ var concepto_flete = Number(req.body.concepto_flete);
       });
     })
 
+router.post('/v2',isLoggedIn, function(req,res, next){
+console.log(req.body)
+var recibo;
+var usuario_id = req.user.id_usuario;
+if(req.user.categoria === "checador"){
+var obra_id = req.user.obra_id;
+} else {
+ var obra_id = req.body.obra_id;
+}
+var camion_id= Number(req.body.camion_id);
+var foto = req.body.photo;
+var unidad = req.body.unidad;
+var fletero = req.body.fletero;
+if(!foto){
+  foto = null;
+}
+var camion_categoria = req.body.camion_categoria;
+var direccion = req.body.direccion;
+var categoria_flete = req.body.fletero_categoria;
+var total_flete = req.body.precio_flete;
+var zona_id = Number(req.body.zona_id);
+var cantidad=req.body.capacidad;
+if(req.user.categoria === "checador" && !req.body.hour){
+var date = Date.now();
+var timezone = "America/Mexico_City";
+var hora= moment.tz(date,timezone).format("YYYY-MM-DD hh:mm A");
+} else {
+ var date = new Date(req.body.date + ' ' + req.body.hour + ':'+req.body.minutes+ ' '+req.body.meridian);
+ var hora= moment(date).format("YYYY-MM-DD hh:mm A");
+}
 
+var flete_id = req.body.flete_id;
+var concepto_flete = Number(req.body.concepto_flete);
+
+
+if(concepto_flete == 82){
+    banco_id = null;
+  } else {
+var banco_id = req.body.banco_id;
+}
+
+    var material_id= Number(req.body.material_id);
+    var total_material = (Number(req.body.precio_material)*cantidad);
+    var concepto_material = req.body.concepto_material;
+
+  var nuevoRecibo;
+  var reciboValues;
+    if(camion_categoria === "pipa"){
+     nuevoRecibo = "INSERT INTO pipas_viajes(hora,usuario_id,camion_id,zona_id,direccion,material_id) VALUE (?,?,?,?,?,?);";
+      reciboValues =[hora,usuario_id,camion_id,zona_id,direccion,material_id];
+  } else {
+      nuevoRecibo = "INSERT INTO recibos(usuario_id,zona_id,foto,hora,obra_id,camion_id) VALUES (?,?,?,?,?,?);";
+      reciboValues = [usuario_id,zona_id,foto,hora,obra_id,camion_id];
+  }
+      db.query(nuevoRecibo,reciboValues, function(err, rows){
+        console.log('sending query')
+        console.log(reciboValues)
+        console.log(nuevoRecibo)
+        if(err) {
+          console.log(err);
+          res.render('error',{message: 'Hubo un error al capturar el acarreo.' })
+        }
+        else {
+            recibo=rows.insertId;
+               if (camion_categoria === "pipa"){
+                    res.redirect('/captura');
+              } else if (concepto_flete == 82){
+                  console.log('interno')
+                  var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
+                  var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad];
+              } else {
+                    console.log(categoria_flete);
+                      var nuevoAcarreo = 'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);INSERT INTO acarreos_material(material_id,cantidad,total_material,concepto_material,recibo_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);'
+                      var values = [cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad,material_id,cantidad,total_material,concepto_material,recibo,banco_id,unidad];
+              }
+              console.log(values);
+              db.query(nuevoAcarreo,values,function(err, rows){
+                if(err){
+                  console.log(err);
+                res.render('error',{message: 'Hubo un error al capturar el acarreo.' })
+
+                }
+                else {
+                  console.log(req.body.date);
+                  if(req.user.categoria === "checador" && !req.body.date){
+                    res.redirect('/captura')
+                  } else if(req.user.categoria === "checador" && req.body.date) {
+                    res.send({status:'success'})
+                  } else if(req.user.categoria !== "checador"){
+                    res.redirect('/acarreos/nuevo')
+                  }
+                }
+              });
+        }
+      });
+    })
 
 //Read acarreos
 
@@ -201,9 +296,9 @@ router.post('/update/:id', function(req, res, next ){
   var zona_id=req.body.zona_id;
   var flete_id=req.body.flete_id;
   var categoria=req.body.categoria;
-    var getAcarreo = "SET SQL_SAFE_UPDATES=0;UPDATE recibos SET zona_id = "+zona_id+" WHERE recibos.recibo_id = "+recibo_id+";UPDATE acarreos_material SET material_id = "+material_id+",concepto_material = "+concepto+",banco_id = "+banco_id+" WHERE recibo_id = "+recibo_id+";";
+    var getAcarreo = "SET @acarreos_mat_id := (SELECT acarreos_mat_id FROM acarreos_material WHERE recibo_id ="+recibo_id+");UPDATE recibos SET zona_id = "+zona_id+" WHERE recibos.recibo_id = "+recibo_id+";UPDATE acarreos_material SET material_id = "+material_id+",concepto_material = "+concepto+",banco_id = "+banco_id+" WHERE acarreos_mat_id = @acarreos_mat_id;";
   if(categoria === "flete"){
-    getAcarreo += "UPDATE acarreos_flete SET banco_id = "+banco_id+",flete_id="+flete_id+" WHERE recibo_id = "+recibo_id+";";
+    getAcarreo += "SET @acarreos_id := (SELECT acarreo_id FROM acarreos_flete WHERE recibo_id ="+recibo_id+");UPDATE acarreos_flete SET banco_id = "+banco_id+",flete_id="+flete_id+" WHERE acarreo_id = "+recibo_id+";";
   }
   console.log(getAcarreo);
   db.query(getAcarreo, function(err, acarreo){
@@ -416,9 +511,9 @@ router.get('/recibos/resumen',isLoggedIn, function(req, res, next ){
   var camion_id = req.query.camion_id;
 
   if(categoria === "flete/banco"){
- var recibosDia = "SELECT stickers.sticker_id,camiones.camion_id,camiones.placas,proveedores.razon_social as prov_flete,camiones.proveedor_id,camiones.categoria as camion_categoria,camiones.capacidad,camiones.unidad_camion FROM camiones LEFT JOIN stickers ON stickers.codigo = camiones.numero LEFT JOIN proveedores ON proveedores.id = camiones.proveedor_id WHERE camiones.camion_id = "+camion_id+"; SELECT recibos.recibo_id,recibos.aprobado,recibos.hora,acarreos_material.acarreos_mat_id AS acarreo_id,conceptos.nombre_concepto AS concepto, zonas.nombre_zona,proveedores.razon_social,camiones.numero FROM recibos JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_material.concepto_material JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" UNION SELECT recibos.recibo_id,recibos.aprobado,recibos.hora,acarreos_flete.acarreo_id AS acarreo_id,conceptos.nombre_concepto AS concepto, zonas.nombre_zona,proveedores.razon_social,camiones.numero FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_flete.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" AND concepto_flete = 82; SELECT conceptos.nombre_concepto, zonas.nombre_zona,proveedores.razon_social, SUM(cantidad) AS total_cantidad,COUNT(*) AS viajes FROM recibos JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_material.concepto_material JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" GROUP BY nombre_zona,nombre_concepto UNION SELECT conceptos.nombre_concepto, zonas.nombre_zona,proveedores.razon_social,SUM(cantidad) AS total_cantidad,COUNT(*) AS viajes FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_flete.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" AND concepto_flete = 82 GROUP BY nombre_concepto,nombre_zona;SELECT COUNT(recibos.camion_id) AS total_viajes FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND recibos.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+";SELECT materiales.concepto,conceptos.nombre_concepto FROM materiales JOIN conceptos ON conceptos.conceptos_id = materiales.concepto WHERE proveedor_id = 92 ORDER BY concepto;SELECT id,razon_social FROM proveedores WHERE categoria != 'flete';";
+ var recibosDia = "SELECT stickers.sticker_id,camiones.camion_id,camiones.placas,proveedores.razon_social as prov_flete,camiones.proveedor_id,camiones.categoria as camion_categoria,camiones.capacidad,camiones.unidad_camion FROM camiones LEFT JOIN stickers ON stickers.codigo = camiones.numero LEFT JOIN proveedores ON proveedores.id = camiones.proveedor_id WHERE camiones.camion_id = "+camion_id+"; SELECT recibos.recibo_id,recibos.aprobado,recibos.hora,acarreos_material.acarreos_mat_id AS acarreo_id,conceptos.nombre_concepto AS concepto, zonas.nombre_zona,proveedores.razon_social,camiones.numero FROM recibos JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_material.concepto_material JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" UNION SELECT recibos.recibo_id,recibos.aprobado,recibos.hora,acarreos_flete.acarreo_id AS acarreo_id,conceptos.nombre_concepto AS concepto, zonas.nombre_zona,proveedores.razon_social,camiones.numero FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_flete.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" AND concepto_flete = 82; SELECT conceptos.nombre_concepto, zonas.nombre_zona,proveedores.razon_social, SUM(cantidad) AS total_cantidad,COUNT(*) AS viajes FROM recibos JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_material.concepto_material JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" GROUP BY nombre_zona,nombre_concepto UNION SELECT conceptos.nombre_concepto, zonas.nombre_zona,proveedores.razon_social,SUM(cantidad) AS total_cantidad,COUNT(*) AS viajes FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_flete.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" AND concepto_flete = 82 GROUP BY nombre_concepto,nombre_zona;SELECT COUNT(recibos.camion_id) AS total_viajes FROM recibos LEFT JOIN camiones ON recibos.camion_id = camiones.camion_id LEFT JOIN proveedores AS proveedor_flete ON proveedor_flete.id = camiones.proveedor_id LEFT JOIN acarreos_material ON recibos.recibo_id = acarreos_material.recibo_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id LEFT JOIN conceptos ON acarreos_material.concepto_material = conceptos.conceptos_id LEFT JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN obras ON obras.obra_id = recibos.obra_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND recibos.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+";SELECT * FROM conceptos;SELECT id,razon_social FROM proveedores WHERE categoria != 'flete';";
   } else {
-  var recibosDia = "SELECT stickers.sticker_id,camiones.camion_id,camiones.placas,camiones.proveedor_id,proveedores.razon_social as prov_flete, camiones.categoria as camion_categoria,camiones.capacidad,camiones.unidad_camion FROM camiones LEFT JOIN stickers ON stickers.codigo = camiones.numero LEFT JOIN proveedores ON proveedores.id = camiones.proveedor_id WHERE camiones.camion_id = "+camion_id+";SELECT recibos.recibo_id,recibos.aprobado,recibos.hora,acarreos_flete.acarreo_id AS acarreo_id,conceptos.nombre_concepto AS concepto, zonas.nombre_zona,proveedores.razon_social,camiones.numero FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_flete.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+";SELECT conceptos.nombre_concepto, zonas.nombre_zona,proveedores.razon_social,count(*) AS viajes,SUM(cantidad) AS total_cantidad FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_flete.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" GROUP BY nombre_concepto,nombre_zona;SELECT COUNT(*) AS viajes FROM recibos JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_material.concepto_material JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date2+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" GROUP BY nombre_zona,nombre_concepto UNION SELECT COUNT(*) AS viajes FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_flete.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date2+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" AND concepto_flete = 82 GROUP BY nombre_concepto,nombre_zona;SELECT materiales.concepto,conceptos.nombre_concepto FROM materiales JOIN conceptos ON conceptos.conceptos_id = materiales.concepto WHERE proveedor_id = 92 ORDER BY concepto;SELECT id,razon_social FROM proveedores WHERE categoria != 'flete';";
+  var recibosDia = "SELECT stickers.sticker_id,camiones.camion_id,camiones.placas,camiones.proveedor_id,proveedores.razon_social as prov_flete, camiones.categoria as camion_categoria,camiones.capacidad,camiones.unidad_camion FROM camiones LEFT JOIN stickers ON stickers.codigo = camiones.numero LEFT JOIN proveedores ON proveedores.id = camiones.proveedor_id WHERE camiones.camion_id = "+camion_id+";SELECT recibos.recibo_id,recibos.aprobado,recibos.hora,acarreos_flete.acarreo_id AS acarreo_id,conceptos.nombre_concepto AS concepto, zonas.nombre_zona,proveedores.razon_social,camiones.numero FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_flete.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+";SELECT conceptos.nombre_concepto, zonas.nombre_zona,proveedores.razon_social,count(*) AS viajes,SUM(cantidad) AS total_cantidad FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_flete.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date1+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" GROUP BY nombre_concepto,nombre_zona;SELECT COUNT(*) AS viajes FROM recibos JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_material.concepto_material JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_material.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date2+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" GROUP BY nombre_zona,nombre_concepto UNION SELECT COUNT(*) AS viajes FROM recibos JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN conceptos ON conceptos.conceptos_id = acarreos_flete.concepto_flete JOIN zonas ON zonas.zonas_id = recibos.zona_id LEFT JOIN proveedores ON proveedores.id = acarreos_flete.banco_id JOIN camiones ON recibos.camion_id = camiones.camion_id WHERE hora BETWEEN '"+date2+"' AND '"+date2+"' AND camiones.camion_id = "+camion_id+" AND recibos.obra_id = "+obra_id+" AND concepto_flete = 82 GROUP BY nombre_concepto,nombre_zona;SELECT * FROM conceptos;SELECT id,razon_social FROM proveedores WHERE categoria != 'flete';";
 }
   console.log(recibosDia)
   db.query(recibosDia, function(err, recibos){
