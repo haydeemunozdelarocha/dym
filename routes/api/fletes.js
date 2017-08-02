@@ -40,7 +40,7 @@ router.post('/precio', function(req,res,err){
   var proveedor_id = req.body.proveedor_id;
   var banco_id = req.body.banco_id;
   var concepto = req.body.concepto;
-  console.log(req.body)
+  console.log(req.body);
 
     var getPrecio = 'SELECT * FROM fletes WHERE proveedor_id = ? AND obra_id = ? AND banco = ?;SELECT * FROM materiales WHERE proveedor_id = ? AND concepto = ? AND obra_id = ?;';
     db.query(getPrecio,[proveedor_id,obra_id,banco_id,banco_id,concepto,obra_id],function(err, rows){
