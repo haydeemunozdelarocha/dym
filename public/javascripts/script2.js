@@ -1,10 +1,18 @@
 
-var canvas = document.createElement("canvas");
-canvas.setAttribute("id", "canvasPaper");
-canvas.setAttribute("width", "576");
-canvas.setAttribute("height", "100");
-canvas.style.visibility = "hidden"; // to hide the canvas
-canvas.style.display = "none"; // to not ruin the layout of the page
+var canvasLogo = document.createElement("canvas");
+canvasLogo.setAttribute("id", "canvasPaper");
+canvasLogo.setAttribute("width", "576");
+canvasLogo.setAttribute("height", "100");
+canvasLogo.style.visibility = "hidden"; // to hide the canvasLogo
+canvasLogo.style.display = "none"; // to not ruin the layout of the page
+
+// var canvasFirma = document.createElement("canvas");
+// canvasFirma.setAttribute("id", "canvasPaper");
+// canvasFirma.setAttribute("width", "576");
+// canvasFirma.setAttribute("height", "100");
+// canvasFirma.style.visibility = "hidden"; // to hide the canvasFirma
+// canvasFirma.style.display = "none";
+
 var hidden, visibilityChange;
 if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
   hidden = "hidden";
@@ -23,52 +31,60 @@ else if (typeof document.webkitHidden !== "undefined") {
   visibilityChange = "webkitvisibilitychange";
 }
 
-var image = ""; // When the page (and only the page) loads, the loadImages function is called.
+var logo = ""; // When the page (and only the page) loads, the loadImages function is called.
         // once loadImages exits, the scope level "image" variable will overwrite the global variable.
         // this allows me to pass it as a parameter when I call my drawCanvas function.
         // this is a bit hacky, so hopefully you find a better solution.
         // open the Javascript Console and you'll see my dilemma a bit clearer.
-
+var signature = "";
 document.addEventListener("DOMContentLoaded", loadImages("/images/dym-logo copy.bmp"));
 //document.addEventListener("visibility", onFocusChanged());
 
 function passPRNT() {
   console.log('sending to printer')
-  drawCanvas(image);
+  drawCanvas(logo);
 }
 
-function loadImages(src) {
-    image = new Image();
-    image.onload = function() {
+function loadImages(srcLogo) {
+    logo = new Image();
+    logo.onload = function() {
+
   }
-  image.onerror = function() {
-    alert("Failed to load image."); // checking again
+  logo.onerror = function() {
+    alert("Failed to load logo."); // checking again
   }
-  image.src = src;
+  logo.src = srcLogo;
 }
 
-function drawCanvas(image) {
-  if(canvas.getContext) {
-    var context = canvas.getContext("2d");
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(image, 0, 0);
+
+function drawCanvas(logo) {
+
+  if(canvasLogo.getContext) {
+    var context = canvasLogo.getContext("2d");
+    context.clearRect(0, 0, canvasLogo.width, canvasLogo.height);
+    context.drawImage(logo, 0, 0);
+      var base64URLLogo = canvasLogo.toDataURL();
   }
-  var base64URL = canvas.toDataURL();
-  createImgElement(base64URL);
+
+  createImgElement(base64URLLogo);
 }
 
-function createImgElement(base64URL) {
-  var imgElement = document.createElement("img");
-  imgElement.setAttribute("src", base64URL);
+function createImgElement(base64Logo) {
+  // var imgFirma = document.createElement("img");
+  // imgFirma.setAttribute("src", base64Firma);
+
+    var imgLogo = document.createElement("img");
+  imgLogo.setAttribute("src", base64Logo);
   // imgElement.setAttribute("style", "padding-bottom: 10px;");
-  createImgElementBase64(imgElement.outerHTML);
+  createImgElementBase64(imgLogo.outerHTML);
 }
 
-function createImgElementBase64(htmlElement) {
-  var receipt = encodeURIComponent(htmlElement + document.getElementById("printData").innerHTML);
+function createImgElementBase64(logo) {
+  var receipt = encodeURIComponent(logo + document.getElementById("printData").innerHTML);
   console.log(receipt)
   buildURLScheme(receipt);
 }
+
 
 function buildURLScheme(encodedReceiptBase64) {
   var urlStart = "starpassprnt://v1/print/nopreview?html=";
@@ -678,8 +694,10 @@ console.log("getting image");
 
       image.done(function(data){
         console.log(data)
-        if(data.status === "success"){
-          passPRNT();
+        if(data.photo.length>0){
+           closePopup();
+           var img = $('#firma').attr('src',data.photo);
+           passPRNT();
         }
 
         });
@@ -687,9 +705,13 @@ console.log("getting image");
       image.fail(function(jqXHR, textStatus, errorThrown){
           alert('Error');
       });
+} else {
+  passPRNT();
 }
 
 }
+
+
 function autorizar(){
     var checkedVals = $('.acarreos:checkbox').map(function() {
     return this.value;
@@ -726,6 +748,8 @@ function autorizar(){
     }
 
 }
+
+
 
 function aprobarPopup(camionId){
   console.log('aprobando');
@@ -902,7 +926,7 @@ function getAcarreo(){
             $('#banco_id').val(data[0].proveedor_id);
             } else {
             $('#banco_id').val(data[0].banco_id);
-            getBancos();
+            getBancos(data[0].banco_id);
             }
             getMateriales(data[0].material_id);
             getZonas(data[0].zona_id);
@@ -914,7 +938,7 @@ function getAcarreo(){
           });
 }
 
-function getBancos(){
+function getBancos(value){
     var camion_id = $('#camion_id').val();
     $('#banco_id').html('');
     $('#banco_id').append('<option value="">Banco</option>');
@@ -929,6 +953,9 @@ function getBancos(){
             for(var i = 0; i <data.length; i++){
             $('#banco_id').append('<option value="'+data[i].banco+'">'+data[i].razon_social+'</option>');
             if(i == data.length-1){
+              if(value){
+               $('#banco_id').val(value);
+              }
              $('#banco').css('display','block');
             $('#banco').css('visibility','visible');
             }
@@ -983,9 +1010,13 @@ function getMateriales(value){
 
           materiales.done(function(data){
             console.log(data);
+            if(data.length > 0){
             getZonas();
             $('#material_id').val(data[0].id);
             $('#precio_material').val(data[0].precio);
+            } else {
+              alert('No se encontró la entrada de material de el concepto y banco seleccionado. Favor de dar de alta el material indicado.');
+            }
             });
 
           materiales.fail(function(jqXHR, textStatus, errorThrown){
@@ -997,6 +1028,8 @@ function getMateriales(value){
 
 function getZonas(value){
   checkAcarreo();
+  $('#zona').attr('disabled','true');
+  $('#editar-button-loading').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
   var concepto_id = $('#concepto').val();
   console.log(value)
   if(!value){
@@ -1014,16 +1047,22 @@ function getZonas(value){
             $('#zona').append('<option value="">Zonas</option>');
             for(var i = 0; i <data.length; i++){
             $('#zona').append('<option value="'+data[i].zona+'">'+data[i].nombre_zona+'</option>');
-            }
-            }
-            $('#zona').append('<option value="122">Extras</option>');
-            $('#zona').val(value);
-            $('#zona').removeAttr('readonly');
+            if(i == data.length-1){
+                $('#zona').removeAttr('disabled');
+                $('#zona').append('<option value="122">Extras</option>');
+                $('#zona').val(value);
+                $('#editar-button-loading').html('')
+                $('#zona').removeAttr('readonly');
                 $('#editar-container').css('visibility','visible');
                 $('#editar-container').css('display','block');
                 $('#popup-editar').css('visibility','visible');
                 $('#popup-loading').css('visibility','hidden');
                 $('#popup-loading').html('');
+            }
+            }
+            } else {
+              $('#zona').append('<option value="122">Extras</option>');
+            }
             });
 
           zonas.fail(function(jqXHR, textStatus, errorThrown){
@@ -1040,6 +1079,8 @@ function checkAcarreo(){
 }
 
 function updateAcarreo(){
+  $('#editar-button-loading').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
+
   var recibo_id = $('#acarreo_id').val();
   var concepto = $('#concepto').val();
   var banco_id = $('#banco_id').val();
@@ -1047,6 +1088,7 @@ function updateAcarreo(){
   var flete_id = $('#flete_id').val();
   var zona = $('#zona').val();
   var categoria = $('#categoria').val();
+  console.log('nozona: '+!zona);
   if(!zona || !concepto || !banco_id){
     alert("Favor de no dejar campos en blanco.")
   } else {
@@ -1064,6 +1106,7 @@ function updateAcarreo(){
 
           update.done(function(data){
             console.log(data);
+            $('#editar-button-loading').html('')
             location.reload();
             });
 
@@ -1075,6 +1118,7 @@ function updateAcarreo(){
 }
 
 function addAcarreo(){
+  $('#editar-button-loading').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
   var camion_id = $('#camion_id').val();
   var unidad = $('#unidad').val();
   var cantidad = $('#capacidad').val();
@@ -1097,7 +1141,10 @@ function addAcarreo(){
   var material_id = $('#material_id').val();
   var concepto_material = $('#concepto').val();
    var precio_material = $('#concepto').val();
-
+   console.log(zona_id);
+  if(!zona_id || !concepto_flete || !date || !hour || !minutes || !meridian || !banco_id ){
+    alert("Favor de no dejar campos en blanco.")
+  } else {
        var acarreo = $.ajax({
             url: '/api/acarreos/',
             type: 'POST',
@@ -1125,14 +1172,17 @@ function addAcarreo(){
           acarreo.done(function(data){
             console.log(data);
             if(data.status === "success"){
+            $('#editar-button-loading').html('');
             location.reload();
             }
             });
 
           acarreo.fail(function(jqXHR, textStatus, errorThrown){
-            console.log(errorThrown)
-              alert('Error');
+            console.log(errorThrown);
+              $('#editar-button-loading').html('');
+              alert('No se pudo guardar el acarreo.');
           });
+        }
 }
 
 function confirmBorrar(){
@@ -1150,6 +1200,13 @@ var checkedVals = $('.acarreos:checkbox:checked').map(function() {
 }
 }
 }
+}
+
+function checkAcarreoInt(){
+  if($('#concepto').val() == 82){
+    $('#save-button').attr('disabled','true');
+    alert('Para cambiar a concepto de Acarreo Interno, se requiere eliminar el viaje y agregarlo de nuevo.');
+  }
 }
 
 function borrarAcarreo(){

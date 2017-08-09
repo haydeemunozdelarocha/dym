@@ -36,7 +36,7 @@
 <div id="signature-pad" class="m-signature-pad">
 <p> Por favor ingrese su firma:</p>
     <div class="signature-pad-body" style="background-color: lightgray">
-    <canvas width="500px"></canvas></div><div class="signature-pad-footer">
+    <canvas width="300px"></canvas></div><div class="signature-pad-footer">
     <div class="signature-pad-left">
     <button type="button" class="button clear btn btn-primary" data-action="clear">Borrar</button>
     </div>
@@ -119,10 +119,11 @@
       <option value="PM">PM</option>
     </select>
     </div>
+    <br>
     </div>
     <div class="form-group editar-form">
       <label for="concepto">Concepto</label>
-        <select class="form-control" name="concepto" id="concepto" onchange="getMateriales();">
+        <select class="form-control" name="concepto" id="concepto" onchange="getMateriales();checkAcarreoInt();">
           <option value="">Concepto</option>
           <% for(var i =0; i < conceptos.length;i++){ %>
           <option value="<%=conceptos[i].conceptos_id%>"><%=conceptos[i].nombre_concepto%></option>
@@ -155,6 +156,7 @@
         </select>
     </div>
         <button type="button" class="button save btn btn-primary editar-form" id="save-button" onClick="updateAcarreo()">Guardar</button>
+        <div id="editar-button-loading" style="display:inline;"></div>
     </div>
   </div>
 
@@ -231,8 +233,8 @@
 
 <br>
 </div>
-<div style="visibility: hidden; display:none">
-<div id="printData">
+<!-- <div style="visibility: hidden; display:none">
+ --><div id="printData">
 <h2>DYM INGENIEROS CONSTRUCTORES SA DE CV</h2>
 <h2>RECIBO ACARREOS</h2>
 
@@ -308,6 +310,9 @@
   <h3><strong>No. Total Viajes:</strong> <%=total[0].total_viajes %></h3>
 
     <% } %>
+    <br>
+
+    <img id="firma" src="<% if(firma.length > 0){%><%=firma%><%}%>">
   <p><strong>Impreso: </strong><%= fecha_impresion %></p>
 </div>
 <div height="200px" width="100px"></div>
