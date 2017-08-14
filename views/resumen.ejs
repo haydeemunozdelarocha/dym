@@ -24,9 +24,9 @@
       <input type="hidden" class="form-control" id="camion_id" name="camion_id" required autofocus autocomplete="off">
       <br>
       <input type="hidden" class="form-control" id="categoria-proveedor" name="categoria" required>
-      <input type="date" class="form-control" id="fechaRecibo" name="fecha" required disabled onchange="checkDate();">
+      <input type="date" class="form-control" id="fechaRecibo" name="fecha" required disabled>
       <br>
-    <input type="submit" id="submit-button" class="btn btn-primary" value="Ver Recibo" disabled="">
+    <input type="submit" id="submit-button" class="btn btn-primary" value="Ver Recibo" disabled="true">
     <br>
 <% if(message) {%>
 <br>
@@ -47,7 +47,10 @@
     if (day < 10) day = "0" + day;
 
     var today = year + "-" + month + "-" + day;
+    var yesterday = year+ "-" + month + "-" + "0"+(day-1);
     $("#fechaRecibo").attr("value", today);
+    $("#fechaRecibo").attr("min", yesterday);
+    $("#fechaRecibo").attr("max", today);
 });
 
 function buscarCodigo(){
@@ -75,6 +78,7 @@ $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px
     $('#submit-button').removeAttr('disabled');
     if(data.camion_categoria === "pipa"){
       $("#resumen-form").attr("action", "/api/acarreos/pipa/resumen");
+      $("#resumen-form").attr("method", "post");
     }
     }
     });
@@ -83,6 +87,13 @@ $('#status-codigo').html('<i class="fa fa-spinner fa-spin" style="font-size:24px
     console.log(errorThrown);
   });
 }
+
+$("body").keydown(function(){
+    if(event.keyCode == 13) {
+        document.activeElement.blur();
+        return false;
+    }
+});
 </script>
 <script src="/javascripts/captura.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>

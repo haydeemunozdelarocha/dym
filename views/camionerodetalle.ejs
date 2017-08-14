@@ -1,0 +1,57 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DYM Ingenieros Constructores | Detalle</title>
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+    <div id="recibos-logo">
+      <img src="/images/dym-logo.png" alt="" align="center">
+    </div>
+  <div id="content-container">
+  <div class="content-header">
+    <p><h2>Acarreos</h2></p>
+
+    <h4><strong>Cantidad Total:</strong> <%= total[0].cantidad.toLocaleString() %> <%= recibos[0].unidad %> </h4>
+    <h4><strong>Número de Viajes:</strong> <%= viajes[0].cantidad.toLocaleString() %> </h4>
+    <br>
+    </div>
+<div style="margin-bottom: 10px">
+<!-- <form action="/api/acarreos/download/" method="GET">
+  <input type="submit" class = "btn btn-primary" value="Exportar a CSV">
+</form> -->
+</div>
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Acarreos</div>
+
+  <!-- Table -->
+    <table class="table">
+    <tr>
+      <td>Concepto</td>
+      <td>Zona</td>
+      <td>Proveedor</td>
+      <td>Cantidad</td>
+      <td>Fecha</td>
+    </tr>
+    <% for(var i=0;i<recibos.length;i++){ %>
+    <tr>
+     <td><%= recibos[i].nombre_concepto %></td>
+     <td><%= recibos[i].nombre_zona %></td>
+      <td><%= recibos[i].razon_social %></td>
+      <td><%= recibos[i].cantidad %> <%=recibos[i].unidad %></td>
+      <td><%= recibos[i].hora %></td>
+     </tr>
+    <% } %>
+    </table>
+  </div>
+</div>
+<script src="/javascripts/script.js" type="text/javascript" charset="utf-8" async defer></script>
+
+</body>
+</html>

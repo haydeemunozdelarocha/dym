@@ -33,7 +33,7 @@
     <div class="form-group categoria-info" hidden>
 
       <label for="categoria">Categoría Acarreo:</label>
-        <select class="form-control" id="categoria" name="categoria" onchange="calcularFlete()" required disabled>
+        <select class="form-control" id="categoria" name="categoria" onchange="revisarInterno()" required disabled>
             <option value="">Categoría</option>
             <option value="82">Acarreo Interno</option>
             <option value="92">Acarreo Externo</option>
@@ -45,7 +45,7 @@
       <div id="banco-status"></div>
     <div id="bancoinfo" hidden>
       <label for="bancoinfo">Banco:</label>
-          <select class="form-control" name="banco_id" id="banco" onchange="calcularAcarreoEM()" required disabled>
+          <select class="form-control" name="banco_id" id="banco" onchange="calcularFlete()" required disabled>
             <option value="">Banco</option>
       <% for(var i=0; i<proveedores.length; i++) {%>
             <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>

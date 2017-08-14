@@ -1,55 +1,75 @@
 // var path = "http://localhost:3000/";
 var path = 'http://dymingenieros.herokuapp.com';
 
-function calcularFlete() {
+function getCamion() {
+  $('#search-status').html("");
+  $('#search-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
+console.log("getting camion");
+var camion_id = $('#scanner').val();
+if(camion_id.length > 0){
+
+
+  var camion = $.ajax({
+    url: '/api/camiones/buscar/'+camion_id,
+    type: 'GET',
+    dataType: 'json'
+  });
+
+  camion.done(function(data){
+    console.log(data)
+    if(data[0].camion_id){
+      $('#camion_id').val(data[0].camion_id);
+      $('#scanner').attr("readonly", true);
+      $('#fletero').val(data[0].proveedor_id);
+      $('#fletero_categoria').val(data[0].proveedor_categoria);
+      $('#camion_categoria').val(data[0].categoria);
+      $('#unidad').val(data[0].unidad_camion);
+      $('#capacidad').val(data[0].capacidad)
+      $('#search-status').html("");
+      if(data[0].categoria === "camion"){
+        $('.categoria-info').removeAttr("hidden");
+        $('#categoria').removeAttr("disabled");
+      } else {
+        getBancos();
+      }
+      $('#search-status').append("Camión encontrado!");
+    } else{
+      $('#search-status').html("");
+      $('#search-status').append("Camión ID no se ha registrado!");
+      $('#scanner').val("");
+    }
+    });
+
+  camion.fail(function(jqXHR, textStatus, errorThrown){
+    console.log(errorThrown);
+      $('#search-status').html("");
+      $('#search-status').append("Camión ID inválido!");
+  });
+}
+}
+
+function revisarInterno() {
   console.log('calculando');
   var concepto_flete = $('#categoria').val();
-  var categoria_fletero =  $('#fletero_categoria').val();
-  if(concepto_flete === "92"){
-    console.log('92')
-    $('#material-info').attr("hidden",true);
-    $('#material_id').removeAttr("disabled");
-    getBancos('acarreo');
-    $('#concepto_flete').val(concepto_flete);
-  } else if (concepto_flete === "100"){
-    if(categoria_fletero !== "flete/banco") {
-      console.log('no es flete/banco');
-      $('#bancoinfo').attr("hidden",true);
-      $('#banco').attr("disabled");
-      getBancos('material');
-    } else {
-    console.log(concepto_flete);
-    $('#bancoinfo').attr("hidden",true);
-    $('#banco').removeAttr("disabled");
-    $('#concepto_flete').val(concepto_flete);
-    getBancos("todos");
-    }
-  } else {
-    $('#bancoinfo').attr("hidden",true);
-    $('#banco').attr("disabled");
-    $('#material-info').attr("hidden",true);
-    $('#material_id').attr("disabled");
+  if(concepto_flete == 82){
+    $('#concepto_flete').val('82');
+    console.log('acarreo interno');
     calcularAcarreoInt();
+  } else{
+    $('#concepto_flete').val(concepto_flete);
+    getBancos();
   }
 }
 
 
-function getBancos(categoria){
+function getBancos(){
   console.log('getting bancos')
   $('#banco-status').html("");
   $('#banco-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
   $('#banco').html('');
-   var proveedor_id =   $('#fletero').val();
-  if(categoria === "acarreo") {
-    var url = '/api/banco/acarreoext/'+proveedor_id;
-  } else if (categoria === "todos"){
-    var url = '/api/banco/todos';
-  } else {
-    var url = '/api/banco/materiales/'+proveedor_id;
-  }
-
+   var camion_id =   $('#camion_id').val();
    var bancos = $.ajax({
-    url: url,
+    url: '/api/banco/banco/'+camion_id,
     type: 'GET',
     dataType: 'json'
   });
@@ -57,30 +77,17 @@ function getBancos(categoria){
   bancos.done(function(data){
     if(data.length !== 0){
       console.log(data)
-      for(var i =0; i <= data.length;i++){
-              if(data[i]){
-              $('#banco').html('<option value="">Banco</option>');
-              $('#banco').append('<option value='+data[i].banco+'>'+data[i].razon_social+'</option>');
-              }
-            if(i == data.length-1){
-            if(categoria === "todos"){
-                  var proveedor_id = $('#fletero').val();
-                  console.log(proveedor_id)
-                  $('#banco').val(proveedor_id);
-                  console.log($('#banco').val())
-                  if($('#banco').val()){
-                  $('#banco-status').html("");
-                  getMateriales();
-                  }
-            } else {
-                $('#bancoinfo').removeAttr("hidden");
-                console.log('done')
-                $('#banco-status').html("");
-                $('#banco').removeAttr("disabled");
-                $('#banco').removeAttr("hidden");
-            }
-          }
+      $('#banco').removeAttr("disabled");
+      $('#banco').html('<option value="">Banco</option>');
+      for(var i=0; i<data.length; i++){
+        $('#banco').append('<option value='+data[i].banco+'>'+data[i].razon_social+'</option>');
+        if(i == data.length-1){
+          $('#bancoinfo').removeAttr("hidden");
+          $('#banco-status').html("");
+          $('#banco').removeAttr("hidden");
+      }
     }
+
     } else {
       console.log('no data')
       alert('No se ha registrado el precio de flete de acarreo externo.')
@@ -124,53 +131,24 @@ function calcularAcarreoInt() {
   });
 }
 
-function calcularAcarreoEM() {
-  var capacidad = $('#capacidad').val();
-  var proveedor_id;
-  var concepto_flete = $('#categoria').val();
-  var camion_categoria = $('#camion_categoria').val();
-  var apiURL;
-  if(concepto_flete === "92"){
-    proveedor_id = $('#banco').val();
-    $('#concepto_flete').val('92');
-    $('#proveedor_id').val(proveedor_id);
-    apiURL = '/api/materiales/acarreoext/'+proveedor_id;
-      var data = new Object();
-    if($('#obra').val()){
-      data.obra_id = $('#obra').val();
-    }
-  } else if (camion_categoria === "pipa"){
-    getMateriales();
-  } else if (concepto_flete === "100"){
-    if ($('#fletero_categoria').val() === "flete/banco"){
-      $('#banco-info').attr("hidden");
-       $('#banco').attr("disabled");
-       getMateriales();
-    } else {
-    proveedor_id = $('#banco').val();
-    apiURL = '/api/materiales/acarreomat/'+proveedor_id;
-  var data = new Object();
-    if($('#obra').val()){
-      data.obra_id = $('#obra').val();
-    }
-    }
-  }
+function calcularFlete() {
+
+  var proveedor_id= $('#fletero').val();
+  var banco_id= $('#banco').val();
+
+  if(proveedor_id != banco_id){
   var precio = $.ajax({
-    url: apiURL,
+    url: '/api/fletes/captura/'+banco_id+'/'+proveedor_id,
     type: 'GET',
-    dataType: 'json',
-    data: data
+    dataType: 'json'
   });
 
   precio.done(function(data){
     console.log(data)
     if(data.length !== 0){
-    $('#flete_id').val(data[0].fletes_id);
-        $('#precio_material').val(data[0].precio);
-        $('#concepto_flete').val(data[0].concepto);
-        $('#concepto_material').val(data[0].concepto);
-        $('#material_id').val(data[0].material_id);
-        totalFlete();
+        $('#flete_id').val(data[0].fletes_id);
+        $('#precio_flete').val(data[0].precio);
+        getMateriales();
     } else {
       console.log('no data');
       alert('No se ha registrado el precio de flete para el proveedor de este camión.');
@@ -180,6 +158,9 @@ function calcularAcarreoEM() {
     precio.fail(function(jqXHR, textStatus, errorThrown){
  console.log("error")
   });
+  } else {
+        getMateriales();
+  }
 }
 
 function getMateriales() {
@@ -187,77 +168,44 @@ function getMateriales() {
   $('#material_id').html("");
   $('#material-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
     var proveedor_id = $('#banco').val();
-    console.log(proveedor_id);
-  var data = new Object();
-    if($('#obra').val()){
-      data.obra_id = $('#obra').val();
+    var concepto_flete = $('#concepto_flete').val();
+    if(concepto_flete == 92){
+      var url = '/api/materiales/acarreoext/'+proveedor_id;
+    } else {
+      var url = '/api/materiales/acarreomat/'+proveedor_id;
     }
-    console.log(data)
   var precio = $.ajax({
-    url: '/api/materiales/acarreomat/'+proveedor_id,
+    url: url,
     type: 'GET',
-    dataType: 'json',
-    data: data
+    dataType: 'json'
   });
 
   precio.done(function(data){
     console.log(data)
     if(data.length !== 0){
-        $('#material-info').removeAttr("hidden");
+        $('#material_id').removeAttr("disabled");
         $('#material_id').html('<option value="">Material</option>');
         for(var i = 0; i < data.length; i++){
            $('#material_id').append('<option value='+data[i].id+'>'+data[i].nombre_concepto+'</option>');
            if(i+1 == data.length){
-            $('#material_id').removeAttr("disabled");
-              $('#material-status').html("");
+              if(concepto_flete == 92){
+                $('#precio_material').val(Number(data[0].precio));
+                $('#concepto_material').val(data[0].concepto);
+                $('#material_id').val(data[0].id);
+                getZonas();
+              } else {
+                $('#material-info').removeAttr("hidden");
            }
+           $('#material-status').html("");
         }
       }
-     else {
+  } else {
       console.log('no data')
       alert('No se han registrado materiales de este proveedor.')
     }
 });
 
     precio.fail(function(jqXHR, textStatus, errorThrown){
- console.log("error")
-  });
-}
-
-function totalFlete(){
-    var concepto_flete = $('#categoria').val();
-    var proveedor_id = $('#fletero').val();
-    var banco_id = $('#banco').val();
-    var capacidad = $('#capacidad').val();
-
-
-    var precio = $.ajax({
-    url: '/api/fletes/precio/',
-    type: 'POST',
-    dataType: 'json',
-    data:{
-      proveedor_id:proveedor_id,
-      banco_id:banco_id,
-      concepto:concepto_flete
-    }
-  });
-
-  precio.done(function(data){
-    console.log(data)
-    $('#flete_id').val(data[0][0].fletes_id);
-    $('#precio_flete').val(data[0][0].precio*capacidad);
-    $('#unidad').val(data[0][0].unidad);
-      if (concepto_flete === "92"){
-        $('#material_id').append('<option value="'+data[1][0].id+'">'+data[1][0].concepto+'</option>');
-        $('#material_id').removeAttr("disabled");
-        $('#material_id').val(data[1][0].id);
-        getZonas();
-      } else if (concepto_flete === "100"){
-        getMateriales();
-      }
-    });
-
-  precio.fail(function(jqXHR, textStatus, errorThrown){
  console.log("error")
   });
 }
@@ -275,7 +223,7 @@ function getMaterial() {
 
   material.done(function(data){
     var capacidad = $('#capacidad').val();
-    $('#precio_material').val(Number(data.precio)*capacidad);
+    $('#precio_material').val(Number(data.precio));
     $('#concepto_material').val(data.concepto);
     $('#concepto_flete').val(data.concepto);
       getZonas();
@@ -286,54 +234,6 @@ function getMaterial() {
     console.log(errorThrown);
           console.log('no material');
   });
-}
-
-
-function getCamion() {
-  $('#search-status').html("");
-  $('#search-status').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>');
-console.log("getting camion");
-var camion_id = $('#scanner').val();
-if(camion_id.length > 0){
-
-
-  var camion = $.ajax({
-    url: '/api/camiones/buscar/'+camion_id,
-    type: 'GET',
-    dataType: 'json'
-  });
-
-  camion.done(function(data){
-    console.log(data)
-    if(data[0].camion_id){
-      $('#camion_id').val(data[0].camion_id);
-      $('#scanner').attr("readonly", true);
-      $('#fletero').val(data[0].proveedor_id);
-      $('#fletero_categoria').val(data[0].proveedor_categoria);
-      $('#camion_categoria').val(data[0].categoria);
-      $('#unidad').val(data[0].unidad_camion);
-      $('#capacidad').val(data[0].capacidad)
-      $('#search-status').html("");
-      if(data[0].categoria === "pipa"){
-        checkProveedor();
-      } else {
-        $('.categoria-info').removeAttr("hidden");
-        $('#categoria').removeAttr("disabled");
-      }
-      $('#search-status').append("Camión encontrado!");
-    } else{
-      $('#search-status').html("");
-      $('#search-status').append("Camión ID no se ha registrado!");
-      $('#scanner').val("");
-    }
-    });
-
-  camion.fail(function(jqXHR, textStatus, errorThrown){
-    console.log(errorThrown);
-      $('#search-status').html("");
-      $('#search-status').append("Camión ID inválido!");
-  });
-}
 }
 
 function getZonas() {
@@ -413,6 +313,7 @@ function allowSubmit(){
   $('#scanner').removeAttr("disabled")
 }
 
+
 document.getElementById("capturaForm").onkeypress = function(e) {
   var key = e.charCode || e.keyCode || 0;
   if (key == 13) {
@@ -420,17 +321,5 @@ document.getElementById("capturaForm").onkeypress = function(e) {
   }
 }
 
-function checkProveedor(){
-if( $('#fletero_categoria').val() !== "flete/banco"){
-  console.log('no es flete/banco');
-  $('#bancoinfo').removeAttr("hidden");
-  console.log('not hidden');
-  $('#banco').removeAttr("disabled");
-} else {
-    console.log('flete/banco')
-    var proveedor_id = $('#fletero').val();
-    $('#banco').val(proveedor_id);
-    getMateriales();
- }
-}
+
 

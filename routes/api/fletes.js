@@ -46,9 +46,13 @@ router.post('/precio', function(req,res,err){
     db.query(getPrecio,[proveedor_id,obra_id,banco_id,banco_id,concepto,obra_id],function(err, rows){
     if(err) throw err;
     else {
+      if(rows.length > 0){
       console.log(getPrecio)
       console.log(rows)
         res.json(rows);
+      } else {
+        res.json({});
+      }
     }
   });
 })
@@ -64,6 +68,23 @@ router.get('/:proveedorid/:obraid', function(req,res,err){
     if(err) throw err;
     else {
         res.send(rows);
+    }
+  });
+})
+
+router.get('/captura/:bancoid/:proveedorid', function(req,res,err){
+  console.log('getting')
+  var proveedor_id = Number(req.params.proveedorid);
+  var obra_id = req.user.obra_id;
+  var banco_id = req.params.bancoid;
+  var listaFletesProveedor = 'SELECT a.*, bp.razon_social AS nombre_banco, a.proveedor_id, bc.razon_social AS nombre_proveedor FROM fletes AS a LEFT JOIN proveedores AS bp ON bp.id = a.banco LEFT JOIN proveedores AS bc ON bc.id = a.proveedor_id WHERE a.proveedor_id = ? AND a.obra_id = ? AND banco = ? LIMIT 1;';
+
+    db.query(listaFletesProveedor,[proveedor_id,obra_id,banco_id], function(err, rows){
+      console.log(listaFletesProveedor)
+    if(err) throw err;
+    else {
+      console.log(rows)
+      res.send(rows);
     }
   });
 })

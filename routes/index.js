@@ -1073,6 +1073,52 @@ router.get('/camiones/nuevo',isLoggedIn, function(req, res, next) {
   });
 });
 
+router.get('/recibos',isLoggedIn, function(req, res, next) {
+res.render('camionerorecibo', { title: 'Revisar Acarreos',message:'' });
+
+});
+
+router.post('/recibos/detalle',isLoggedIn, function(req, res, next) {
+  var pin = req.body.pin;
+  var sticker = req.body.sticker;
+  var date1 = req.body.date1;
+  var date2 = req.body.date2;
+  var getPin = 'SELECT pin,camion_id FROM camiones JOIN stickers ON stickers.codigo = camiones.numero WHERE sticker_id = '+sticker+';';
+
+    db.query(getPin, function(err, camion){
+    if(err) {
+      res.render('error',{message: 'No se encontró el número de sticker.' })
+    }
+    else {
+      if(camion[0]){
+      if(camion[0].pin == req.body.pin && camion[0].pin){
+        var camion_id = camion[0].camion_id;
+        var getRecibos = 'SELECT recibos.hora,obras.nombre_obra,recibos.aprobado,zonas.nombre_zona,(case when acarreos_material.cantidad then acarreos_material.cantidad else acarreos_flete.cantidad end) as cantidad,(case when acarreos_flete.unidad then acarreos_flete.unidad else acarreos_material.unidad end) as unidad,proveedores.razon_social,nombre_concepto  FROM recibos LEFT JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id LEFT JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN obras ON recibos.obra_id = obras.obra_id JOIN zonas ON zonas.zonas_id = recibos.zona_id JOIN conceptos ON conceptos.conceptos_id = acarreos_material.concepto_material LEFT JOIN materiales ON acarreos_material.material_id = materiales.id LEFT JOIN proveedores ON (case when acarreos_flete.banco_id then acarreos_flete.banco_id = proveedores.id else materiales.proveedor_id = proveedores.id end)  WHERE camion_id = '+camion_id+' AND hora BETWEEN "'+date1+' 00:00" AND "'+date2+' 23:59";SELECT SUM((case when acarreos_flete.cantidad then acarreos_flete.cantidad else acarreos_material.cantidad end)) as cantidad FROM recibos LEFT JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id LEFT JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id  WHERE camion_id = '+camion_id+' AND hora BETWEEN "'+date1+' 00:00" AND "'+date2+' 23:59";SELECT COUNT(*) as cantidad FROM recibos LEFT JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id LEFT JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id  WHERE camion_id = '+camion_id+' AND hora BETWEEN "'+date1+' 00:00" AND "'+date2+' 23:59";';
+            db.query(getRecibos, function(err, recibos){
+                if(err) {
+                  res.render('error',{message: 'No se encontró el número de sticker.' })
+                }
+                else {
+                  console.log(recibos)
+                  if(recibos[0].length == 0){
+                    res.render('camionerorecibo', { title: 'Recibos', message:'No hay recibos de la fecha seleccionada'});
+                  } else {
+                  res.render('camionerodetalle', { title: 'Recibos', message:'',recibos:recibos[0],total:recibos[1],viajes:recibos[2]});
+                  }
+                }
+              });
+
+      } else {
+      res.render('camionerorecibo', { title: 'Recibos', message:'Pin incorrecto.'});
+      }
+      }else {
+      res.render('camionerorecibo', { title: 'Recibos', message:'No se encontro el número de sticker.'});
+      }
+    }
+  });
+
+});
+
 module.exports = router;
 
 

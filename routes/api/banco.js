@@ -68,7 +68,7 @@ router.get('/material/', function(req,res,err){
 
 router.get('/banco/:camionid', function(req,res,err){
  var camion_id = req.params.camionid;
-  var getBanco = 'SELECT (case when banco = 0 then fletes.proveedor_id else banco end) as banco,(case when razon_social is null then (SELECT proveedores.razon_social FROM camiones JOIN proveedores ON camiones.proveedor_id =proveedores.id WHERE camion_id = '+camion_id+') else razon_social end) as razon_social FROM fletes LEFT JOIN proveedores ON fletes.banco = proveedores.id WHERE proveedor_id = (SELECT proveedor_id FROM camiones WHERE camion_id = '+camion_id+') ;';
+  var getBanco = 'SELECT materiales.proveedor_id as banco,proveedores.razon_social FROM materiales JOIN proveedores ON proveedores.id = materiales.proveedor_id WHERE materiales.proveedor_id = (SELECT camiones.proveedor_id FROM camiones WHERE camion_id = '+camion_id+') GROUP BY materiales.proveedor_id UNION SELECT fletes.banco,proveedores.razon_social FROM fletes JOIN proveedores ON proveedores.id = fletes.banco WHERE fletes.proveedor_id = (SELECT camiones.proveedor_id FROM camiones WHERE camion_id = '+camion_id+') GROUP BY fletes.banco;';
     db.query(getBanco, function(err, banco){
     if(err) throw err;
     else {

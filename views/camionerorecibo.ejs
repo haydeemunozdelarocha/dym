@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Recibos | DYM Ingenieros Constructores</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body id="login-body">
+    <div class="container">
+    <div id="login-logo">
+      <img src="/images/dym-logo.png" alt="" align="center">
+    </div>
+              <div class="panel-body">
+              <form action="/recibos/detalle" method="post" class="login-form">
+                 <div class="form-group">
+                  <label for="sticker">No. de Sticker:</label>
+                  <input type="text" name="sticker" class="form-control login-input" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="pin">PIN:</label>
+                  <input type="password" name="pin" class="form-control login-input" required>
+                </div>
+                 <div class="form-group">
+                  <label for="pin">Periódo:</label>
+                  <input type="date" name="date1" id="date1" class="form-control login-input" required>
+                  <br>
+                  <input type="date" name="date2" id="date2" class="form-control login-input" required>
+                </div>
+                <br>
+                <% if(message) { %>
+                <div style="width:100%;height:35px;background-color:#89ecf9;padding:5px;border:none;border-radius:3px;">
+                <p style="color:#000;padding:5px;"><%= message %></p>
+                </div>
+                <br>
+                <% } %>
+                <input type="submit" value="ENTRAR" class="btn btn-default btn-info login-button" style="display:flex">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+    $(document).ready(function() {
+    console.log('runnning')
+    var date = new Date();
+
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    if (month < 10) month = "0" + month;
+    if (day < 10) day = "0" + day;
+
+    var today = year + "-" + month + "-" + day;
+    $("#date1").attr("value", today);
+    $("#date2").attr("value", today);
+});
+    </script>
+  </body>
+</html>

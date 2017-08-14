@@ -790,13 +790,29 @@ function aprobarPopup(camionId){
 
 function closePopup(){
   $('.recibo-popup').css('visibility','hidden');
-    $('.editar-form').css('visibility','hidden');
+  $('.editar-form').css('visibility','hidden');
+  $('.editar-form').css('display','none');
   $('.acarreos').css('visibility','hidden');
   $('.acarreos').css('display','none');
   $('.acarreos').attr('checked', false);
   $('#reportar-boton').html('Reportar Cambios');
   $('#reportar-boton').attr('onclick','checkboxesOn()');
   $('#hora-container').css('visibility','hidden');
+  $('#agregar-boton').css('visibility','hidden');
+  $('#borrar-boton').css('visibility','hidden');
+  $('#aprobar-boton').css('visibility','visible');
+    $('#aprobar-boton').css('display','inline-block');
+  $('#residente_id').val('');
+   $('#residente_pin').val('');
+  $('#pipa-cerrar').css('visibility','hidden');
+  $('#pipa-cerrar').css('display','none');
+    $('#editar-container-pipa').css('visibility','hidden');
+  $('#editar-container-pipa').css('display','none');
+  $('#editar-container').css('visibility','hidden');
+  $('#editar-container').css('display','none');
+  $('#pipa-tipo').css('visibility','hidden');
+  $('#pipa-tipo').css('display','none');
+  $('#pipa-tipo').val('');
 
 }
 
@@ -843,7 +859,7 @@ var checkedVals = $('.acarreos:checkbox:checked').map(function() {
   if(checkedVals.length == $('.acarreos:checkbox:checked').length){
       console.log(checkedVals[0])
     $('#acarreo_id').val(checkedVals[0]);
-    popUpResidente('editar');
+    checarNumeroEdicion('editar');
   }
 }
   //send request to show acarreos
@@ -851,6 +867,7 @@ var checkedVals = $('.acarreos:checkbox:checked').map(function() {
 
 function popUpResidente(tipo){
   $('#popup-residente').css('visibility','visible');
+  $('#popup-residente').css('display','block');
   $('#tipo').val(tipo);
 }
 
@@ -879,7 +896,20 @@ console.log(residente_id);
                   getAcarreo();
                   } else if(tipo ==="borrar"){
                   borrarAcarreo();
-                  }else {
+                  } else {
+                    if($('#categoria-camion').val() === 'pipa'){
+                    $('#popup-loading').css('visibility','hidden');
+                    $('#popup-loading').html('');
+                    $('#popup-editar').css('visibility','visible');
+                    $('.editar-form').css('visibility','hidden');
+                    $('.editar-form').css('display','none');
+                    $('#pipa-tipo').css('visibility','visible');
+                    $('#pipa-tipo').css('display','block');
+                    $('#editar-container-pipa').css('visibility','visible');
+                    $('#editar-container-pipa').css('display','block');
+                    $('#pipa-tipo-container').css('visibility','visible');
+                    $('#pipa-tipo-container').css('display','block');
+                    } else {
                     getBancos();
                     $('#popup-loading').css('visibility','hidden');
                     $('#popup-loading').html('');
@@ -890,6 +920,7 @@ console.log(residente_id);
                     $('#hora-container').css('visibility','visible');
                     $('#hora-container').css('display','block');
                     $('#save-button').attr('onclick','addAcarreo()');
+                    }
                   }
 
             } else{
@@ -913,7 +944,8 @@ console.log(residente_id);
 function getAcarreo(){
   var acarreoUrl;
   var recibo_id = $('#acarreo_id').val();
-
+      $('.editar-form').css('visibility','visible');
+      $('.editar-form').css('display','block');
      var acarreo = $.ajax({
             url: '/api/acarreos/recibo/'+recibo_id,
             type: 'GET'
@@ -985,8 +1017,13 @@ function getFlete(){
 
           fletes.done(function(data){
             console.log(data);
+            if(data[0].length>0){
             $('#flete_id').val(data[0][0].fletes_id);
             $('#precio-flete').val(data[0][0].precio);
+            } else {
+            $('#flete_id').val('');
+            $('#precio-flete').val('');
+            }
             getZonas();
             });
 
@@ -1053,8 +1090,8 @@ function getZonas(value){
                 $('#zona').val(value);
                 $('#editar-button-loading').html('')
                 $('#zona').removeAttr('readonly');
-                $('#editar-container').css('visibility','visible');
-                $('#editar-container').css('display','block');
+                // $('#editar-container').css('visibility','visible');
+                // $('#editar-container').css('display','block');
                 $('#popup-editar').css('visibility','visible');
                 $('#popup-loading').css('visibility','hidden');
                 $('#popup-loading').html('');
@@ -1117,6 +1154,39 @@ function updateAcarreo(){
   }
 }
 
+function checarNumeroEdicion(tipo){
+  var camion_id= $('#camion_id').val();
+  var fecha= $('#fecha').val();
+ var ediciones = $.ajax({
+            url: '/api/acarreos/ediciones',
+            type: 'GET',
+            data: {camion_id:camion_id,
+                fecha:fecha
+            }
+          });
+
+          ediciones.done(function(data){
+            console.log(data[0].ediciones);
+            if(data[0].ediciones < 2){
+                if(tipo === 'editar'){
+                  popUpResidente('editar');
+                } else if(tipo ==='agregar'){
+                  popUpResidente('agregar');
+                }
+            } else {
+              alert('Se ha alcanzado el máximo de ediciones por camión por día.');
+              closePopup();
+            }
+
+            });
+
+          ediciones.fail(function(jqXHR, textStatus, errorThrown){
+            console.log(errorThrown);
+              $('#editar-button-loading').html('');
+              alert('No se pudo guardar el acarreo.');
+          });
+}
+
 function addAcarreo(){
   $('#editar-button-loading').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
   var camion_id = $('#camion_id').val();
@@ -1140,9 +1210,11 @@ function addAcarreo(){
   var concepto_flete = $('#concepto').val();
   var material_id = $('#material_id').val();
   var concepto_material = $('#concepto').val();
-   var precio_material = $('#concepto').val();
+  var precio_material = $('#concepto').val();
+  var razon = $('#razon').val();
+
    console.log(zona_id);
-  if(!zona_id || !concepto_flete || !date || !hour || !minutes || !meridian || !banco_id ){
+  if(!zona_id || !razon || !concepto_flete || !date || !hour || !minutes || !meridian || !banco_id ){
     alert("Favor de no dejar campos en blanco.")
   } else {
        var acarreo = $.ajax({
@@ -1165,7 +1237,8 @@ function addAcarreo(){
                 concepto_flete:concepto_flete,
                 material_id:material_id,
                 precio_material:precio_material,
-                concepto_material:concepto_material
+                concepto_material:concepto_material,
+                razon:razon
             }
           });
 
@@ -1184,6 +1257,7 @@ function addAcarreo(){
           });
         }
 }
+
 
 function confirmBorrar(){
 if($('.acarreos:checkbox:checked').length < 1 || $('.acarreos:checkbox:checked').length > 1 ){
@@ -1230,6 +1304,187 @@ function borrarAcarreo(){
           });
            }
 
+function pipaForm(){
+  if($('#pipa-tipo').val() == 0){
+      $('#editar-container').css('visibility','hidden');
+      $('#editar-container').css('display','none');
+       $('#pipa-entrada').css('visibility','hidden');
+      $('#pipa-entrada').css('display','none');
+       $('#pipa-salida').css('visibility','hidden');
+      $('#banco').css('display','none');
+      $('#banco').css('visibility','hidden');
+      $('#pipa-salida').css('display','none');
+      $('.editar-form').css('visibility','hidden');
+      $('.editar-form').css('display','none');
+      $('#save-button').attr('onclick','addAcarreo()');
+      $('#razon').css('visibility','visible');
+      $('#razon').css('display','block');
+      getViajes();
+  } else if($('#pipa-tipo').val() == 1){
+    getBancos();
+      $('#editar-container').css('visibility','visible');
+      $('#editar-container').css('display','block');
+       $('#pipa-entrada').css('visibility','visible');
+      $('#pipa-entrada').css('display','block');
+       $('#pipa-salida').css('visibility','visible');
+      $('#banco').css('display','block');
+      $('#banco').css('visibility','visible');
+      $('#pipa-salida').css('display','block');
+      $('.editar-form').css('visibility','visible');
+      $('.editar-form').css('display','block');
+      $('#save-button').attr('onclick','cerrarViaje()');
 
-// location.replace('http://localhost:3000/api/acarreos/?camion_id='+camion_id+'&categoria='+categoria+'&fecha='+fecha)
+  }
+}
 
+function getViajes(){
+   var camion_id = $('#camion_id').val();
+   var fecha = $('#fecha').val();
+        var acarreo = $.ajax({
+            url: '/api/acarreos/lastviaje/',
+            type: 'POST',
+            data:{
+              camion_id:camion_id,
+              fecha:fecha
+            }
+          });
+
+          acarreo.done(function(data){
+            if(data.length >0){
+            $('#viaje_id').val(data[0].viaje_id);
+            $('#entrada').val(data[0].entrada);
+            $('#pipa-cerrar').css('visibility','visible');
+            $('#pipa-cerrar').css('display','block');
+            $('#editar-container').css('visibility','visible');
+            $('#editar-container').css('display','block');
+            $('#pipa-salida').css('visibility','visible');
+            $('#pipa-salida').css('display','block');
+            $('#save-button').css('display','inline-block');
+            $('#save-button').css('visibility','visible');
+            $('#save-button').attr('onclick','cerrarViaje()');
+            } else {
+              alert('No hay viajes sin cerrar.');
+              closePopup();
+            }
+            });
+
+          acarreo.fail(function(jqXHR, textStatus, errorThrown){
+            console.log(errorThrown)
+              alert('Error');
+          });
+}
+
+function cerrarViaje(){
+  $('#editar-button-loading').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
+  var viaje_id = $('#viaje_id').val();
+  var fecha = $('#fecha').val();
+  var material_id = $('#material_id').val();
+  var camion_id = $('#camion_id').val();
+  var zona = $('#zona').val();
+  var flete_id = $('#flete_id').val();
+   var razon = $('#razon').val();
+  var entrada='';
+  var salida= fecha+' '+$('#nueva-hora-salida').val()+':'+$('#nueva-minutos-salida').val()+' '+$('#nueva-meridiano-salida').val();
+  if($('#nueva-minutos-entrada').val() && $('#nueva-meridiano-entrada').val()){
+      entrada= fecha+' '+$('#nueva-hora-entrada').val()+':'+$('#nueva-minutos-entrada').val()+' '+$('#nueva-meridiano-entrada').val();
+    }
+
+   var hora= $('#hora-salida').val();
+   var minutos= $('#minutos-salida').val();
+   var meridiano= $('#meridiano-salida').val();
+   console.log(viaje_id)
+        var viaje = $.ajax({
+            url: '/api/acarreos/cerrarviaje',
+            type: 'POST',
+         data:{
+              viaje_id:viaje_id,
+              fecha:fecha,
+              hora:hora,
+              minutos:minutos,
+              meridiano:meridiano,
+              zona_id:zona,
+              flete_id:flete_id,
+              material_id:material_id,
+              camion_id:camion_id,
+              salida:salida,
+              entrada:entrada,
+              razon:razon
+            }
+          });
+
+          viaje.done(function(data){
+            if(data.status === 'success'){
+              location.reload();
+            }
+            });
+
+          viaje.fail(function(jqXHR, textStatus, errorThrown){
+            console.log(errorThrown)
+              alert('Error');
+          });
+}
+
+function checkDate(){
+  console.log('checking date')
+  var hora_salida;
+  var minutos_salida;
+  var hora_entrada;
+  var minutos_entrada;
+  if($('#nueva-hora-entrada').val() && $('#nueva-minutos-entrada').val() && $('#nueva-meridiano-entrada').val()){
+
+    if($('#nueva-meridiano-entrada').val() == 'PM'){
+      hora_entrada = Number($('#nueva-hora-entrada').val())+12;
+      minutos_entrada = $('#nueva-minutos-entrada').val();
+    } else {
+      hora_entrada = Number($('#nueva-hora-entrada').val());
+      minutos_entrada = $('#nueva-minutos-entrada').val();
+    }
+  }
+  if($('#nueva-hora-salida').val() && $('#nueva-minutos-salida').val() && $('#nueva-meridiano-salida').val()){
+    if($('#nueva-meridiano-salida').val() == 'PM'){
+      hora_salida = Number($('#nueva-hora-salida').val())+12;
+      minutos_salida = $('#nueva-minutos-salida').val();
+    } else {
+      hora_salida = Number($('#nueva-hora-salida').val());
+      minutos_salida = $('#nueva-minutos-salida').val();
+    }
+  }
+  if(hora_salida && hora_entrada && minutos_entrada && minutos_salida){
+    if(hora_salida<=hora_entrada && minutos_salida<=minutos_entrada){
+        alert('La hora de salida debe ser después de la hora de entrada.');
+        $('#nueva-hora-salida').val('');
+        $('#nueva-minutos-salida').val('');
+        $('#nueva-meridiano-salida').val('');
+        $('#nueva-hora-entrada').val('');
+        $('#nueva-minutos-entrada').val('');
+        $('#nueva-meridiano-entrada').val('');
+    } else {
+     console.log(hora_salida-hora_entrada);
+      console.log(minutos_salida-minutos_entrada);
+    }
+  }
+}
+
+function checkSalida(){
+  console.log('checking salida')
+  var hora_salida = Number($('#nueva-hora-salida').val());
+  var minutos_salida = Number($('#nueva-minutos-salida').val());
+  var meridiano_salida = $('#nueva-meridiano-salida').val();
+  var entrada = $('#entrada').val();
+  var entrada_hora=entrada.slice(entrada.length-8,entrada.length-6);
+  var entrada_minutos=entrada.slice(entrada.length-5,entrada.length-3);
+
+  if(entrada_hora && entrada_minutos && meridiano_salida){
+    if(meridiano_salida === 'PM'){
+      hora_salida = Number(hora_salida) +12;
+    }
+
+  console.log(hora_salida>=Number(entrada_hora) && minutos_salida >= Number(entrada_minutos))
+    if(hora_salida<=Number(entrada_hora) && minutos_salida <= Number(entrada_minutos)){
+      alert('La hora de salida debe ser después de la hora de entrada.');
+       $('#nueva-hora-salida').val('');
+        $('#nueva-minutos-salida').val('');
+        $('#nueva-meridiano-salida').val('');
+    }
+  }
+}
