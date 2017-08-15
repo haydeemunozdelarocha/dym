@@ -104,17 +104,18 @@
 
         </div>
     </div>
-    <div id="editar-container" style="visibility: hidden;display:none">
-    <input type="text" id="acarreo_id" hidden>
-
-        <label for="hora">Razón:</label>
-        <select class="form-control editar-form" required name="razon" id="razon">
+    <div class="form-group editar-form">
+        <label for="razon">Razón:</label>
+        <select class="form-control" required name="razon" id="razon">
         <option value="">Seleccionar Razón</option>
         <% for(var s=0;s<razones.length;s++) { %>
        <option value="<%=razones[s].id_edicion%>"><%=razones[s].nombre_desc%></option>
       <% } %>
     </select>
-    <br>
+    </div>
+    <div id="editar-container" style="visibility: hidden;display:none">
+    <input type="text" id="acarreo_id" hidden>
+
     <div style="visibility: hidden;display:none;" id="hora-container">
     <br>
     <label for="hora">Hora</label>
@@ -235,7 +236,8 @@
     <div class="form-group editar-form">
     <br>
       <label for="concepto">Concepto</label>
-        <select class="form-control" name="concepto" id="concepto" onchange="getMateriales();checkAcarreoInt();">
+      <input type="hidden" id="concepto-original">
+        <select class="form-control" name="concepto" id="concepto" onchange="checkAcarreoInt();">
           <option value="">Concepto</option>
           <% for(var i =0; i < conceptos.length;i++){ %>
           <option value="<%=conceptos[i].conceptos_id%>"><%=conceptos[i].nombre_concepto%></option>

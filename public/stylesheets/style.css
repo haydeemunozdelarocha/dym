@@ -13,7 +13,7 @@ a {
     right: 0;
     left: 0;
     margin: auto;
-  min-height:400px;
+  min-height:345px;
   background-color: white;
   padding:20px;
   -webkit-box-shadow: -1px 1px 5px 3px rgba(163,163,163,0.75);
@@ -366,7 +366,7 @@ width: 350px;
   -webkit-box-shadow:none;
 }
 .recibo-popup{
-  min-height:250px;
+  min-height:317px;
   top:20;
   max-height:90%;
   overflow-x:auto;
@@ -445,6 +445,7 @@ width: 100%;
 }
 .recibo-popup{
   width:500px;
+  min-height: 387px;
 }
 .btn-recibo{
   padding:15px 25px;

@@ -197,7 +197,7 @@ var razon = null;
 }
 if(req.body.flete_id.length >0) {
 var flete_id = req.body.flete_id;
-}else {
+} else {
   var flete_id = null;
 }
 var concepto_flete = Number(req.body.concepto_flete);
@@ -238,7 +238,7 @@ console.log(req.body.precio_material)
                 var values = [];
                 recibo=rows.insertId;
                 console.log(recibo);
-                if(req.body.flete_id.length >0) {
+                if(req.body.flete_id.length >0 || concepto_flete == 82) {
                   nuevoAcarreo = nuevoAcarreo +'INSERT INTO acarreos_flete(cantidad,total_flete,recibo_id,concepto_flete,flete_id,banco_id,unidad) VALUE (?,?,?,?,?,?,?);';
                     values.push.apply(values,[cantidad,total_flete,recibo,concepto_flete,flete_id,banco_id,unidad]);
                     }
@@ -307,7 +307,7 @@ router.post('/buscar', function(req,res,err){
 
 router.get('/recibo/:id', function(req, res, next ){
   var recibo_id= req.params.id;
-  var getAcarreo = "SELECT recibos.*,camiones.proveedor_id,acarreos_material.*,acarreos_flete.* FROM `recibos` JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id LEFT JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN camiones ON recibos.camion_id = camiones.camion_id JOIN proveedores ON recibos.camion_id = camiones.camion_id WHERE recibos.recibo_id = "+recibo_id+' LIMIT 1;';
+  var getAcarreo = "SELECT recibos.*,camiones.proveedor_id,acarreos_material.*,acarreos_flete.* FROM `recibos` LEFT JOIN acarreos_material ON acarreos_material.recibo_id = recibos.recibo_id LEFT JOIN acarreos_flete ON acarreos_flete.recibo_id = recibos.recibo_id JOIN camiones ON recibos.camion_id = camiones.camion_id JOIN proveedores ON recibos.camion_id = camiones.camion_id WHERE recibos.recibo_id = "+recibo_id+' LIMIT 1;';
   console.log(getAcarreo)
   db.query(getAcarreo, function(err, acarreo){
     if(err) {
@@ -320,21 +320,28 @@ router.get('/recibo/:id', function(req, res, next ){
   });
 })
 
-router.post('/update/:id', function(req, res, next ){
+router.post('/update/:id', function(req, res, err){
+  console.log(req.body);
   var recibo_id= req.params.id;
   var concepto = Number(req.body.concepto);
   var banco_id=req.body.banco_id;
   var material_id=req.body.material_id;
   var zona_id=req.body.zona_id;
   var flete_id=req.body.flete_id;
+  var razon=req.body.razon;
   var categoria=req.body.categoria;
   var date2 = Date.now();
   var timezone2 = req.user.timezone;
+  var getAcarreo = '';
   var hora_edicion =moment.tz(date2,timezone2).format("YYYY-MM-DD hh:mm A");
-    var getAcarreo = "SET @acarreos_mat_id := (SELECT acarreos_mat_id FROM acarreos_material WHERE recibo_id ="+recibo_id+");UPDATE recibos SET zona_id = "+zona_id+" WHERE recibos.recibo_id = "+recibo_id+";UPDATE acarreos_material SET material_id = "+material_id+",concepto_material = "+concepto+",banco_id = "+banco_id+" WHERE acarreos_mat_id = @acarreos_mat_id;UPDATE recibos SET hora_edicion = '"+hora_edicion+"' WHERE recibo_id = "+recibo_id;
-    console.log(concepto);
-  if(categoria === "flete" || concepto == 92){
-    getAcarreo += "SET @acarreos_id := (SELECT acarreo_id FROM acarreos_flete WHERE recibo_id ="+recibo_id+");UPDATE acarreos_flete SET banco_id = "+banco_id+",flete_id="+flete_id+" WHERE acarreo_id = "+recibo_id+";UPDATE recibos SET hora_edicion = '"+hora_edicion+"' WHERE recibo_id = "+recibo_id+";";
+  if(flete_id.length >0 || concepto == 82){
+    if(concepto == 82){
+      banco_id = 0;
+    }
+    getAcarreo += "SET @acarreos_id := (SELECT acarreo_id FROM acarreos_flete WHERE recibo_id ="+recibo_id+");UPDATE acarreos_flete SET banco_id = "+banco_id+",flete_id="+flete_id+" WHERE acarreo_id = "+recibo_id+";UPDATE recibos SET zona_id="+zona_id+",hora_edicion = '"+hora_edicion+"',razon="+razon+" WHERE recibo_id = "+recibo_id+";";
+  }
+  if(concepto !=82){
+    getAcarreo = getAcarreo+"SET @acarreos_mat_id := (SELECT acarreos_mat_id FROM acarreos_material WHERE recibo_id ="+recibo_id+");UPDATE recibos SET zona_id = "+zona_id+",hora_edicion = '"+hora_edicion+"',razon="+razon+" WHERE recibos.recibo_id = "+recibo_id+";UPDATE acarreos_material SET material_id = "+material_id+",concepto_material = "+concepto+",banco_id = "+banco_id+" WHERE acarreos_mat_id = @acarreos_mat_id;";
   }
   console.log(getAcarreo);
   db.query(getAcarreo, function(err, acarreo){
