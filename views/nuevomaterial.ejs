@@ -16,47 +16,105 @@
 <% } %>
 <div id="content-container">
 <form action="/api/materiales" method="POST" enctype="application/x-www-form-urlencoded">
-<div class="input-group">
-  <div id="materiales">
   <div class="panel panel-default">
   <!-- Default panel contents -->
   <div class="panel-heading">Materiales</div>
-
-  <!-- Table -->
-    <table class="table">
-    <tr>
-      <td>Concepto</td>
-      <td>Proveedor</td>
-      <td>Unidad</td>
-      <td>Precio</td>
-    </tr>
-    <tr>
-      <td><select class="form-control" name="concepto" id="concepto">
+  <div class="panel-body">
+    <div class="form-group">
+<label for="">Obra</label>
+<select class="form-control" name="obra_id" id="obra_id">
+            <option value="">Obra</option>
+      <% for(var i=0; i<obras.length; i++) {%>
+            <option value="<%= obras[i].obra_id %>"><%= obras[i].nombre_obra %></option>
+    <% } %>
+    </select>
+</div>
+  <div class="form-group">
+<label for="">Concepto</label>
+<select class="form-control" name="concepto" id="concepto">
             <option value="">Concepto</option>
       <% for(var i=0; i<conceptos.length; i++) {%>
             <option value="<%= conceptos[i].conceptos_id %>"><%= conceptos[i].nombre_concepto %></option>
     <% } %>
-    </select></td>
-      <td><select class="form-control" name="proveedor_id" id="proveedor_id">
-            <option value="">Proveedor</option>
+    </select>
+</div>
+  <div class="form-group">
+    <label for="">Proveedor Flete</label><span style='color:red;'>*</span>
+      <td><select class="form-control" name="flete_prov" id="flete_prov" required>
+            <option value="">Proveedor Flete</option>
       <% for(var i=0; i<proveedores.length; i++) {%>
             <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
     <% } %>
     </select>
-    </td>
-    <td>
-      <select class="form-control" name="unidad" id="unidad">
-        <option value="">Unidad</option>
+     <label for="">Precio Unitario Flete</label><span style='color:red;'>*</span>
+    <input type="text" class="form-control" placeholder="Precio" name="flete_precio" id="flete_precio" required>
+
+    <label for="">Unidad Flete</label><span style='color:red;'>*</span>
+      <select class="form-control" name="unidad_flete" id="unidad_flete">
+        <option value="">Unidad Flete</option>
         <option value="m">m</option>
         <option value="m2">m2</option>
         <option value="m3">m3</option>
         <option value="ton">ton</option>
+         <option value="dias">días</option>
       </select>
-    </td>
-    <td><input type="text" class="form-control" placeholder="Precio" name="precio" id="precio"></td>
-     </tr>
-    </table>
+
     </div>
+  <div class="form-group">
+    <label for="">Proveedor Derecho de Banco</label>
+      <td><select class="form-control" name="derecho_banco_prov" id="derecho_banco_prov">
+            <option value="">Proveedor Derecho de Banco</option>
+      <% for(var i=0; i<proveedores.length; i++) {%>
+            <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
+    <% } %>
+    </select>
+    <label for="">Precio Unitario Derecho de Banco</label>
+    <input type="text" class="form-control" placeholder="Precio" name="derecho_banco_precio" id="derecho_banco_precio">
+       <label for="">Unidad Derecho de Banco</label><span style='color:red;'>*</span>
+      <select class="form-control" name="derecho_banco_unidad" id="derecho_banco_unidad">
+        <option value="">Unidad Derecho de Banco</option>
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3">m3</option>
+        <option value="ton">ton</option>
+         <option value="dias">días</option>
+      </select>
+    </div>
+    <div class="form-group">
+    <label for="">Proveedor Carga Obra</label>
+      <td><select class="form-control" name="prov_carga_obra" id="prov_carga_obra">
+            <option value="">Proveedor Carga Obra</option>
+      <% for(var i=0; i<proveedores.length; i++) {%>
+            <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
+    <% } %>
+    </select>
+    <label for="">Precio Unitario Carga Obra</label>
+    <input type="text" class="form-control" placeholder="Precio" name="precio_carga_obra" id="precio_carga_obra">
+    </div>
+    <div class="form-group">
+    <label for="">Proveedor Depósito Tiradero</label>
+      <td><select class="form-control" name="dep_tiradero_prov" id="dep_tiradero_prov">
+            <option value="">Proveedor Depósito Tiradero</option>
+      <% for(var i=0; i<proveedores.length; i++) {%>
+            <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
+    <% } %>
+    </select>
+    <label for="">Precio Unitario Depósito Tiradero</label>
+    <input type="text" class="form-control" placeholder="Precio" name="dep_tiradero_precio" id="dep_tiradero_precio">
+    </div>
+    <div class="form-group">
+    <label for="">Proveedor Carga Banco</label>
+      <td><select class="form-control" name="prov_carga_banco" id="prov_carga_banco">
+            <option value="">Proveedor Carga Banco</option>
+      <% for(var i=0; i<proveedores.length; i++) {%>
+            <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
+    <% } %>
+    </select>
+    <label for="">Precio Unitario Carga Banco</label>
+    <input type="text" class="form-control" placeholder="Precio" name="precio_carga_banco" id="precio_carga_banco">
+    </div>
+
+
   </div>
 </div>
 <br>

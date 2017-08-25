@@ -237,7 +237,7 @@
     <br>
       <label for="concepto">Concepto</label>
       <input type="hidden" id="concepto-original">
-        <select class="form-control" name="concepto" id="concepto" onchange="checkAcarreoInt();">
+        <select class="form-control" name="concepto" id="concepto" onchange="getBancos()">
           <option value="">Concepto</option>
           <% for(var i =0; i < conceptos.length;i++){ %>
           <option value="<%=conceptos[i].conceptos_id%>"><%=conceptos[i].nombre_concepto%></option>
@@ -247,19 +247,16 @@
 
     <div class="form-group editar-form" id="banco" style="visibility:hidden;display:none;">
       <label for="banco_id">Banco</label>
-        <select class="form-control" name="banco_id" id="banco_id" onchange="getMateriales();getFlete();">
+        <select class="form-control" name="banco_id" id="banco_id" onchange="getMateriales();">
           <option value="">Banco</option>
           <% for(var i =0; i < bancos.length;i++){ %>
           <option value="<%=bancos[i].id%>"><%=bancos[i].razon_social%></option>
           <% } %>
         </select>
     </div>
-    <input type="hidden" id="flete_id" name="flete_id">
-    <input type="hidden" id="precio-flete" name="precio-flete">
 
     <div class="form-group editar-form">
-        <input type="hidden" name="material_id" id="material_id" onchange="getZonas();">
-        <input type="hidden" name="precio_material" id="precio_material" onchange="getZonas();">
+        <input type="hidden" name="material_id" id="material_id">
 
     </div>
 
@@ -321,11 +318,11 @@
       <% if(acarreos[i].aprobado === "Y"){ %>
         <span class="glyphicon glyphicon-ok"></span>
       <%} else {%>
-        <input style="zoom: 2.5;float:right;visibility:hidden;display:none" type="checkbox" name="acarreos" class="acarreos" value="<%=acarreos[i].recibo_id%>">
+        <input style="zoom: 2.5;float:right;visibility:hidden;display:none" type="checkbox" name="acarreos" class="acarreos" value="<%=acarreos[i].acarreo_id%>">
       <%}%>
     </div>
     <h4>No. </h4><strong><%= i+1 %></strong>
-    <h4>Concepto: </h4><strong><%=acarreos[i].concepto%></strong>
+    <h4>Concepto: </h4><strong><%=acarreos[i].nombre_concepto%></strong>
     <h4>Zona: </h4><strong><%=acarreos[i].nombre_zona%></strong>
     <h4>Banco: </h4><strong><%=acarreos[i].razon_social%></strong>
     <h4>Hora: </h4><strong><%=moment(acarreos[i].hora).format("HH:mm A")%></strong>

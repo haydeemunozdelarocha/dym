@@ -120,11 +120,11 @@ router.get('/logout', function(req, res, next) {
 //CAPTURA DE ACARREOS
 router.get('/captura', [isLoggedIn,checkAuthToken], function(req, res){
   var obra_id =req.user.obra_id;
-  var infoProveedores = 'SELECT proveedores.id,proveedores.razon_social FROM materiales LEFT JOIN proveedores ON proveedores.id = materiales.proveedor_id WHERE obra_id = ? GROUP BY proveedores.razon_social; SELECT obras_zonas.zona,zonas.nombre_zona FROM zonas LEFT JOIN obras_zonas ON zonas.zonas_id = obras_zonas.zona  WHERE obra = ?;'
-    db.query(infoProveedores,[obra_id,obra_id], function(err, info){
+  var infoProveedores = 'SELECT conceptos.conceptos_id,conceptos.nombre_concepto FROM obras_conceptos JOIN conceptos ON obras_conceptos.concepto = conceptos.conceptos_id WHERE obra = ? ORDER by nombre_concepto ASC;SELECT proveedores.id,proveedores.razon_social FROM materiales_n LEFT JOIN proveedores ON proveedores.id = materiales_n.derecho_banco_prov WHERE obra_id = ? GROUP BY proveedores.razon_social ORDER by razon_social ASC; SELECT obras_zonas.zona,zonas.nombre_zona FROM zonas LEFT JOIN obras_zonas ON zonas.zonas_id = obras_zonas.zona  WHERE obra = ? ;'
+    db.query(infoProveedores,[obra_id,obra_id,obra_id], function(err, info){
     if(err) throw err;
     else {
-        res.render('captura', { title: 'Acarreos', proveedores: info[0],zonas:info[1] });
+        res.render('captura', { title: 'Acarreos', proveedores: info[1],zonas:info[2] ,conceptos:info[0]});
     }
   });
 })
@@ -894,7 +894,7 @@ router.get('/proveedores/editar/:id',isLoggedIn, function(req,res,err){
 //MATERIALES
 router.get('/materiales',isLoggedIn, function(req, res, next) {
   var usuario = req.user;
-  var readTable = 'SELECT materiales.*, conceptos.nombre_concepto, proveedores.razon_social FROM materiales LEFT JOIN proveedores ON proveedores.id = materiales.proveedor_id JOIN conceptos ON conceptos.conceptos_id = materiales.concepto;SELECT * FROM conceptos WHERE conceptos_id != 352;SELECT * FROM proveedores;SELECT * FROM obras;';
+  var readTable = 'SELECT materiales_n.*, conceptos.nombre_concepto, proveedores.razon_social FROM materiales_n LEFT JOIN proveedores ON proveedores.id = materiales_n.derecho_banco_prov JOIN conceptos ON conceptos.conceptos_id = materiales_n.concepto_id;SELECT * FROM conceptos WHERE conceptos_id != 352;SELECT * FROM proveedores;SELECT * FROM obras;';
 
     db.query(readTable, function(err, info){
       if(err) {
@@ -908,20 +908,15 @@ router.get('/materiales',isLoggedIn, function(req, res, next) {
 });
 
 router.get('/materiales/nuevo',isLoggedIn, function(req, res, next) {
-  var readTable = 'SELECT * FROM proveedores';
+  var readTable = 'SELECT * FROM proveedores;SELECT * FROM conceptos;SELECT * FROM obras;';
   var usuario = req.user;
+
     db.query(readTable, function(err, proveedores){
     if(err) {
            res.render('error',{message: 'Esta página no esta disponible', usuario:usuario })
     }
     else {
-      var readConceptos = 'SELECT * FROM conceptos WHERE conceptos_id != 352;'
-        db.query(readConceptos, function(err, conceptos){
-          if(err) throw err;
-          else {
-            res.render('nuevomaterial', { title: 'Proveedores', proveedores: proveedores, usuario:usuario,conceptos: conceptos });
-          }
-        });
+            res.render('nuevomaterial', { title: 'Proveedores', proveedores: proveedores[0], usuario:usuario,conceptos: proveedores[1],obras:proveedores[2] });
     }
   });
 });

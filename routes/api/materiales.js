@@ -4,28 +4,34 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var db = require('../../db.js');
 
-var nuevoMaterial = 'INSERT INTO materiales(concepto, unidad, precio,proveedor_id,categoria,obra_id) VALUE(?,?,?,?,?,?)';
-var listaMateriales = 'SELECT materiales.*, conceptos.* FROM materiales JOIN conceptos ON conceptos.conceptos_id = materiales.concepto';
+var nuevoMaterial = 'INSERT INTO materiales_n(obra_id,concepto_id,flete_unidad,precio_carga_obra,prov_carga_obra,flete_precio,flete_prov,dep_tiradero_precio,dep_tiradero_prov,derecho_banco_prov,derecho_banco_unidad,derecho_banco_precio,precio_carga_banco,prov_carga_banco) VALUE(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+var listaMateriales = 'SELECT materiales_n.*, conceptos.* FROM materiales_n JOIN conceptos ON conceptos.conceptos_id = materiales_n.concepto_id';
 
 
 //agregar material
 router.post('/', function(req,res, err){
   console.log(req.body)
+  var usuario = req.user;
 var obra_id = Number(req.body.obra_id);
 var concepto= req.body.concepto;
-var unidad= req.body.unidad;
-var precio= req.body.precio;
-var proveedor_id = Number(req.body.proveedor_id);
-var categoria;
-if (concepto === "82" || concepto === "92"){
-  categoria = "acarreo";
-} else{
-  categoria = "material";
-}
-  db.query(nuevoMaterial,[concepto, unidad, precio,proveedor_id,categoria,obra_id], function(err,material){
+var flete_unidad= req.body.flete_unidad;
+var precio_carga_obra = req.body.precio_carga_obra;
+var prov_carga_obra = req.body.prov_carga_obra;
+var flete_precio = req.body.flete_precio;
+var flete_prov=req.body.flete_prov;
+var flete_unidad=req.body.flete_unidad;
+var dep_tiradero_precio = req.body.dep_tiradero_precio;
+var dep_tiradero_prov = req.body.dep_tiradero_prov;
+var derecho_banco_prov= req.body.derecho_banco_prov;
+var derecho_banco_precio = req.body.derecho_banco_precio;
+var derecho_banco_unidad= req.body.derecho_banco_unidad;
+var precio_carga_banco = req.body.precio_carga_banco;
+var prov_carga_banco = req.body.prov_carga_banco;
+
+db.query(nuevoMaterial,[obra_id,concepto,flete_unidad,precio_carga_obra,prov_carga_obra,flete_precio,flete_prov,dep_tiradero_precio,dep_tiradero_prov,derecho_banco_prov,derecho_banco_unidad,derecho_banco_precio,precio_carga_banco,prov_carga_banco], function(err,material){
       if(err) throw err;
       else {
-          res.json({material:material});
+          res.redirect('/materiales');
       }
     });
 })
@@ -45,6 +51,25 @@ router.get('/banco/:banco/:concepto', function(req,res,err){
   var obra_id = req.user.obra_id;
   var concepto_id = req.params.concepto;
   var listaMateriales = 'SELECT materiales.id,materiales.precio FROM materiales WHERE proveedor_id ='+banco_id+' AND obra_id ='+obra_id+' AND concepto='+concepto_id+';';
+  console.log(listaMateriales);
+    db.query(listaMateriales, function(err, rows){
+    if(err) throw err;
+    else {
+        res.send(rows);
+    }
+  });
+})
+
+router.get('/v2/:banco/:fletero/:concepto', function(req,res,err){
+  var banco_id = req.params.banco;
+  var banco_query = ''
+  if(banco_id != 0){
+    banco_query = ' AND derecho_banco_prov ='+banco_id;
+  }
+  var fletero = req.params.fletero;
+  var obra_id = req.user.obra_id;
+  var concepto_id = req.params.concepto;
+  var listaMateriales = 'SELECT materiales_n.material_id FROM materiales_n WHERE flete_prov = '+fletero+' AND concepto_id = '+concepto_id+' AND obra_id ='+obra_id+' '+banco_query+';';
   console.log(listaMateriales);
     db.query(listaMateriales, function(err, rows){
     if(err) throw err;

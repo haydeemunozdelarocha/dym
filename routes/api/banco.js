@@ -66,9 +66,10 @@ router.get('/material/', function(req,res,err){
   });
 })
 
-router.get('/banco/:camionid', function(req,res,err){
+router.get('/banco/:camionid/:concepto', function(req,res,err){
  var camion_id = req.params.camionid;
-  var getBanco = 'SELECT materiales.proveedor_id as banco,proveedores.razon_social FROM materiales JOIN proveedores ON proveedores.id = materiales.proveedor_id WHERE materiales.proveedor_id = (SELECT camiones.proveedor_id FROM camiones WHERE camion_id = '+camion_id+') GROUP BY materiales.proveedor_id UNION SELECT fletes.banco,proveedores.razon_social FROM fletes JOIN proveedores ON proveedores.id = fletes.banco WHERE fletes.proveedor_id = (SELECT camiones.proveedor_id FROM camiones WHERE camion_id = '+camion_id+') GROUP BY fletes.banco;';
+  var concepto = req.params.concepto;
+  var getBanco = 'SELECT materiales_n.derecho_banco_prov as banco,proveedores.razon_social FROM materiales_n JOIN proveedores ON proveedores.id = materiales_n.derecho_banco_prov WHERE materiales_n.flete_prov = (SELECT camiones.proveedor_id FROM camiones WHERE camion_id = '+camion_id+') AND concepto_id = '+concepto+' GROUP BY materiales_n.derecho_banco_prov;';
     db.query(getBanco, function(err, banco){
     if(err) throw err;
     else {

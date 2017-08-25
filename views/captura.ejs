@@ -22,7 +22,6 @@
       <div id="search-status"></div>
 
       <input type="hidden" class="form-control" id="fletero" name="fletero">
-      <input type="hidden" class="form-control" id="fletero_categoria" name="fletero_categoria">
       <input type="hidden" class="form-control" id="camion_categoria" name="camion_categoria">
       <input type="hidden" class="form-control" id="camion_id" name="camion_id">
       <input type="hidden" class="form-control" id="capacidad" name="capacidad">
@@ -32,20 +31,18 @@
 
     <div class="form-group categoria-info" hidden>
 
-      <label for="categoria">Categoría Acarreo:</label>
-        <select class="form-control" id="categoria" name="categoria" onchange="revisarInterno()" required disabled>
-            <option value="">Categoría</option>
-            <option value="82">Acarreo Interno</option>
-            <option value="92">Acarreo Externo</option>
-            <option value="100">Acarreo Material</option>
-    </select>
-      <input type="hidden" class="form-control" id="concepto_flete" name="concepto_flete">
+      <label for="concepto">Concepto:</label>
+        <select class="form-control" id="concepto" name="concepto" onchange="revisarInterno()" required disabled>
+            <option value="">Concepto</option>
+            <% for(var i=0; i<conceptos.length; i++) {%>
+            <option value="<%= conceptos[i].conceptos_id %>"><%= conceptos[i].nombre_concepto %></option>
+            <% } %>
+        </select>
       </div>
     </div>
-      <div id="banco-status"></div>
     <div id="bancoinfo" hidden>
       <label for="bancoinfo">Banco:</label>
-          <select class="form-control" name="banco_id" id="banco" onchange="calcularFlete()" required disabled>
+          <select class="form-control" name="banco_id" id="banco" onchange="getMaterial()" required disabled>
             <option value="">Banco</option>
       <% for(var i=0; i<proveedores.length; i++) {%>
             <option value="<%= proveedores[i].id %>"><%= proveedores[i].razon_social %></option>
@@ -53,25 +50,11 @@
     </select>
     <br>
     </div>
+    <div id="banco-status"></div>
 
-    <div id="material-status"></div>
-    <input type="hidden" class="form-control" id="proveedor_id" name="proveedor_id" >
     </div>
 
-      <input type="hidden" class="form-control" id="flete_id" name="flete_id" >
-      <input type="hidden" class="form-control" id="precio_flete" name="precio_flete" >
-
-
-    <div id="material-info" hidden>
-      <label for="material">Material</label>
-        <select class="form-control" name="material_id" id="material_id" onchange="getMaterial()" required disabled>
-        <option value="">Material</option>
-        </select>
-        <br>
-    </div>
-
-      <input type="hidden" class="form-control" id="precio_material" name="precio_material" >
-      <input type="hidden" class="form-control" id="concepto_material" name="concepto_material" >
+      <input type="hidden" class="form-control" id="material_id" name="material_id" >
 
 
     <div class="form-group" name="zona" id="zona">

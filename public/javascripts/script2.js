@@ -911,11 +911,10 @@ console.log(residente_id);
                     $('#pipa-tipo-container').css('visibility','visible');
                     $('#pipa-tipo-container').css('display','block');
                     } else {
-                      console.log('agregar')
-                    getBancos();
-                     $('#concepto-original').val('');
-                      $('#concepto').val('');
-                      $('#zona').val('');
+                      console.log('agregar');
+                    $('#concepto-original').val('');
+                    $('#concepto').val('');
+                    $('#zona').val('');
                     $('#popup-loading').css('visibility','hidden');
                     $('#popup-loading').html('');
                     $('#popup-editar').css('visibility','visible');
@@ -957,32 +956,18 @@ function getAcarreo(){
 
           acarreo.done(function(data){
             console.log(data);
-            $('.editar-form').css('visibility','visible');
-            $('.editar-form').css('display','block');
-            if(data[0].concepto_material){
-            $('#concepto').val(data[0].concepto_material);
-            $('#concepto-original').val(data[0].concepto_material);
-            } else {
-            $('#concepto').val(data[0].concepto_flete);
-            $('#concepto-original').val(data[0].concepto_flete);
+            $('#concepto').val(data[0].concepto_id);
+            $('#concepto-original').val(data[0].concepto_id);
+            $('#concepto-original').val(data[0].concepto_id);
             $('#banco_id').attr('disabled', true);
             $('#banco_id').css('visibility','hidden');
             $('#banco_id').css('display','none');
             $('#banco').css('visibility','hidden');
             $('#banco').css('display','none');
+            if(data[0].derecho_banco_prov){
+            getBancos(data[0].derecho_banco_prov);
             }
-            if(!data[0].flete_id){
-            $('#banco_id').val(data[0].proveedor_id);
-            } else {
-            $('#banco_id').val(data[0].banco_id);
-            $('#flete_id').val(data[0].flete_id);
-            if(data[0].banco_id){
-            getBancos(data[0].banco_id);
-            }
-            }
-            if(data[0].material_id){
-            getMateriales(data[0].material_id);
-            }
+            $('#material_id').val(data[0].material_id);
             getZonas(data[0].zona_id);
             });
 
@@ -993,18 +978,28 @@ function getAcarreo(){
 }
 
 function getBancos(value){
+  console.log('getting banco');
     var camion_id = $('#camion_id').val();
+    var concepto_id = $('#concepto').val();
+    $('#zona').attr('disabled',true);
+    $('#banco_id').attr('disabled',true);
     $('#banco_id').html('');
     $('#banco_id').append('<option value="">Banco</option>');
-
+    if(concepto_id == 82){
+    $('#banco').css("visibility","hidden");
+    $('#banco').css("display","none");
+    $('#banco_id').attr('disabled');
+    getMateriales();
+    } else {
    var bancos = $.ajax({
-            url: '/api/banco/banco/'+camion_id,
+            url: '/api/banco/banco/'+camion_id+'/'+concepto_id,
             type: 'GET'
           });
 
           bancos.done(function(data){
             console.log(data);
-             $('#banco').removeAttr('disabled');
+            if(data){
+             $('#banco_id').removeAttr('disabled');
             for(var i = 0; i <data.length; i++){
             $('#banco_id').append('<option value="'+data[i].banco+'">'+data[i].razon_social+'</option>');
             if(i == data.length-1){
@@ -1017,69 +1012,43 @@ function getBancos(value){
             $('#banco').css('visibility','visible');
             }
             }
+          } else {
+            alert('No se hay bancos de este concepto.')
+          }
             });
+
 
           bancos.fail(function(jqXHR, textStatus, errorThrown){
             console.log(errorThrown)
               alert('Error');
           });
+    }
 }
 
-function getFlete(){
-
-  var proveedor_id = $('#proveedor_id').val();
-  if($('#concepto').val() == 82){
-    var banco_id = 0;
-  } else {
-  var banco_id = $('#banco_id').val();
-  }
-  var concepto = $('#concepto').val();
-   var fletes = $.ajax({
-            url: '/api/fletes/precio',
-            type: 'POST',
-            data: {
-              proveedor_id:proveedor_id,
-              banco_id:banco_id,
-              concepto:concepto
-            }
-          });
-
-          fletes.done(function(data){
-            console.log(data);
-            if(data[0].length>0){
-            $('#flete_id').val(data[0][0].fletes_id);
-            $('#precio-flete').val(data[0][0].precio);
-            } else {
-            $('#flete_id').val('');
-            $('#precio-flete').val('');
-            }
-            getZonas();
-            });
-
-          fletes.fail(function(jqXHR, textStatus, errorThrown){
-            console.log(errorThrown)
-              alert('Error');
-          });
-
-}
 
 function getMateriales(value){
-  var banco_id = $('#banco_id').val();
+  var banco_id=$('#banco').val();
+
+  if(!banco_id){
+  banco_id = 0;
+  }
+
   var concepto = $('#concepto').val();
+  var fletero = $('#proveedor_id').val();
+  console.log('getting materiales')
   if(value){
     $('#material_id').val(value);
-  } else if(banco_id && concepto){
+  } else {
        var materiales = $.ajax({
-            url: '/api/materiales/banco/'+banco_id+'/'+concepto,
+            url: '/api/materiales/v2/'+banco_id+'/'+fletero+'/'+concepto,
             type: 'GET'
           });
 
           materiales.done(function(data){
             console.log(data);
             if(data.length > 0){
+            $('#material_id').val(data[0].material_id);
             getZonas();
-            $('#material_id').val(data[0].id);
-            $('#precio_material').val(data[0].precio);
             } else {
               alert('No se encontró la entrada de material de el concepto y banco seleccionado. Favor de dar de alta el material indicado.');
             }
@@ -1098,9 +1067,7 @@ function getZonas(value){
   $('#editar-button-loading').html('<i class="fa fa-spinner fa-spin" style="font-size:24px; color:#8999A8;"></i>')
   var concepto_id = $('#concepto').val();
   console.log(value)
-  if(!value){
-    var value = $('#zona').val();
-  }
+
    var zonas = $.ajax({
             url: '/api/zonas/lista/'+concepto_id,
             type: 'GET'
@@ -1109,16 +1076,15 @@ function getZonas(value){
           zonas.done(function(data){
             console.log(data);
             if(data.length > 0){
+            $('#zona').removeAttr('disabled');
             $('#zona').html('');
             $('#zona').append('<option value="">Zonas</option>');
             for(var i = 0; i <data.length; i++){
             $('#zona').append('<option value="'+data[i].zona+'">'+data[i].nombre_zona+'</option>');
             if(i == data.length-1){
-                $('#zona').removeAttr('disabled');
                 $('#zona').append('<option value="122">Extras</option>');
                 $('#zona').val(value);
                 $('#editar-button-loading').html('')
-                $('#zona').removeAttr('readonly');
                 $('#popup-editar').css('visibility','visible');
                 $('#popup-loading').css('visibility','hidden');
                 $('#popup-loading').html('');
@@ -1147,24 +1113,24 @@ function updateAcarreo(){
 
   var recibo_id = $('#acarreo_id').val();
   var concepto = $('#concepto').val();
-  var banco_id = $('#banco_id').val();
   var material_id = $('#material_id').val();
-  var flete_id = $('#flete_id').val();
   var zona = $('#zona').val();
-    var razon = $('#razon').val();
-  var categoria = $('#categoria').val();
+ var razon = $('#razon').val();
+
   console.log('nozona: '+!zona);
   if(concepto != 82){
  if(!zona || !razon || !concepto || !banco_id){
     var send = false;
-    alert("Por favor no deje campos en blanco.")
+    alert("Por favor no deje campos en blanco.");
+    $('#editar-button-loading').html("");
   } else {
     var send = true;
   }
   } else {
     if(!zona || !razon || !concepto){
     var send = false;
-    alert("Por favor no deje campos en blanco.")
+    alert("Por favor no deje campos en blanco.");
+    $('#editar-button-loading').html("");
   } else {
     var send = true;
   }
@@ -1175,12 +1141,9 @@ function updateAcarreo(){
      var update = $.ajax({
             url: '/api/acarreos/update/'+recibo_id,
             type: 'POST',
-            data: {concepto:concepto,
-                banco_id:banco_id,
+            data: {
                 material_id:material_id,
                 zona_id:zona,
-                categoria:categoria,
-                flete_id:flete_id,
                 razon:razon
             }
           });
@@ -1227,7 +1190,7 @@ function checarNumeroEdicion(tipo){
           ediciones.fail(function(jqXHR, textStatus, errorThrown){
             console.log(errorThrown);
               $('#editar-button-loading').html('');
-              alert('No se pudo guardar el acarreo.');
+              alert('No se encontró el número de ediciones.');
           });
 }
 
@@ -1339,40 +1302,6 @@ var checkedVals = $('.acarreos:checkbox:checked').map(function() {
 }
 }
 
-function checkAcarreoInt(){
-  var nuevoconcepto = $('#concepto').val();
-  var conceptooriginal = $('#concepto-original').val();
-  var flete_id = $('#flete_id').val();
-    if(nuevoconcepto !=82 && conceptooriginal == 82){
-      $('#save-button').attr('disabled','true');
-      $('#concepto').val(conceptooriginal);
-      alert('Para cambiar a concepto de Acarreo Interno, se requiere eliminar el viaje y agregarlo de nuevo.');
-    } else if (nuevoconcepto == 82 && !conceptooriginal){
-      $('#banco_id').val(null);
-      $('#banco_id').attr('disabled','true');
-      $('#banco_id').css('visibility','hidden');
-      $('#banco_id').css('display','none');
-      $('#banco').css('visibility','hidden');
-      $('#banco').css('display','none');
-      getFlete();
-    } else if(nuevoconcepto == 82 && conceptooriginal != 82){
-      $('#save-button').attr('disabled','true');
-      $('#concepto').val(conceptooriginal);
-      alert('Para cambiar de concepto de Acarreo Interno a otro, se requiere eliminar el viaje y agregarlo de nuevo.');
-    } else if(conceptooriginal && !flete_id){
-      $('#save-button').attr('disabled','true');
-      $('#concepto').val(conceptooriginal);
-      alert('Para editar este acarreo, se requiere eliminarlo y volverlo a agregar.');
-    }else {
-      $('#save-button').removeAttr('disabled');
-      $('#banco_id').removeAttr('disabled');
-      $('#banco_id').css('visibility','visible');
-      $('#banco_id').css('display','block');
-      $('#banco').css('visibility','visible');
-      $('#banco').css('display','block');
-      getBancos();
-  }
-}
 
 function borrarAcarreo(){
 
@@ -1412,7 +1341,6 @@ function pipaForm(){
       $('#razon').css('display','block');
       getViajes();
   } else if($('#pipa-tipo').val() == 1){
-    getBancos();
       $('#editar-container').css('visibility','visible');
       $('#editar-container').css('display','block');
        $('#pipa-entrada').css('visibility','visible');
@@ -1472,8 +1400,7 @@ function cerrarViaje(){
   var material_id = $('#material_id').val();
   var camion_id = $('#camion_id').val();
   var zona = $('#zona').val();
-  var flete_id = $('#flete_id').val();
-   var razon = $('#razon').val();
+  var razon = $('#razon').val();
   var entrada='';
   var salida= fecha+' '+$('#nueva-hora-salida').val()+':'+$('#nueva-minutos-salida').val()+' '+$('#nueva-meridiano-salida').val();
   if($('#nueva-minutos-entrada').val() && $('#nueva-meridiano-entrada').val()){
@@ -1494,7 +1421,6 @@ function cerrarViaje(){
               minutos:minutos,
               meridiano:meridiano,
               zona_id:zona,
-              flete_id:flete_id,
               material_id:material_id,
               camion_id:camion_id,
               salida:salida,

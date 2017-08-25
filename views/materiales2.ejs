@@ -37,30 +37,51 @@
     <br>
     <button type="submit" class="btn btn-primary" style="margin-bottom: 10px;" onclick="allMateriales()">Buscar</button>
 <br>
-<a href="/materiales/nuevo">Agregar Nuevo</a>
-<br>
   <div id="table">
 <div class="panel panel-default">
   <!-- Default panel contents -->
   <div class="panel-heading">Materiales</div>
 
   <!-- Table -->
-
+    <table class="table">
+      <tr>
+      <td></td>
+      <td><select class="form-control" name="concepto" id="concepto" onchange="checarOtro('concepto')">
+            <option value="">Concepto</option>
+      <% for(var i=0; i<conceptos.length; i++) {%>
+            <option value="<%= conceptos[i].conceptos_id %>"><%= conceptos[i].nombre_concepto %></option>
+    <% } %>
+                <option value="otro">Otro</option>
+    </select></td>
+    <td>
+      <select class="form-control" name="unidad" id="unidad">
+        <option value="">Unidad</option>
+        <option value="m">m</option>
+        <option value="m2">m2</option>
+        <option value="m3">m3</option>
+        <option value="ton">ton</option>
+        <option value="dias">días</option>
+      </select>
+    </td>
+    <td><input type="text" class="form-control" placeholder="Precio" name="precio" id="precio"></td>
+    <td><span onclick="saveMaterial()" class="glyphicon glyphicon-plus-sign save-material"></span></td>
+     </tr>
+     </table>
      <table class="table"id="todos-materiales">
     <tr>
       <td>ID</td>
       <td>Nombre</td>
       <td>Proveedor</td>
-      <td>Derecho Banco</td>
-      <td>Precio Flete</td>
+      <td>Unidad</td>
+      <td>Precio</td>
     </tr>
     <% for(var i=0; i<info.length; i++) {%>
     <tr class="tabla-materiales">
-      <td><%= info[i].material_id %></td>
+      <td><%= info[i].id %></td>
      <td><%= info[i].nombre_concepto %></td>
-      <td><% if (info[i].razon_social) {%><%= info[i].razon_social %><% } else {%>--<%}%></td>
-      <td><% if (info[i].derecho_banco_precio) {%>$<%= info[i].derecho_banco_precio %><% } else {%>--<%}%></td>
-      <td><% if (info[i].flete_precio) {%>$<%= info[i].flete_precio %><% } else {%>--<%}%></td>
+      <td><%= info[i].razon_social %></td>
+      <td><%= info[i].unidad %></td>
+      <td>$<%= info[i].precio %></td>
       <td><a href="/materiales/editar/<%= info[i].id %>"><span class="glyphicon glyphicon-edit"></span></a></td>
       <td><a onclick="deleteMaterial(<%= info[i].id %>)"><span class="glyphicon glyphicon-remove-circle"></span></a></td>
      </tr>
